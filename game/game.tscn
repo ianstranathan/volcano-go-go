@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=9 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="1_l1rk1"]
@@ -6,17 +6,12 @@
 [ext_resource type="Shader" uid="uid://i3hhhyyohcb4" path="res://player/capsule_visual.gdshader" id="3_4fuuu"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://bir11ajaiuyxg" path="res://lava/lava_view.tscn" id="6_dakft"]
+[ext_resource type="PackedScene" uid="uid://4d5kvc0vxnc1" path="res://placeholders/palceholder_platform/placeholder_platform.tscn" id="7_u5opy"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dakft"]
 shader = ExtResource("3_4fuuu")
 shader_parameter/radius = 0.0
 shader_parameter/height = 0.355
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dxrkv"]
-size = Vector2(1000, 100)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dakft"]
-size = Vector2(100, 50)
 
 [node name="Game" type="Node2D" node_paths=PackedStringArray("player", "lava_view")]
 script = ExtResource("1_dxrkv")
@@ -51,18 +46,16 @@ metadata/_edit_group_ = true
 [node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
 target = NodePath("../Player")
 
-[node name="TmpContainer" type="Node2D" parent="."]
-
-[node name="StaticBody2D" type="StaticBody2D" parent="TmpContainer"]
-position = Vector2(0, 100)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TmpContainer/StaticBody2D"]
-shape = SubResource("RectangleShape2D_dxrkv")
-
-[node name="StaticBody2D2" type="StaticBody2D" parent="TmpContainer"]
-position = Vector2(-116, -120)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TmpContainer/StaticBody2D2"]
-shape = SubResource("RectangleShape2D_dakft")
-
 [node name="LavaView" parent="." instance=ExtResource("6_dakft")]
+
+[node name="StaticBodyCOntainer" type="Node2D" parent="."]
+
+[node name="PlaceholderPlatform" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(0, 75)
+color = Color(0.9032129, 0.9695106, 0.998074, 1)
+coll_extents = Vector2(1300, 50)
+
+[node name="PlaceholderPlatform2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(-125, -125)
+color = Color(0.2227377, 0.2758213, 0.79406697, 1)
+coll_extents = Vector2(100, 50)
