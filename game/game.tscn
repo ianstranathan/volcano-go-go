@@ -44,6 +44,7 @@ position = Vector2(107, 0)
 metadata/_edit_group_ = true
 
 [node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
+zoom = Vector2(0.8, 0.8)
 target = NodePath("../Player")
 
 [node name="LavaView" parent="." instance=ExtResource("6_dakft")]
@@ -59,3 +60,13 @@ coll_extents = Vector2(1300, 50)
 position = Vector2(-125, -125)
 color = Color(0.2227377, 0.2758213, 0.79406697, 1)
 coll_extents = Vector2(100, 50)
+
+[node name="PlaceholderPlatform3" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(175, -125)
+color = Color(0.2227377, 0.2758213, 0.79406697, 1)
+coll_extents = Vector2(100, 50)
+
+[node name="PlaceholderPlatform4" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(436, 0)
+color = Color(0.9647059, 0.6, 0, 1)
+coll_extents = Vector2(200, 50)

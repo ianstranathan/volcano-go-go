@@ -10,16 +10,17 @@ shader = ExtResource("2_6iyk5")
 shader_parameter/source_col = Color(0.5, 0.5, 0.5, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6iyk5"]
-size = Vector2(1000, 50)
+size = Vector2(250, 50)
 
-[node name="PlaceholderPlatform" type="Node2D"]
+[node name="PlaceholderPlatform" type="Node2D" node_paths=PackedStringArray("coll_shape", "sprite")]
 script = ExtResource("1_o478t")
-color = null
-coll_extents = Vector2(1000, 50)
+coll_extents = Vector2(250, 50)
+coll_shape = NodePath("StaticBody2D/CollisionShape2D")
+sprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_htw8n")
-scale = Vector2(7.8125, 0.390625)
+scale = Vector2(1.953125, 0.390625)
 texture = ExtResource("1_8c8f6")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]

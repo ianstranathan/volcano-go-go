@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=7 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_rkbax"]
+[ext_resource type="Script" uid="uid://c0d1jssyd0qnl" path="res://player/movement_state_controller/movement_state_controller.gd" id="4_yw30f"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
 shader = ExtResource("2_g1dw6")
@@ -31,7 +32,8 @@ wait_time = 0.25
 one_shot = true
 
 [node name="CoyoteTimeTimer" type="Timer" parent="."]
-wait_time = 0.1
+wait_time = 0.5
+one_shot = true
 
 [node name="FloorCheckContainer" type="Node2D" parent="."]
 
@@ -50,3 +52,6 @@ offset_top = -70.0
 offset_right = 26.0
 offset_bottom = -47.0
 text = "HELLO"
+
+[node name="MovementStateController" type="Node2D" parent="."]
+script = ExtResource("4_yw30f")
