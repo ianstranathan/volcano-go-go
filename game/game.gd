@@ -8,4 +8,5 @@ extends Node2D
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):
 		player.velocity = Vector2.ZERO
+		player.global_rotation = 0
 		player.global_position = player_initial_position

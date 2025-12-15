@@ -32,6 +32,7 @@ one_shot = true
 
 [node name="CoyoteTimeTimer" type="Timer" parent="."]
 wait_time = 0.1
+one_shot = true
 
 [node name="FloorCheckContainer" type="Node2D" parent="."]
 
@@ -50,3 +51,35 @@ offset_top = -70.0
 offset_right = 26.0
 offset_bottom = -47.0
 text = "HELLO"
+
+[node name="SideSomersaultTimer" type="Timer" parent="."]
+wait_time = 0.35
+one_shot = true
+
+[node name="WallCheckContainer" type="Node2D" parent="."]
+
+[node name="RHS1" type="RayCast2D" parent="WallCheckContainer"]
+position = Vector2(0, -33)
+target_position = Vector2(30, 0)
+
+[node name="RHS2" type="RayCast2D" parent="WallCheckContainer"]
+target_position = Vector2(30, 0)
+
+[node name="RHS3" type="RayCast2D" parent="WallCheckContainer"]
+position = Vector2(0, 36)
+target_position = Vector2(30, 0)
+
+[node name="LHS1" type="RayCast2D" parent="WallCheckContainer"]
+position = Vector2(0, -33)
+target_position = Vector2(-30, 0)
+
+[node name="LHS2" type="RayCast2D" parent="WallCheckContainer"]
+target_position = Vector2(-30, 0)
+
+[node name="LHS3" type="RayCast2D" parent="WallCheckContainer"]
+position = Vector2(0, 36)
+target_position = Vector2(-30, 0)
+
+[node name="WallJumpTimer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true

@@ -70,3 +70,17 @@ coll_extents = Vector2(100, 50)
 position = Vector2(436, 0)
 color = Color(0.9647059, 0.6, 0, 1)
 coll_extents = Vector2(200, 50)
+
+[node name="LH_WALL" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(-372, -208)
+rotation = 1.5707964
+
+[node name="RH_WALL" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(410, -640)
+rotation = 1.5707964
+coll_extents = Vector2(1000, 50)
+
+[node name="RH_WALL2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(616, -640)
+rotation = 1.5707964
+coll_extents = Vector2(1000, 50)
