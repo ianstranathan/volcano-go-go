@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://v8tvycknm2ck"]
 
 [ext_resource type="Script" uid="uid://hmtvrk1i1cd6" path="res://placeholders/palceholder_platform/placeholder_platform.gd" id="1_1lxba"]
-[ext_resource type="Script" uid="uid://ba5khv4uf4vm0" path="res://body_in_lava/animated_body_in_lava.gd" id="2_r1cld"]
+[ext_resource type="Script" uid="uid://ba5khv4uf4vm0" path="res://lava_body/lavable_body.gd" id="2_r1cld"]
 [ext_resource type="Shader" uid="uid://bv5njxihvo5tf" path="res://placeholders/palceholder_platform/placeholder_platform.gdshader" id="3_pcj3t"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_jxflh"]
 
@@ -19,7 +19,6 @@ color = Color(0.5019608, 0.5019608, 1, 1)
 coll_extents = Vector2(200, 100)
 coll_shape = NodePath("AnimatableBody2D/CollisionShape2D")
 sprite = NodePath("Sprite2D")
-moveable = null
 
 [node name="AnimatableBody2D" type="AnimatableBody2D" parent="."]
 collision_layer = 4

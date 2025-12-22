@@ -21,7 +21,8 @@ Kinematics="*res://globals/kinematics.gd"
 
 [display]
 
-window/size/mode=2
+window/size/initial_position_type=3
+window/size/resizable=false
 
 [input]
 
@@ -55,3 +56,7 @@ reset={
 2d_physics/layer_1="StaticBodies"
 2d_physics/layer_2="Player"
 2d_physics/layer_3="AnimatableBodies"
+
+[rendering]
+
+gl_compatibility/nvidia_disable_threaded_optimization=false

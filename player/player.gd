@@ -29,18 +29,18 @@ extends CharacterBody2D
 @export_group("platformer stuff")
 ## Time to allow jump after leaving ground
 @export var COYOTE_TIME_DURATION: float = 0.15
-# Time to hold jump input for later jump
+## Time to hold jump input for later jump
 @export var JUMP_BUFFER_DURATION: float = 0.15
-
+## number of pixels to snap character to (for vertically moving platforms)
+@export var platform_snap_distance = 20
 @onready var coyote_timer: Timer = $CoyoteTimeTimer
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
 
-@onready var new_y_vel: float = velocity.y
 
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
 var can_jump := true
 @onready var g: float = jump_gravity
-
+@onready var down_test_vector = Vector2(0, platform_snap_distance)
 
 @export_category("Lava")
 # -- TODO NOTE
@@ -119,28 +119,50 @@ func handle_falling():
 			movement_state_transition(MovementStates.FALLING)
 			coyote_timer.start()
 
+var current_platform = null # -- for calculating relative velocities
 func _physics_process(delta: float) -> void:
-	# -- TODO
-	tmp_burn_handle()
-	
-	move();
+	var was_idle = movement_state == MovementStates.IDLE
+	move()
 	handle_jump()
 	handle_falling()
-
-	#var g = fall_gravity if velocity.y >= 0  else jump_gravity
-
+	#ledge_hanging_check()
+	tmp_burn_handle()
+	
+	# -----
+	if current_platform:
+		move_and_collide(current_platform.get_velocity() * delta)
 	# -----------------------------------------------------------  kinematic update
 	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
 	velocity.y += g * delta
-
-	var coll = move_and_collide(Vector2.ZERO)
-	if coll:
-		var normal = coll.get_normal()
+	
+	
+	var collision = move_and_collide(Vector2.ZERO)
+	if collision:
+		#var normal = collision.get_normal()
 		# -- logic for transitioning to ground, idle
-		if normal.y < 0:
+		is_on_ground = collision.get_normal().dot(Vector2.UP) > 0.7
+		if is_on_ground:
+			current_platform_check( collision )
 			movement_state_transition(MovementStates.IDLE)
-			is_on_ground = true
+			#is_on_ground = true
 			velocity.y = 0
+
+	# -- Check the logic on this guy
+	# -- if the state was idle, then falling
+	#print(was_idle and movement_state == MovementStates.FALLING)
+	if was_idle and movement_state == MovementStates.FALLING:
+		if test_move(global_transform, down_test_vector):
+			var snap_collision = move_and_collide(down_test_vector)
+			if snap_collision:
+				current_platform_check( snap_collision )
+				is_on_ground = true
+				velocity.y = 0
+
+
+func current_platform_check(coll: KinematicCollision2D):
+	var collider = coll.get_collider()
+	if collider is MoveablePlatform:
+		current_platform = collider
 
 
 var last_move_input: float
@@ -170,7 +192,7 @@ func move():
 
 func my_is_on_floor() -> bool:
 	# -- is any downward pointing ray colliding with something?
-	# -- is_on_floor only works with move_and_slide
+	# -- the built in "is_on_floor()" only works with move_and_slide
 	return $FloorCheckContainer.get_children().reduce(func(accum, child):
 		return (accum or child.is_colliding()), false)
 
@@ -196,6 +218,14 @@ func wall_normal():
 			return ray.get_collision_normal()
 
 
+func ledge_hanging_check():
+	# -- if we're falling and any of the ledge rays are hitting
+	if movement_state == MovementStates.FALLING and $LedgeRayContainer.get_children().reduce( 
+		func( acc, child): return (acc or child.is_colliding())):
+		velocity = Vector2.ZERO
+		movement_state_transition(MovementStates.LEDGE_HANGING)
+
+
 enum MovementStates
 {
 	IDLE,
@@ -204,6 +234,7 @@ enum MovementStates
 	FALLING,
 	CROUCHING,
 	WALL_SLIDING,
+	LEDGE_HANGING
 }
 const MOVEMENT_STATE_PRIORIOTY_ARR = [ 
 	MovementStates.IDLE,
@@ -211,13 +242,20 @@ const MOVEMENT_STATE_PRIORIOTY_ARR = [
 	MovementStates.JUMPING,
 	MovementStates.FALLING,
 	MovementStates.CROUCHING,
-	MovementStates.WALL_SLIDING
+	MovementStates.WALL_SLIDING,
+	MovementStates.LEDGE_HANGING
 ]
+
 
 var movement_state: MovementStates = MovementStates.IDLE
 var prev_movement_state: MovementStates = movement_state
 
-# -- TODO wrap this up into a more functional, modular thing to inject states into matches
+
+func set_debug_label(new_movement_state: MovementStates) -> void:
+	$Label.text = MovementStates.keys()[new_movement_state]
+
+# -- TODO 
+# -- wrap this up into a more functional, modular thing to inject states into matches
 func movement_state_transition(new_movement_state: MovementStates):
 	#print("Curr: ", movement_state, " & next: ", new_movement_state)
 	if movement_state != new_movement_state:
@@ -227,59 +265,59 @@ func movement_state_transition(new_movement_state: MovementStates):
 				match new_movement_state:
 					# -- enter code here
 					MovementStates.WALKING:
-						#print("from idle to walking")
-						$Label.text = "WALKING"
+						pass
 					MovementStates.JUMPING:
-						#print("from idle to jumping")
 						g = jump_gravity
-						$Label.text = "JUMPING"
+						current_platform = null
 					MovementStates.FALLING:
-						#print("from idle to falling")
 						g = fall_gravity
-						$Label.text = "FALLING"
+						current_platform = null
 			MovementStates.WALKING:
 				match new_movement_state:
 					MovementStates.IDLE:
-						$Label.text = "IDLE"
+						pass
 					MovementStates.JUMPING:
 						g = jump_gravity
-						$Label.text = "JUMPING"
+						current_platform = null
 					MovementStates.FALLING:
 						g = fall_gravity
-						$Label.text = "FALLING"
+						current_platform = null
 			MovementStates.JUMPING:
 				match new_movement_state:
 					MovementStates.FALLING:
 						g = fall_gravity
-						$Label.text = "FALLING"
 					MovementStates.WALL_SLIDING:
-						#jump_buffer_timer.stop()
 						g = _wall_slide_gravity()
-						$Label.text = "WALL SLIDING"
+					MovementStates.LEDGE_HANGING:
+						pass
 			MovementStates.FALLING:
 				match new_movement_state:
 					MovementStates.IDLE:
-						$Label.text = "IDLE"
+						g = fall_gravity
 					MovementStates.WALL_SLIDING:
-						# -- maybe?
-						#jump_buffer_timer.stop()
 						g = _wall_slide_gravity()
-						$Label.text = "WALL_SLIDING"
+					MovementStates.LEDGE_HANGING:
+						pass
 			MovementStates.CROUCHING:
 				pass
 			MovementStates.WALL_SLIDING:
 				match new_movement_state:
 					MovementStates.IDLE:
-						$Label.text = "IDLE"
+						pass
 					MovementStates.JUMPING:
 						g = jump_gravity
 					MovementStates.FALLING:
 						g = fall_gravity
-						#$WallJumpTimer.start()
-						#$WallCheckContainer.get_children().map( 
-							#func(child): child.enabled = false)
-						$Label.text = "JUMPING"
+			MovementStates.LEDGE_HANGING:
+				match new_movement_state:
+					MovementStates.IDLE:
+						pass
+					MovementStates.FALLING:
+						g = fall_gravity
+					MovementStates.JUMPING:
+						g = jump_gravity
 		# ----------------------------------
+		set_debug_label( new_movement_state )
 		prev_movement_state = movement_state
 		movement_state = new_movement_state
 		# ----------------------------------
@@ -324,7 +362,7 @@ func tmp_burn_handle() -> void:
 		mat.set_shader_parameter("dummy_burn_timer", 0.)
 		burn_tween.tween_property(mat, "shader_parameter/dummy_burn_timer", 5.0, 3.)
 		can_burn = false
-				
+
 	# -- going back accross lava threshold after getting burned
 	if !can_burn and hit_lava:
 		can_burn = true

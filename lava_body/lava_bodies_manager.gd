@@ -3,13 +3,16 @@ extends Node2D
 
 @export var lava_ref: Node2D
 
+"""
+Middleman for lava
+Assigns lava ref to it's children at _ready & any subsequent child added
+"""
 func _ready() -> void:
 	assert( lava_ref )
 	# -- init lava ref on children
-	get_children().map( func( body_in_lava: Node2D):
-		body_in_lava.get_children().map( func( child):
-			if child is LavableBody:
-				child.lava_ref = lava_ref))
+	get_children().map( func( child):
+		if child is LavableBody:
+			child.lava_ref = lava_ref)
 	
 	#get_children().map( func( child ):
 		#if child is AnimatableBody2D:

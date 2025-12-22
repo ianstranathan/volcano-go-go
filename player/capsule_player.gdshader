@@ -25,7 +25,7 @@ void fragment() {
 	float m = 1. - smoothstep(0.3, 0.35, d);
 	float t = exp(-dummy_burn_timer);
 	
-	vec3 col = mix(vec3(1.), vec3(1., 0., 0.), t);
+	vec3 col = mix(vec3(1.), vec3(1., 0., 0.) + sin(20. * TIME), t);
 	COLOR = vec4(col, m);
 }
 
