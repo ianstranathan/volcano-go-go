@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+class_name Player
 # -- TODO
 # -- account for terminal velocity
 # -- (should only be able to fall so fast)
@@ -58,6 +59,7 @@ func _ready() -> void:
 		# -- turn on all the wall raycasts after a certain amount time after wall jump
 		$WallCheckContainer.get_children().map( 
 			func(child): child.enabled = true))
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("jump"):

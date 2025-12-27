@@ -3,13 +3,13 @@ class_name InputManager
 
 signal input_source_type_changed
 
+ 
 enum InputSourceType{
 	CONTROLLER,
 	KEYBOARD
 }
 
 var current_input_source: InputSourceType = InputSourceType.CONTROLLER
-
 
 func _input(event: InputEvent) -> void:
 	if (current_input_source == InputSourceType.CONTROLLER and
@@ -26,16 +26,28 @@ func _input(event: InputEvent) -> void:
 
 
 func movement_vector():
-	# -- NOTE
-	# -- may want to force either keyboard or controller, but I don't care right now
-	return Input.get_vector("move left", "move right", "move up", "move down") 
+	return Input.get_vector("move_left", "move_right", "move_up", "move_down") 
 
+# -- NOTE
+# -- CHANGE ME
+## the distance in pixels that the controller can aim to
+@export var controller_aiming_chain_length: float = 400.0 
 
-func aiming_vector(from_position=null):
+func aiming_vector() -> Vector2:
+	var rez := Vector2.ZERO
 	if current_input_source == InputSourceType.CONTROLLER:
-		return Input.get_vector("aim left", "aim right", "aim up", "aim down")
+		rez = (Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down").normalized() *
+				controller_aiming_chain_length)
 	elif current_input_source == InputSourceType.KEYBOARD:
-		return (get_global_mouse_position() - from_position)
+		# -- NOTE
+		# var _from = global_position if !from_position else from_position
+		#return (get_global_mouse_position() - _from)
+		rez = (get_global_mouse_position() - global_position)
+	return rez
+
+
+func aiming_pos() -> Vector2:
+	return (aiming_vector() + global_position)
 
 
 func just_pressed_action(action_name: String):
@@ -49,8 +61,9 @@ func just_released_action(action_name: String) -> bool:
 var last_pressed_action: StringName
 func pressed_action(action_name: String) -> bool: #, return_name=false):
 	var rez = Input.is_action_pressed(action_name)
-	if rez and (!last_pressed_action or last_pressed_action != action_name):
-		last_pressed_action = action_name
+	if rez:
+		if !last_pressed_action or last_pressed_action != action_name:
+			last_pressed_action = action_name
 	return rez
 
 

@@ -6,7 +6,12 @@ Simple utility component that is child of a AnimatableBody2D or StaticBody2D
 - it just couples the placeholder sprite size and the collision shape to
   automate manual changing
 """
-@export var body: StaticBody2D
+@export var body: StaticBody2D:
+	set(value):
+		body = value
+		if is_inside_tree(): 
+			_sync_to_body()
+			
 @export var color: Color = Color(0.5, 0.5, 0.5, 1.0):
 	set(value):
 		color = value
@@ -25,12 +30,16 @@ Simple utility component that is child of a AnimatableBody2D or StaticBody2D
 				_update_collision_shape(coll_shape)
 				_on_shape_size_changed() # Your custom callback function
 
+
+func _sync_to_body() -> void:
+	if body and body.has_node("CollisionShape2D"):
+		var coll_shape = body.get_node("CollisionShape2D")
+		_on_shape_size_changed( )
+		_update_collision_shape( coll_shape )
+
+
 func _ready():
-	#if !Engine.is_editor_hint():
-	assert( body )
-	var coll_shape = body.get_node("CollisionShape2D")
-	_on_shape_size_changed( )
-	_update_collision_shape( coll_shape )
+	_sync_to_body()
 
 
 func _update_collision_shape(coll_shape: CollisionShape2D):

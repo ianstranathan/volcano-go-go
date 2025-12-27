@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=17 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="1_l1rk1"]
@@ -10,7 +10,10 @@
 [ext_resource type="PackedScene" uid="uid://bgbt8cdrdgm7j" path="res://level_components/platform/path_platform.tscn" id="8_y36n6"]
 [ext_resource type="Script" uid="uid://bm3k0fooylrpl" path="res://lava_body/lava_bodies_manager.gd" id="9_l8g03"]
 [ext_resource type="PackedScene" uid="uid://dw8xbw1eowf42" path="res://lava_body/lava_body.tscn" id="10_3vho3"]
+[ext_resource type="PackedScene" uid="uid://csxlguu7f4gt6" path="res://items/pickup_item.tscn" id="12_qf6n1"]
 [ext_resource type="PackedScene" uid="uid://j2as0dklypue" path="res://platforms/coll_sprite_matcher.tscn" id="12_vsp63"]
+[ext_resource type="PackedScene" uid="uid://cvpf74tya22rc" path="res://items/grappling_hook/grappling_hook.tscn" id="13_vsp63"]
+[ext_resource type="Texture2D" uid="uid://c4oflmcqxtgy3" path="res://assets/grapple.svg" id="14_b686c"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dakft"]
 shader = ExtResource("3_4fuuu")
@@ -50,7 +53,6 @@ position = Vector2(0, -300)
 texture = ExtResource("4_dxrkv")
 
 [node name="Player" parent="." node_paths=PackedStringArray("lava_ref") instance=ExtResource("1_l1rk1")]
-position = Vector2(107, 0)
 lava_ref = NodePath("../Lava")
 metadata/_edit_group_ = true
 
@@ -125,3 +127,10 @@ position = Vector2(1072, 0)
 body = NodePath("..")
 color = Color(0, 0.57911354, 0.5474907, 1)
 coll_extents = Vector2(250, 250)
+
+[node name="ItemsContainer" type="Node2D" parent="."]
+
+[node name="PickupItem" parent="ItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(-112, 26)
+scene_resource = ExtResource("13_vsp63")
+_texture = ExtResource("14_b686c")

@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://csxlguu7f4gt6"]
+
+[ext_resource type="Script" uid="uid://cq0egx7y64qws" path="res://items/pickup_item.gd" id="1_edkex"]
+[ext_resource type="Shader" uid="uid://bl3t8qr7nbwc" path="res://items/pickup_item_icon.gdshader" id="1_pxpuq"]
+[ext_resource type="Texture2D" uid="uid://cy0f7doufjxwg" path="res://assets/reticule.svg" id="2_bklxq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_buahv"]
+radius = 20.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_buahv"]
+shader = ExtResource("1_pxpuq")
+shader_parameter/src_col = Color(0.504, 0.214, 1, 1)
+
+[node name="PickupItem" type="Node2D" node_paths=PackedStringArray("sprite")]
+script = ExtResource("1_edkex")
+pickup_radius = 20.0
+sprite = NodePath("Sprite2D")
+_texture = ExtResource("2_bklxq")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_buahv")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_buahv")
+scale = Vector2(0.078125, 0.078125)
+texture = ExtResource("2_bklxq")
