@@ -10,3 +10,4 @@ script = ExtResource("1_wx7rf")
 [node name="Line2D" type="Line2D" parent="."]
 points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0
+default_color = Color(0.4238622, 0.2185036, 0.0974899, 1)

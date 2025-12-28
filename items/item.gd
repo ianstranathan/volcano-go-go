@@ -4,10 +4,24 @@ class_name Item
 
 var input_manager: InputManager
 var player_ref :Player
+var type: ItemGlobals.ItemType
+
+signal item_started( _type: ItemGlobals.ItemType)
+signal item_finished
 
 func _ready():
-	assert( input_manager and player_ref )
+	assert( type )
+	assert( input_manager )
+	assert( player_ref )
 
-## virtual function use
+
 func use():
-	pass
+	item_started.emit( type )
+
+
+func finish_using():
+	item_finished.emit( type )
+
+#
+#func is_mobility_item() -> bool:
+	#return type == ItemGlobals.ItemType.MOBILITY

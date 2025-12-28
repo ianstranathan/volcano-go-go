@@ -96,6 +96,12 @@ position = Vector2(616, -640)
 rotation = 1.5707964
 coll_extents = Vector2(1000, 50)
 
+[node name="PlaceholderPlatform5" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(-26, -704)
+
+[node name="PlaceholderPlatform6" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(-416, -968)
+
 [node name="Lava" parent="." instance=ExtResource("7_y36n6")]
 
 [node name="PathPlatform" parent="." instance=ExtResource("8_y36n6")]

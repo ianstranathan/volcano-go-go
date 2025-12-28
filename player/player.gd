@@ -47,7 +47,16 @@ var can_jump := true
 # -- TODO NOTE
 @export var lava_ref: Node2D
 
+var item_is_overriding_velocity: bool = false
+
 func _ready() -> void:
+	
+	# ----------------------------------------------------- Input manager
+	$ItemManager.item_started.connect( func( vel_override: bool):
+		item_is_overriding_velocity = vel_override)
+	$ItemManager.item_finished.connect( func( vel_override: bool):
+		item_is_overriding_velocity = vel_override)
+	# -----------------------------------------------------
 	assert(lava_ref)
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
 	jump_buffer_timer.wait_time = JUMP_BUFFER_DURATION
@@ -123,42 +132,46 @@ func handle_falling():
 
 var current_platform = null # -- for calculating relative velocities
 func _physics_process(delta: float) -> void:
-	var was_idle = movement_state == MovementStates.IDLE
-	move()
-	handle_jump()
-	handle_falling()
-	#ledge_hanging_check()
-	tmp_burn_handle()
-	
-	# -----
-	if current_platform:
-		move_and_collide(current_platform.get_velocity() * delta)
-	# -----------------------------------------------------------  kinematic update
-	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
-	velocity.y += g * delta
-	
-	
-	var collision = move_and_collide(Vector2.ZERO)
-	if collision:
-		#var normal = collision.get_normal()
-		# -- logic for transitioning to ground, idle
-		is_on_ground = collision.get_normal().dot(Vector2.UP) > 0.7
-		if is_on_ground:
-			current_platform_check( collision )
-			movement_state_transition(MovementStates.IDLE)
-			#is_on_ground = true
-			velocity.y = 0
-
-	# -- Check the logic on this guy
-	# -- if the state was idle, then falling
-	#print(was_idle and movement_state == MovementStates.FALLING)
-	if was_idle and movement_state == MovementStates.FALLING:
-		if test_move(global_transform, down_test_vector):
-			var snap_collision = move_and_collide(down_test_vector)
-			if snap_collision:
-				current_platform_check( snap_collision )
-				is_on_ground = true
+	if item_is_overriding_velocity:
+		move_and_slide()
+		velocity.y += g * delta
+	else:
+		var was_idle = movement_state == MovementStates.IDLE
+		move()
+		handle_jump()
+		handle_falling()
+		#ledge_hanging_check()
+		tmp_burn_handle()
+		
+		# -----
+		if current_platform:
+			move_and_collide(current_platform.get_velocity() * delta)
+		# -----------------------------------------------------------  kinematic update
+		global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
+		velocity.y += g * delta
+		
+		
+		var collision = move_and_collide(Vector2.ZERO)
+		if collision:
+			#var normal = collision.get_normal()
+			# -- logic for transitioning to ground, idle
+			is_on_ground = collision.get_normal().dot(Vector2.UP) > 0.7
+			if is_on_ground:
+				current_platform_check( collision )
+				movement_state_transition(MovementStates.IDLE)
+				#is_on_ground = true
 				velocity.y = 0
+
+		# -- Check the logic on this guy
+		# -- if the state was idle, then falling
+		#print(was_idle and movement_state == MovementStates.FALLING)
+		if was_idle and movement_state == MovementStates.FALLING:
+			if test_move(global_transform, down_test_vector):
+				var snap_collision = move_and_collide(down_test_vector)
+				if snap_collision:
+					current_platform_check( snap_collision )
+					is_on_ground = true
+					velocity.y = 0
 
 
 func current_platform_check(coll: KinematicCollision2D):

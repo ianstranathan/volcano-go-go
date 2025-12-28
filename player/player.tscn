@@ -108,8 +108,9 @@ collision_mask = 5
 
 [node name="InputManager" parent="." instance=ExtResource("4_yw30f")]
 
-[node name="ItemManager" parent="." node_paths=PackedStringArray("input_manager") instance=ExtResource("5_qjkh3")]
+[node name="ItemManager" parent="." node_paths=PackedStringArray("input_manager", "player_ref") instance=ExtResource("5_qjkh3")]
 input_manager = NodePath("../InputManager")
+player_ref = NodePath("..")
 
 [node name="AimingVisual" parent="." node_paths=PackedStringArray("input_manager") instance=ExtResource("6_g6k8r")]
 input_manager = NodePath("../InputManager")

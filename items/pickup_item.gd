@@ -18,7 +18,7 @@ class_name PickupItem
 
 
 @export var sprite: Sprite2D
-@export var _type: ItemType:
+@export var _type: ItemGlobals.ItemType:
 	set(value):
 		_type = value
 		if sprite:
@@ -41,21 +41,14 @@ func match_sprite_to_coll_radius(_size: Vector2):
 	sprite.scale = 2.0 * Vector2(pickup_radius, pickup_radius) / _size
 
 
-# -- maybe each should be visually colored for easier decision making
-enum ItemType{
-	MOBILITY,
-	CREATION,
-	DESTRUCTION
-}
-
-
+# -- different types should be visually distinct to allow gestalt decision making
 func color_from_type() -> Color:
 	match _type:
-		ItemType.MOBILITY:
+		ItemGlobals.ItemType.MOBILITY:
 			return Color(0.504, 0.214, 1.0, 1.0)
-		ItemType.CREATION:
+		ItemGlobals.ItemType.CREATION:
 			return Color(0.788, 0.294, 0.0, 1.0)	
-		ItemType.DESTRUCTION:
+		ItemGlobals.ItemType.DESTRUCTION:
 			return Color(0.045, 0.27, 0.943, 1.0)
 	return Color(0.0, 0.0, 0.0, 1.0)
 
@@ -68,7 +61,9 @@ func _ready() -> void:
 			# -- player picks up item and does soemthing with it
 			# -- pass a clean up function to do whatever whenvever the player
 			# -- pickup logic is finished
-			body.get_node("ItemManager").pick_up( scene_resource, pick_up_finished_callback))
+			body.get_node("ItemManager").pick_up( _type,
+												  scene_resource,
+												  pick_up_finished_callback))
 
 
 func pick_up_finished_callback():
