@@ -133,6 +133,7 @@ func handle_falling():
 var current_platform = null # -- for calculating relative velocities
 func _physics_process(delta: float) -> void:
 	if item_is_overriding_velocity:
+		#move()
 		move_and_slide()
 		velocity.y += g * delta
 	else:
@@ -146,7 +147,7 @@ func _physics_process(delta: float) -> void:
 		# -----
 		if current_platform:
 			move_and_collide(current_platform.get_velocity() * delta)
-		# -----------------------------------------------------------  kinematic update
+		# ----------------------------------------------------------- Kinematic update
 		global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
 		velocity.y += g * delta
 		
@@ -158,13 +159,11 @@ func _physics_process(delta: float) -> void:
 			is_on_ground = collision.get_normal().dot(Vector2.UP) > 0.7
 			if is_on_ground:
 				current_platform_check( collision )
-				movement_state_transition(MovementStates.IDLE)
-				#is_on_ground = true
 				velocity.y = 0
 
-		# -- Check the logic on this guy
-		# -- if the state was idle, then falling
-		#print(was_idle and movement_state == MovementStates.FALLING)
+		
+		# -- TODO
+		# ----------------------------------------------------------- Kludge to check falling platforms
 		if was_idle and movement_state == MovementStates.FALLING:
 			if test_move(global_transform, down_test_vector):
 				var snap_collision = move_and_collide(down_test_vector)

@@ -1,7 +1,9 @@
 extends Item
 
 @export var grapple_max_distance: float = 800
-@export var rest_length = 2.0
+@export var grapple_min_distance: float = 2.0
+@export var grapple_change_rate := 100.0
+@onready var rest_length = grapple_min_distance
 @export var stiffness = 15.0
 @export var damping = 5.0
 
@@ -26,6 +28,12 @@ func _physics_process(delta: float) -> void:
 		use()
 	if Input.is_action_just_released("use_item"):
 		finish_using()
+	
+	# -- inverting these to match intuion
+	var move_input := Input.get_axis("move_up", "move_down")
+	rest_length += delta * move_input * grapple_change_rate
+	rest_length = clamp(rest_length, grapple_min_distance, grapple_max_distance)
+
 
 func use():
 	super()
