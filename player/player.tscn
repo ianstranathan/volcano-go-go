@@ -1,11 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=9 format=3 uid="uid://by5kd51cixxgu"]
 
-[ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player.gd" id="1_yf0e5"]
+[ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_rkbax"]
+[ext_resource type="PackedScene" uid="uid://nlnarpn8nmxn" path="res://input_manager/input_manager.tscn" id="4_yw30f"]
+[ext_resource type="PackedScene" uid="uid://ckljhiydi3u8p" path="res://items/item_manager.tscn" id="5_qjkh3"]
+[ext_resource type="PackedScene" uid="uid://dgtxfvo2esvyd" path="res://player/aiming_visual/aiming_visual.tscn" id="6_g6k8r"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
 shader = ExtResource("2_g1dw6")
+shader_parameter/dummy_burn_timer = 5.0
 shader_parameter/radius = 0.0
 shader_parameter/height = 0.355
 
@@ -14,6 +18,8 @@ radius = 20.0
 height = 100.0
 
 [node name="Player" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 13
 script = ExtResource("1_yf0e5")
 move_speed = 250.0
 jump_distance_to_peak = 125.0
@@ -24,10 +30,11 @@ material = SubResource("ShaderMaterial_yw30f")
 texture = ExtResource("2_rkbax")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("CapsuleShape2D_ugqs2")
 
 [node name="JumpBufferTimer" type="Timer" parent="."]
-wait_time = 0.25
+wait_time = 0.1
 one_shot = true
 
 [node name="CoyoteTimeTimer" type="Timer" parent="."]
@@ -38,12 +45,25 @@ one_shot = true
 
 [node name="RayCast2D" type="RayCast2D" parent="FloorCheckContainer"]
 position = Vector2(0, 8)
+collision_mask = 5
 
-[node name="RayCast2D3" type="RayCast2D" parent="FloorCheckContainer"]
-position = Vector2(15, 8)
+[node name="RHS" type="RayCast2D" parent="FloorCheckContainer"]
+position = Vector2(19, 8)
+collision_mask = 5
 
-[node name="RayCast2D2" type="RayCast2D" parent="FloorCheckContainer"]
-position = Vector2(-15, 8)
+[node name="LHS" type="RayCast2D" parent="FloorCheckContainer"]
+position = Vector2(-20, 8)
+collision_mask = 5
+
+[node name="CeilingCheckContainer" type="Node2D" parent="."]
+
+[node name="LHS" type="RayCast2D" parent="CeilingCheckContainer"]
+position = Vector2(-19, -8)
+target_position = Vector2(0, -45)
+
+[node name="RHS" type="RayCast2D" parent="CeilingCheckContainer"]
+position = Vector2(19, -8)
+target_position = Vector2(0, -45)
 
 [node name="Label" type="Label" parent="."]
 offset_left = -25.0
@@ -60,26 +80,51 @@ one_shot = true
 
 [node name="RHS1" type="RayCast2D" parent="WallCheckContainer"]
 position = Vector2(0, -33)
-target_position = Vector2(30, 0)
+target_position = Vector2(25, 0)
 
 [node name="RHS2" type="RayCast2D" parent="WallCheckContainer"]
-target_position = Vector2(30, 0)
+target_position = Vector2(25, 0)
 
 [node name="RHS3" type="RayCast2D" parent="WallCheckContainer"]
 position = Vector2(0, 36)
-target_position = Vector2(30, 0)
+target_position = Vector2(25, 0)
 
 [node name="LHS1" type="RayCast2D" parent="WallCheckContainer"]
 position = Vector2(0, -33)
-target_position = Vector2(-30, 0)
+target_position = Vector2(-25, 0)
 
 [node name="LHS2" type="RayCast2D" parent="WallCheckContainer"]
-target_position = Vector2(-30, 0)
+target_position = Vector2(-25, 0)
 
 [node name="LHS3" type="RayCast2D" parent="WallCheckContainer"]
 position = Vector2(0, 36)
-target_position = Vector2(-30, 0)
+target_position = Vector2(-25, 0)
 
 [node name="WallJumpTimer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
+
+[node name="LedgeRayContainer" type="Node2D" parent="."]
+
+[node name="LHS" type="RayCast2D" parent="LedgeRayContainer"]
+position = Vector2(0, -49)
+target_position = Vector2(-50, 0)
+collision_mask = 5
+
+[node name="RHS" type="RayCast2D" parent="LedgeRayContainer"]
+position = Vector2(0, -49)
+target_position = Vector2(50, 0)
+collision_mask = 5
+
+[node name="InputManager" parent="." instance=ExtResource("4_yw30f")]
+
+[node name="ItemManager" parent="." node_paths=PackedStringArray("input_manager", "player_ref") instance=ExtResource("5_qjkh3")]
+input_manager = NodePath("../InputManager")
+player_ref = NodePath("..")
+
+[node name="AimingVisual" parent="." node_paths=PackedStringArray("input_manager") instance=ExtResource("6_g6k8r")]
+input_manager = NodePath("../InputManager")
+
+[node name="LedgeGrabBufferTimer" type="Timer" parent="."]
 wait_time = 0.3
 one_shot = true

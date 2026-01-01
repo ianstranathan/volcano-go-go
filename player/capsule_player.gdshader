@@ -12,13 +12,20 @@ float sdSegment( in vec2 p, in vec2 a, in vec2 b )
 }
 
 // just match it up and make it analytic later
+uniform float dummy_burn_timer: hint_range(0.0, 5.0, 0.1);
 uniform float radius;
 uniform float height;
+
+const vec3 lava_top_col = vec3(1.0, 0.5, 0.25);
+const vec3 lava_body_col = vec3(1., 0.1, 0.2);
+
 void fragment() {
 	vec2 uv = 2. * UV - 1.;
 	float d = sdSegment(uv, vec2(0., 0.45), vec2(0., -0.45));
 	float m = 1. - smoothstep(0.3, 0.35, d);
-	vec3 col = vec3(1, 1., 1.) * m;
+	float t = exp(-dummy_burn_timer);
+	
+	vec3 col = mix(vec3(1.), vec3(1., 0., 0.) + sin(20. * TIME), t);
 	COLOR = vec4(col, m);
 }
 

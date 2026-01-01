@@ -3,7 +3,10 @@ extends Node2D
 @export var player: CharacterBody2D
 @onready var player_initial_position = player.global_position
 
-@export var lava_view: Sprite2D
+@export var lava: Node2D
+@export var lava_bodies_manager: Node2D
+func _ready() -> void:
+	pass
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):

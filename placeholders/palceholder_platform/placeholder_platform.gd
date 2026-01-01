@@ -11,8 +11,8 @@ the editor exposed var: coll_extents
 @export var color: Color = Color(0.5, 0.5, 0.5, 1.0):
 	set(value):
 		color = value
-		#if sprite:
-		sprite.material.set_shader_parameter("source_col", color)
+		if sprite:
+			sprite.material.set_shader_parameter("source_col", color)
 
 @export var coll_extents: Vector2 = Vector2(50, 50):
 	set(value):
@@ -24,6 +24,12 @@ the editor exposed var: coll_extents
 @export var coll_shape: CollisionShape2D
 @export var sprite: Sprite2D
 
+@export var moveable: bool = false
+func _physics_process(_delta: float) -> void:
+	if moveable:
+		sprite.global_position = coll_shape.global_position
+		sprite.global_rotation = coll_shape.global_rotation
+		
 func _update_collision_shape():
 	if not coll_shape.shape.is_local_to_scene():
 		coll_shape.shape = coll_shape.shape.duplicate()

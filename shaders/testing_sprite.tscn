@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://bjndcvv46b2re"]
+
+[ext_resource type="Shader" uid="uid://cgsnb664s3xam" path="res://shaders/testing_sprite.gdshader" id="1_kppsm"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_1au2t"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_bww4g"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bww4g"]
+shader = ExtResource("1_kppsm")
+shader_parameter/noise_tex = ExtResource("2_1au2t")
+shader_parameter/distortion_uv_height = 0.0
+shader_parameter/distortion_thickness = 0.30000000447036
+shader_parameter/ss_blur = 0.13999999687072
+
+[node name="TestingSprite" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_bww4g")
+texture = ExtResource("2_bww4g")

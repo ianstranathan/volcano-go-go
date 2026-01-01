@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3 uid="uid://cntneundq200x"]
+
+[ext_resource type="Script" uid="uid://d3seavksr2hod" path="res://lava/lava.gd" id="1_i25ve"]
+[ext_resource type="Shader" uid="uid://d2c5avo1j8qre" path="res://lava/lava.gdshader" id="2_06p58"]
+[ext_resource type="Resource" uid="uid://bgrp4gfqib265" path="res://level/level_parameters.tres" id="2_6svqb"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_wkqak"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wkqak"]
+shader = ExtResource("2_06p58")
+shader_parameter/fn_y_offset = 0.0
+shader_parameter/t = 0.0
+shader_parameter/sc = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/dummy_pos = Vector2(0, 0)
+
+[node name="Lava" type="Node2D"]
+script = ExtResource("1_i25ve")
+level_params = ExtResource("2_6svqb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_wkqak")
+scale = Vector2(5, 5)
+texture = ExtResource("3_wkqak")

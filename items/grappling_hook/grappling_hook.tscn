@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvpf74tya22rc"]
+
+[ext_resource type="Script" uid="uid://cdvokl05npfna" path="res://items/grappling_hook/grappling_hook.gd" id="1_wx7rf"]
+
+[node name="GrapplingHook" type="Node2D"]
+script = ExtResource("1_wx7rf")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 20.0
+default_color = Color(0.4238622, 0.2185036, 0.0974899, 1)

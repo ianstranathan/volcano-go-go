@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="LevelParameters" load_steps=2 format=3 uid="uid://bgrp4gfqib265"]
+
+[ext_resource type="Script" uid="uid://btd4hbp1xil6a" path="res://level/level_parameters.gd" id="1_dodkx"]
+
+[resource]
+script = ExtResource("1_dodkx")
+level_dimensions = Vector2(4000, 4000)
+metadata/_custom_type_script = "uid://btd4hbp1xil6a"
