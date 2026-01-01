@@ -6,13 +6,12 @@ class_name Player
 # -- (should only be able to fall so fast)
 # -- [X] Side somersault
 # -- [X] Wall Slide
-# -- Wall Bonk
 # -- Head Bonk
 
 @export_group("Kinematics")
 @export var move_speed: float = 200
-@export var ACCL = 20
-@export var DECL = 30
+@export var ACCL := 20.0
+@export var DECL := 30.0
 @export var jump_height: float = 200;
 @export var jump_distance_to_peak: float = 120
 @export var fall_distance_from_peak: float = 100
@@ -66,8 +65,8 @@ func _ready() -> void:
 	$ItemManager.item_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
 	$ItemManager.item_finished.connect( func():
-		movement_state_transition_to( MovementStates.FALLING))
-		
+		is_on_ground = true
+		coyote_timer.start())
 	assert(lava_ref)
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
 	jump_buffer_timer.wait_time = JUMP_BUFFER_DURATION
@@ -109,7 +108,6 @@ func check_for_jump() -> void:
 			do_jump(JumpTypes.WALL)
 		elif is_ledge_grabbing():
 			do_jump(JumpTypes.REGULAR)
-
 
 func do_jump(jump_type):
 	# -- logic of what to do for a specific jump
@@ -207,11 +205,16 @@ func ledge_grabbing_climb_position():
 	var arr = lhs_ledge_grab_pair if last_move_input < 0 else rhs_ledge_grab_pair
 	var ledge_ray = arr[0]
 	var wall_ray = arr[1]
-	# -- relative position between rays
-	var rel_pos = ((ledge_ray.global_position + ledge_ray.target_position) - (wall_ray.global_position + wall_ray.target_position))
-	var height_between_rays = ledge_ray.global_position.y -  wall_ray.global_position.y
-	return (global_position - Vector2(0., $CollisionShape2D.shape.height - height_between_rays) 
-			+ rel_pos)
+	# -- the world position of where the ray is pointing right now
+	var ledge_ray_world_pos = ledge_ray.global_position + ledge_ray.target_position
+	# -- there's a small offset due to the height difference between the ledge ray and
+	# -- and the wall ray
+	# -- I'm making this slightly smaller so we're avoid unreachable spots or whatever
+	var ledge_ray_height_diff = 0.9 * (ledge_ray_world_pos.y - wall_ray.global_position.y)
+	var target_pos = ledge_ray_world_pos - Vector2(0., ($CollisionShape2D.shape.height / 2.0 )
+														+ ledge_ray_height_diff)
+	return target_pos
+
 
 func set_debug_label(new_movement_state: MovementStates) -> void:
 	$Label.text = MovementStates.keys()[new_movement_state]
@@ -249,15 +252,49 @@ func walking_state_fn() -> void:
 
 
 func jumping_state_fn() -> void:
+	handle_corner_correction()
 	if there_is_move_input():
 		move(move_input * move_speed, ACCL)
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
+# -- Utility functions to make platforming easier
 
-var ledge_grab_climb_pos: Vector2
+# NOTE handle_platform_fall_near_miss_correction
+#      &
+#      handle_corner_correction
+#      are the same up to a sign change (they do opposite nudging)
+#      and the raycast container names => should probably consolidate
+
+## nudges player in direction toward edge of platform if hitting from above, i.e falling
+var nudge_to_edge_speed := 3.0 # in px
+func handle_platform_fall_near_miss_correction():
+	# -- should only run during fall state
+	if ($FloorCheckContainer/LHS.is_colliding() and 
+	   !$FloorCheckContainer/RHS.is_colliding()):
+		# Move player right to clear the corner
+		global_position.x -= nudge_to_edge_speed
+	elif ($FloorCheckContainer/RHS.is_colliding() and 
+		 !$FloorCheckContainer/LHS.is_colliding()):
+		# Move player left to clear the corner
+		global_position.x += nudge_to_edge_speed
+
+## nudges player in direction toward edge of platform if hitting from below, i.e jumping
+func handle_corner_correction():
+	# -- should only run during jump state
+	if velocity.y < 0: # Only while jumping up
+		if ($CeilingCheckContainer/LHS.is_colliding() and 
+		   !$CeilingCheckContainer/RHS.is_colliding()):
+			# Move player right to clear the corner
+			global_position.x += nudge_to_edge_speed
+		elif ($CeilingCheckContainer/RHS.is_colliding() and 
+			 !$CeilingCheckContainer/LHS.is_colliding()):
+			# Move player left to clear the corner
+			global_position.x -= nudge_to_edge_speed
+
+var ledge_grab_climb_target_pos
 func falling_state_fn() -> void:
-	check_for_jump() # -- to jump from item moving
+	handle_platform_fall_near_miss_correction()
 	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
 		move(move_input * move_speed, ACCL)
@@ -266,7 +303,7 @@ func falling_state_fn() -> void:
 		# -- we stop gravity and falling velocity, save the climbing pos
 		velocity = Vector2.ZERO
 		g = 0
-		ledge_grab_climb_pos = ledge_grabbing_climb_position()
+		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
 		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
 	elif is_wall_sliding():
 		movement_state_transition_to(MovementStates.WALL_SLIDING)
@@ -281,28 +318,37 @@ func wall_sliding_state_fn() -> void:
 	elif is_ledge_grabbing():
 		velocity = Vector2.ZERO
 		g = 0
-		ledge_grab_climb_pos = ledge_grabbing_climb_position()
+		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
 		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
 	if !is_wall_sliding():
 		movement_state_transition_to(MovementStates.FALLING)
 
 
 func item_moving_state_fn() -> void:
-	pass
+	move(move_input * move_speed, ACCL)
+	check_for_jump()
 
 
-var ledge_climb_speed = 100.0
+@export var ledge_climb_speed = 200.0
 func ledge_grabbing_state_fn() -> void:
 	check_for_jump()
-	if Input.is_action_just_pressed("move_up"):
-		global_position.move_toward(ledge_grab_climb_pos, 0.06)
-		#velocity = (ledge_grab_climb_pos - global_position).normalized() * ledge_climb_speed
-	elif Input.is_action_just_pressed("move_down"):
+	if Input.is_action_just_pressed("move_up") and ledge_grab_climb_target_pos:
+		while global_position.distance_to(ledge_grab_climb_target_pos) > 5.0:
+			var dir = global_position.direction_to(ledge_grab_climb_target_pos)
+			velocity = ledge_climb_speed * dir
+			await get_tree().process_frame
+			if !ledge_grab_climb_target_pos:
+				return
+		
+		global_position = ledge_grab_climb_target_pos
+		velocity = Vector2.ZERO
+		movement_state_transition_to( MovementStates.IDLE)
+
+	if Input.is_action_just_pressed("move_down"):
+		ledge_grab_climb_target_pos = null
 		$LedgeGrabBufferTimer.start()
 		movement_state_transition_to( MovementStates.FALLING)
-	if my_is_on_floor():
-		movement_state_transition_to( MovementStates.IDLE)
-	
+
 
 # -- wrap this up into a more functional, modular thing to inject states into matches
 func movement_state_transition_to(new_movement_state: MovementStates):
@@ -373,11 +419,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.JUMPING:
 						g = jump_gravity
 			MovementStates.ITEM_MOVING:
-				match new_movement_state:
-					MovementStates.FALLING:
-						g = jump_gravity
-						is_on_ground = true
-						coyote_timer.start()
+				is_on_ground = true
+				g = jump_gravity
 
 		# ----------------------------------
 		set_debug_label( new_movement_state )
@@ -385,8 +428,7 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 
 
 #--TODO
-# -- completely replace this w/ proper visual, just here for 
-# -- tmp feedback
+# -- completely replace this w/ proper visual, just here for tmp feedback
 var can_burn: bool = true
 func tmp_burn_handle() -> void:
 	var d = abs((global_position.y + 0.5 * $CollisionShape2D.shape.height)- lava_ref.lava_fn( global_position.x))
@@ -402,53 +444,3 @@ func tmp_burn_handle() -> void:
 	# -- going back accross lava threshold after getting burned
 	if !can_burn and hit_lava:
 		can_burn = true
-
-# ----------------------------------------------------------- SAVE BUFFER
-#const MOVEMENT_STATE_PRIORIOTY_ARR = [ 
-	#MovementStates.IDLE,
-	#MovementStates.WALKING,
-	#MovementStates.JUMPING,
-	#MovementStates.FALLING,
-	#MovementStates.CROUCHING,
-	#MovementStates.WALL_SLIDING,
-	#MovementStates.LEDGE_HANGING,
-	#MovementStates.ITEM_MOVING
-#]
-
-# -------------------------------------
-
-# -- the wall slide gravity is too low when velocity is near 0
-# -- but it feels about right for faster downward velocitys
-#func _wall_slide_gravity() -> float:
-	### -- t: normalization var based on velocity value
-	### -- b: the maximum magnitude of the downward velocity
-	### --    (I just printed out some jumps from the physics loop at picked the highest ~1800
-	### -- a: always zero
-	#var b = 1800.0
-	## -- normalizing on range: t = b - x / b - a
-	## -- simplifies to t = b - x / b
-	## -- need to guarentee velocity is not above this
-	#var v_y = clamp(abs(velocity.y), 0., b)
-	#var t = (b - v_y) / b
-	#
-	## -- linear interpolation of the wall gravity value
-	## -- TODO should play around with different interpolation curves base
-	## -- on game feel at some later point
-	#var A = 0.5 * wall_slide_gravity
-	#var wall_slide_gravvity_at_zero_vel = 20 * wall_slide_gravity
-	#var B = wall_slide_gravvity_at_zero_vel
-	#var _t = t * t
-	#var ret = (1. - _t) * A + _t * B
-	##print("ret: ", ret, "at t: ", t)
-	#return ret
-
-#@onready var down_test_vector = Vector2(0, platform_snap_distance)
-# ----------------------------------------------------------- Kludge to check falling platforms
-		#if was_idle and movement_state == MovementStates.FALLING:
-			#if test_move(global_transform, down_test_vector):
-				#var snap_collision = move_and_collide(down_test_vector)
-				#if snap_collision:
-					#current_platform_check( snap_collision )
-					#is_on_ground = true
-					#velocity.y = 0
-	
