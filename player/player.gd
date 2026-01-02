@@ -71,9 +71,8 @@ func _ready() -> void:
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
 	jump_buffer_timer.wait_time = JUMP_BUFFER_DURATION
 
-	coyote_timer.timeout.connect( func():
-		movement_state_transition_to(MovementStates.FALLING)
-		is_on_ground = false)
+	coyote_timer.timeout.connect( coyote_time_resolution)
+		
 
 	$WallJumpTimer.timeout.connect( func():
 		# -- turn on all the wall raycasts after a certain amount time after wall jump
@@ -96,6 +95,7 @@ enum JumpTypes
 	SOMERSAULT_FLIP,
 	WALL
 }
+
 func check_for_jump() -> void:
 	if !jump_buffer_timer.is_stopped():
 		if is_on_ground:
@@ -108,6 +108,7 @@ func check_for_jump() -> void:
 			do_jump(JumpTypes.WALL)
 		elif is_ledge_grabbing():
 			do_jump(JumpTypes.REGULAR)
+
 
 func do_jump(jump_type):
 	# -- logic of what to do for a specific jump
@@ -124,6 +125,19 @@ func do_jump(jump_type):
 			if _wall_normal:
 				velocity = jump_speed * (-_wall_normal  + Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
+
+
+func coyote_time_resolution() -> void:
+	# the transition should only happen if we're coming from a certain set
+	# of states, otherwise we'll jump in coyote time but be in falling state
+	match movement_state:
+		MovementStates.IDLE:
+			movement_state_transition_to(MovementStates.FALLING)
+		MovementStates.WALKING:
+			movement_state_transition_to(MovementStates.FALLING)
+		MovementStates.ITEM_MOVING:
+			movement_state_transition_to(MovementStates.FALLING)
+	is_on_ground = false
 
 
 func _physics_process(delta: float) -> void:
@@ -326,7 +340,11 @@ func wall_sliding_state_fn() -> void:
 
 func item_moving_state_fn() -> void:
 	move(move_input * move_speed, ACCL)
-	check_for_jump()
+	if !jump_buffer_timer.is_stopped():
+		$ItemManager.stop_using_item()
+		# -- accumulate velocity from the swing
+		velocity.y += jump_speed
+		movement_state_transition_to(MovementStates.JUMPING)
 
 
 @export var ledge_climb_speed = 200.0
@@ -419,7 +437,6 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.JUMPING:
 						g = jump_gravity
 			MovementStates.ITEM_MOVING:
-				is_on_ground = true
 				g = jump_gravity
 
 		# ----------------------------------

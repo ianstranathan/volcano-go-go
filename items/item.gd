@@ -14,14 +14,15 @@ func _ready():
 	assert( input_manager )
 	assert( player_ref )
 
-
+## template for when the is used
 func use():
 	item_started.emit( type )
 
-
+## template for when the item naturally stops being used
 func finish_using():
 	item_finished.emit( type )
 
-#
-#func is_mobility_item() -> bool:
-	#return type == ItemGlobals.ItemType.MOBILITY
+
+## template for when the item is stopped by the item manager (i.e. player interruption)
+func stop_using():
+	pass
