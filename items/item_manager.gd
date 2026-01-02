@@ -34,3 +34,7 @@ func pick_up(_item_type: ItemGlobals.ItemType, item_rsc: PackedScene, fn: Callab
 	add_child(item)
 	set_physics_process( true )
 	fn.call() # -- whatever the pickup item needs to do to clean up
+
+
+func stop_using_item() -> void:
+	item.stop_using()

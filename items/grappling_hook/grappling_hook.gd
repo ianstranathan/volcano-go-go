@@ -36,8 +36,13 @@ func use():
 	super()
 	launch()
 
+
 func finish_using():
 	super()
+	retract()
+
+
+func stop_using():
 	retract()
 
 func launch():
