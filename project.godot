@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 Kinematics="*res://globals/kinematics.gd"
-ItemGlobals="*res://globals/item_globals.gd"
 
 [display]
 

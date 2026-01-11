@@ -1,5 +1,7 @@
-extends Item
+#extends Item
+extends Node2D
 
+@export var item_interface: ItemInterface
 @export var swing_power: float = 100 # -- coefficient for swinging manually
 @export var reel_in_speed: float = 50
 @export var grapple_change_rate := 200.0
@@ -10,51 +12,45 @@ extends Item
 @onready var ray := $RayCast2D
 @onready var rope := $Line2D
 
-var launched = false
-var target: Vector2
+
+var target
+var input_manager: InputManager
+var player_ref: Player
 
 func _ready() -> void:
+	# -- pickup -> item_manager -> instanitates this, assigns it stuff
+	assert(input_manager and item_interface)
+	# -- dependency injection
+	item_interface.can_use_fn = func(): return true # you can always use this
+	item_interface.used.connect( func():
+		if target:
+			retract()
+			item_interface.finished_using_item = true
+		else:
+			item_interface.finished_using_item = false
+			launch())
+	item_interface.stopped.connect( retract )
+	# -- initialize range of ray
 	$RayCast2D.target_position = Vector2(grapple_max_distance, 0.0)
 
 
 func _physics_process(delta: float) -> void:
 	ray.look_at(input_manager.aiming_pos())
-	if launched:
+	if target:
 		handle_grapple(delta)
-	if Input.is_action_just_pressed("use_item"):
-		use()
-	if Input.is_action_just_released("use_item"):
-		finish_using()
-	
-	# -- inverting these to match intuion
-	var move_input := Input.get_axis("move_up", "move_down")
-	rest_length += delta * move_input * grapple_change_rate
-	rest_length = clamp(rest_length, grapple_min_distance, grapple_max_distance)
+		# -- inverting these to match intuion
+		var move_input: float = input_manager.movement_vector().y
+		rest_length += delta * move_input * grapple_change_rate
+		rest_length = clamp(rest_length, grapple_min_distance, grapple_max_distance)
 
-
-func use():
-	super()
-	launch()
-
-
-func finish_using():
-	super()
-	retract()
-
-
-func stop_using():
-	retract()
 
 func launch():
-	#print("launching")
-	if ray.is_colliding():
-		launched = true
-		target = ray.get_collision_point()
-		rope.show()
+	target = ray.get_collision_point()
+	rope.show()
 
 
 func retract():
-	launched = false
+	target = null
 	rope.hide()
 
 func handle_grapple(delta):

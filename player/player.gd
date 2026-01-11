@@ -55,17 +55,18 @@ enum MovementStates
 	CROUCHING,
 	WALL_SLIDING,
 	LEDGE_GRABBING,
-	ITEM_MOVING
+	ITEM_MOVING,
+	CLIMBING
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
 
 #var item_is_overriding_velocity: bool = false
 
 func _ready() -> void:
-	$ItemManager.item_started.connect( func():
+	$ItemManager.item_moving_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
-	$ItemManager.item_finished.connect( func():
-		is_on_ground = true
+	$ItemManager.item_moving_stopped.connect( func():
+		#is_on_ground = true
 		coyote_timer.start())
 	assert(lava_ref)
 	coyote_timer.wait_time = COYOTE_TIME_DURATION

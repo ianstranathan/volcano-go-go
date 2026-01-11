@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddh3v2s46w5me"]
+
+[ext_resource type="Script" uid="uid://8smumn24j1c5" path="res://items/rope_ladder/rope_ladder.gd" id="1_snyf7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_snyf7"]
+
+[node name="RopeLadder" type="Node2D"]
+script = ExtResource("1_snyf7")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 20.0
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_snyf7")
+metadata/_edit_group_ = true
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
