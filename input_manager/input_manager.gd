@@ -2,7 +2,7 @@ extends Node2D
 class_name InputManager
 
 signal input_source_type_changed
-
+signal aim_input_detected
  
 enum InputSourceType{
 	CONTROLLER,
@@ -11,7 +11,10 @@ enum InputSourceType{
 
 var current_input_source: InputSourceType = InputSourceType.CONTROLLER
 
+const DEADZONE := 0.1
+
 func _input(event: InputEvent) -> void:
+	# -------------------------------------- change controller types
 	if (current_input_source == InputSourceType.CONTROLLER and
 		(event is InputEventKey or event is InputEventMouse)):
 		set_input_source(InputSourceType.KEYBOARD)
@@ -23,8 +26,21 @@ func _input(event: InputEvent) -> void:
 		set_input_source(InputSourceType.CONTROLLER)
 		# -- something for the UI later
 		emit_signal("input_source_type_changed", InputSourceType.CONTROLLER)
-
-
+	
+	# -------------------------------------- emit_signal if aiming input
+	if (current_input_source == InputSourceType.KEYBOARD and 
+		event is InputEventMouseMotion):
+		emit_signal("aim_input_detected")
+	elif (current_input_source == InputSourceType.CONTROLLER and
+		  event is InputEventJoypadMotion):
+		if abs(event.axis_value) < DEADZONE:
+			return
+		match event.axis:
+			JOY_AXIS_RIGHT_X, JOY_AXIS_RIGHT_Y:
+				emit_signal("aim_input_detected")
+			#JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y:
+				#on_left_stick_input()
+			
 func movement_vector():
 	return Input.get_vector("move_left", "move_right", "move_up", "move_down") 
 

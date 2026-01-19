@@ -1,23 +1,30 @@
-[gd_scene load_steps=3 format=3 uid="uid://ddh3v2s46w5me"]
+[gd_scene load_steps=5 format=3 uid="uid://ddh3v2s46w5me"]
 
 [ext_resource type="Script" uid="uid://8smumn24j1c5" path="res://items/rope_ladder/rope_ladder.gd" id="1_snyf7"]
+[ext_resource type="Script" uid="uid://du6dcuy4lm2fk" path="res://items/item_interface.gd" id="2_6cghk"]
+
+[sub_resource type="Resource" id="Resource_q7mn7"]
+script = ExtResource("2_6cghk")
+use_mode = 1
+metadata/_custom_type_script = "uid://du6dcuy4lm2fk"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_snyf7"]
 
 [node name="RopeLadder" type="Node2D"]
 script = ExtResource("1_snyf7")
+item_interface = SubResource("Resource_q7mn7")
 
 [node name="Line2D" type="Line2D" parent="."]
 points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0
+default_color = Color(0.36866343, 0.2222774, 0, 1)
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_mask = 2
-monitoring = false
-monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_snyf7")
+disabled = true
 metadata/_edit_group_ = true
 
 [node name="RayCast2D" type="RayCast2D" parent="."]

@@ -117,6 +117,7 @@ target_position = Vector2(50, 0)
 collision_mask = 5
 
 [node name="InputManager" parent="." instance=ExtResource("4_yw30f")]
+metadata/_edit_group_ = true
 
 [node name="ItemManager" parent="." node_paths=PackedStringArray("input_manager", "player_ref") instance=ExtResource("5_qjkh3")]
 input_manager = NodePath("../InputManager")

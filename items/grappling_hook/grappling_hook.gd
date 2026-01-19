@@ -8,8 +8,9 @@ extends Node2D
 @export var swing_damping := 1.0
 @export var grapple_max_distance: float = 800
 @export var grapple_min_distance: float = 50
+
 @onready var rest_length = grapple_min_distance
-@onready var ray := $RayCast2D
+@onready var ray_component = $RaycastItemComponent
 @onready var rope := $Line2D
 
 
@@ -17,7 +18,10 @@ var target
 var input_manager: InputManager
 var player_ref: Player
 
+
 func _ready() -> void:
+	#---------------------------------------
+	$RaycastItemComponent.initialize_input(grapple_max_distance, input_manager)
 	# -- pickup -> item_manager -> instanitates this, assigns it stuff
 	assert(input_manager and item_interface)
 	# -- dependency injection
@@ -30,12 +34,10 @@ func _ready() -> void:
 			item_interface.finished_using_item = false
 			launch())
 	item_interface.stopped.connect( retract )
-	# -- initialize range of ray
-	$RayCast2D.target_position = Vector2(grapple_max_distance, 0.0)
 
 
 func _physics_process(delta: float) -> void:
-	ray.look_at(input_manager.aiming_pos())
+	#ray.look_at(input_manager.aiming_pos())
 	if target:
 		handle_grapple(delta)
 		# -- inverting these to match intuion
@@ -45,13 +47,14 @@ func _physics_process(delta: float) -> void:
 
 
 func launch():
-	target = ray.get_collision_point()
+	target = ray_component.get_intersection_pos()
 	rope.show()
 
 
 func retract():
 	target = null
 	rope.hide()
+
 
 func handle_grapple(delta):
 	var to_anchor = target - player_ref.global_position

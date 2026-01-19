@@ -25,6 +25,8 @@ class_name Player
 @onready var wall_slide_gravity = fall_gravity / 1000.0
 @onready var jump_speed = -2 * jump_height / time_to_peak;
 
+@export var climb_speed = move_speed * 0.5
+
 var current_platform = null # -- for calculating relative velocities
 var last_move_input: float  # -- side somersault variable
 var move_input: float
@@ -37,6 +39,8 @@ var move_input: float
 @export var platform_snap_distance = 20
 @onready var coyote_timer: Timer = $CoyoteTimeTimer
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
+
+
 
 
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
@@ -63,6 +67,14 @@ enum MovementStates
 #var item_is_overriding_velocity: bool = false
 
 func _ready() -> void:
+	
+	#--------------------------------------------- this controls aiming line
+	$InputManager.aim_input_detected.connect( func():
+		$AimingVisual.update_aiming_visual())
+	#--------------------------------------------- this controls aiming target
+	$ItemManager.item_targeted_something.connect( func(pos):
+		$AimingVisual.update_target_pos( pos))
+	
 	$ItemManager.item_moving_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
 	$ItemManager.item_moving_stopped.connect( func():
@@ -273,6 +285,17 @@ func jumping_state_fn() -> void:
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
+
+func climbing_state_fn():
+	var input_vector = $InputManager.movement_vector()
+	velocity= velocity.move_toward(climb_speed * input_vector, ACCL)
+
+
+var climbing_dir: Vector2 = Vector2.ZERO
+func start_climbing( the_climbing_dir: Vector2 ):
+	climbing_dir = the_climbing_dir
+	movement_state_transition_to(MovementStates.CLIMBING)
+
 # -- Utility functions to make platforming easier
 
 # NOTE handle_platform_fall_near_miss_correction
@@ -352,7 +375,7 @@ func item_moving_state_fn() -> void:
 func ledge_grabbing_state_fn() -> void:
 	check_for_jump()
 	if Input.is_action_just_pressed("move_up") and ledge_grab_climb_target_pos:
-		while global_position.distance_to(ledge_grab_climb_target_pos) > 5.0:
+		while global_position.distance_to(ledge_grab_climb_target_pos) > 10.0:
 			var dir = global_position.direction_to(ledge_grab_climb_target_pos)
 			velocity = ledge_climb_speed * dir
 			await get_tree().process_frame

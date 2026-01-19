@@ -3,7 +3,8 @@ extends Node2D
 
 class_name PickupItem
 
-# this is purely for coloring
+# NOTE
+# 
 enum ItemType{
 	MOBILITY,
 	CREATION,

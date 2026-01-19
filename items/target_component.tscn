@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmxhb31prj5b8"]
+
+[sub_resource type="GDScript" id="GDScript_0a0sm"]
+script/source = "extends Node2D
+
+signal targeted_something
+
+@export var ray_component: RayCastItemComponent
+
+func target_something():
+	ray_component
+"
+
+[node name="TargetComponent" type="Node2D"]
+script = SubResource("GDScript_0a0sm")
