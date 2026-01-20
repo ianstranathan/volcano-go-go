@@ -123,8 +123,8 @@ metadata/_edit_group_ = true
 input_manager = NodePath("../InputManager")
 player_ref = NodePath("..")
 
-[node name="AimingVisual" parent="." node_paths=PackedStringArray("input_manager") instance=ExtResource("6_g6k8r")]
-input_manager = NodePath("../InputManager")
+[node name="AimingVisual" parent="." instance=ExtResource("6_g6k8r")]
+player_line_offest = null
 
 [node name="LedgeGrabBufferTimer" type="Timer" parent="."]
 wait_time = 0.3

@@ -5,7 +5,8 @@ class_name ItemManager
 var item_interface: ItemInterface
 signal item_moving_started()
 signal item_moving_stopped()
-signal item_targeted_something( pos: Vector2)
+signal item_targeted_something( pos_or_null )
+signal item_ray_target_position_changed( pos: Vector2 )
 
 @export var input_manager: InputManager # -- local source of input truth
 @export var player_ref: Player
@@ -31,10 +32,15 @@ func pick_up( item_rsc: PackedScene,  fn: Callable):
 	item_interface = item.item_interface
 	if is_moving_item() or is_spawning_item():
 		# NOTE
-		# this means we're assuming that we always have a RaycastItemComponent
-		# on a moving or spawning item
-		item.get_node("RaycastItemComponent").intersected_something.connect( func(pos_or_null):
+		# we're implying an interface here for moving or spawning item 
+		# => RaycastItemComponent
+		# -- choices: 1: make it all reactive / declarative
+		#             2: make a dedicated case in item manager
+		var raycast_component = item.get_node("RaycastItemComponent")
+		raycast_component.intersected_something.connect( func(pos_or_null):
 			emit_signal("item_targeted_something", pos_or_null))
+		raycast_component.target_position_changed.connect( func(pos: Vector2):
+			emit_signal("item_ray_target_position_changed", pos))
 		item.player_ref = player_ref
 		item.input_manager = input_manager
 		add_child(item)

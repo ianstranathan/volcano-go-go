@@ -72,8 +72,10 @@ func _ready() -> void:
 	$InputManager.aim_input_detected.connect( func():
 		$AimingVisual.update_aiming_visual())
 	#--------------------------------------------- this controls aiming target
-	$ItemManager.item_targeted_something.connect( func(pos):
-		$AimingVisual.update_target_pos( pos))
+	$ItemManager.item_targeted_something.connect( func(pos_or_null):
+		$AimingVisual.update_target_pos( pos_or_null))
+	$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
+		$AimingVisual.update_dir( pos ))
 	
 	$ItemManager.item_moving_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))

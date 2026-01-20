@@ -37,7 +37,6 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	#ray.look_at(input_manager.aiming_pos())
 	if target:
 		handle_grapple(delta)
 		# -- inverting these to match intuion

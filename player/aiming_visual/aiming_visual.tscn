@@ -7,7 +7,8 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xxfxa"]
 shader = ExtResource("1_xub1r")
-shader_parameter/glow_color = Color(0, 0, 0, 1)
+shader_parameter/hit_modulation = 0.0
+shader_parameter/src_col = Color(0.94509804, 0.41568628, 0.7607843, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j2kcq"]
 shader = ExtResource("3_j2kcq")
