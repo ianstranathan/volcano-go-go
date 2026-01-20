@@ -21,7 +21,9 @@ var player_ref: Player
 
 func _ready() -> void:
 	#---------------------------------------
-	$RaycastItemComponent.initialize_input(grapple_max_distance, input_manager)
+	$RaycastItemComponent.initialize_ray(grapple_max_distance,
+										 func(the_ray: RayCast2D):
+											the_ray.look_at(input_manager.aiming_pos()))
 	# -- pickup -> item_manager -> instanitates this, assigns it stuff
 	assert(input_manager and item_interface)
 	# -- dependency injection
