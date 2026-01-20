@@ -1,15 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://ddh3v2s46w5me"]
+[gd_scene load_steps=6 format=3 uid="uid://ddh3v2s46w5me"]
 
-[ext_resource type="Script" uid="uid://8smumn24j1c5" path="res://items/rope_ladder/rope_ladder.gd" id="1_snyf7"]
-[ext_resource type="Script" uid="uid://du6dcuy4lm2fk" path="res://items/item_interface.gd" id="2_6cghk"]
+[ext_resource type="Script" uid="uid://51es4fve3ynt" path="res://items/rope_ladder/rope_ladder.gd" id="1_snyf7"]
 [ext_resource type="Shader" uid="uid://bu5o5w2bx15yq" path="res://items/rope_ladder/rope_ladder.gdshader" id="3_q7mn7"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_bgftd"]
-[ext_resource type="PackedScene" uid="uid://1yqyqa8jm5k" path="res://items/raycast_item_component.tscn" id="5_6rna5"]
-
-[sub_resource type="Resource" id="Resource_q7mn7"]
-script = ExtResource("2_6cghk")
-use_mode = 1
-metadata/_custom_type_script = "uid://du6dcuy4lm2fk"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bgftd"]
 shader = ExtResource("3_q7mn7")
@@ -20,11 +13,10 @@ shader_parameter/tex = ExtResource("4_bgftd")
 
 [node name="RopeLadder" type="Node2D"]
 script = ExtResource("1_snyf7")
-item_interface = SubResource("Resource_q7mn7")
 
 [node name="Line2D" type="Line2D" parent="."]
 material = SubResource("ShaderMaterial_bgftd")
-points = PackedVector2Array(0, 0, 0, 0, 200, 1)
+points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0
 texture_mode = 1
 
@@ -35,5 +27,3 @@ collision_mask = 2
 shape = SubResource("RectangleShape2D_snyf7")
 disabled = true
 metadata/_edit_group_ = true
-
-[node name="RaycastItemComponent" parent="." instance=ExtResource("5_6rna5")]

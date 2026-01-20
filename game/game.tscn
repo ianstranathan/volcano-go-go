@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://cvpf74tya22rc" path="res://items/grappling_hook/grappling_hook.tscn" id="13_vsp63"]
 [ext_resource type="Texture2D" uid="uid://c4oflmcqxtgy3" path="res://assets/grapple.svg" id="14_b686c"]
 [ext_resource type="Script" uid="uid://ft8ft4puh52p" path="res://game/vfx_container.gd" id="15_hb504"]
-[ext_resource type="PackedScene" uid="uid://ddh3v2s46w5me" path="res://items/rope_ladder/rope_ladder.tscn" id="15_pxxsx"]
+[ext_resource type="PackedScene" uid="uid://b1v1urff5hmj2" path="res://items/rope_ladder/rope_ladder_spawner.tscn" id="15_pxxsx"]
 [ext_resource type="Shader" uid="uid://bex3q7bc4xrdf" path="res://game/lava_heat_distortion.gdshader" id="16_ee6o4"]
 [ext_resource type="Texture2D" uid="uid://5bw8tr2frxw4" path="res://assets/rope-coil.svg" id="16_u8s88"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="17_4cobl"]
@@ -64,8 +64,9 @@ material = SubResource("ShaderMaterial_dakft")
 position = Vector2(0, -300)
 texture = ExtResource("4_dxrkv")
 
-[node name="Player" parent="." node_paths=PackedStringArray("lava_ref") instance=ExtResource("1_l1rk1")]
+[node name="Player" parent="." node_paths=PackedStringArray("lava_ref", "items_container") instance=ExtResource("1_l1rk1")]
 lava_ref = NodePath("../Lava")
+items_container = NodePath("../ItemsContainer")
 metadata/_edit_group_ = true
 
 [node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
@@ -146,15 +147,33 @@ body = NodePath("..")
 color = Color(0, 0.57911354, 0.5474907, 1)
 coll_extents = Vector2(250, 250)
 
-[node name="ItemsContainer" type="Node2D" parent="."]
+[node name="PickupItemsContainer" type="Node2D" parent="."]
 
-[node name="PickupItem" parent="ItemsContainer" instance=ExtResource("12_qf6n1")]
+[node name="GrapplingHookPickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
 position = Vector2(-226, 0)
 scene_resource = ExtResource("13_vsp63")
 _texture = ExtResource("14_b686c")
 
-[node name="PickupItem2" parent="ItemsContainer" instance=ExtResource("12_qf6n1")]
+[node name="RopePickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
 position = Vector2(464, -56)
+scene_resource = ExtResource("15_pxxsx")
+_type = 1
+_texture = ExtResource("16_u8s88")
+
+[node name="RopePickup2" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(384, -56)
+scene_resource = ExtResource("15_pxxsx")
+_type = 1
+_texture = ExtResource("16_u8s88")
+
+[node name="RopePickup3" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(600, -56)
+scene_resource = ExtResource("15_pxxsx")
+_type = 1
+_texture = ExtResource("16_u8s88")
+
+[node name="RopePickup4" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(536, -150)
 scene_resource = ExtResource("15_pxxsx")
 _type = 1
 _texture = ExtResource("16_u8s88")
@@ -169,3 +188,5 @@ post_processing_quad = NodePath("PostProcessingQuad")
 material = SubResource("ShaderMaterial_4cobl")
 position = Vector2(0, -32)
 texture = ExtResource("4_dxrkv")
+
+[node name="ItemsContainer" type="Node2D" parent="."]

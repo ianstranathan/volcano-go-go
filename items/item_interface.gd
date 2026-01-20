@@ -4,6 +4,7 @@ class_name ItemInterface
 
 signal used
 signal stopped
+signal destroyed
 
 @export var use_mode: ItemUseMode
 
@@ -31,3 +32,7 @@ func use():
 
 func stop():
 	emit_signal("stopped")
+
+
+func destroy():
+	emit_signal("destroyed")

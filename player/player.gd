@@ -17,6 +17,7 @@ class_name Player
 @export var fall_distance_from_peak: float = 100
 @export var somersault_factor = 1.25 ## as a ratio of the jump velocity
 
+
 @onready var time_to_peak = jump_distance_to_peak / move_speed
 @onready var time_to_ground = fall_distance_from_peak / move_speed
 
@@ -26,6 +27,7 @@ class_name Player
 @onready var jump_speed = -2 * jump_height / time_to_peak;
 
 @export var climb_speed = move_speed * 0.5
+@export var ledge_climb_speed = 200.0
 
 var current_platform = null # -- for calculating relative velocities
 var last_move_input: float  # -- side somersault variable
@@ -39,8 +41,6 @@ var move_input: float
 @export var platform_snap_distance = 20
 @onready var coyote_timer: Timer = $CoyoteTimeTimer
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
-
-
 
 
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
@@ -64,10 +64,13 @@ enum MovementStates
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
 
-#var item_is_overriding_velocity: bool = false
+@export_category("Scene Heirarchy Stuff")
+## the dedicated container in the same scene depth as the player that holds item instances
+@export var items_container: Node2D
 
 func _ready() -> void:
-	
+	assert(items_container)
+	$ItemManager.items_container = items_container
 	#--------------------------------------------- this controls aiming line
 	$InputManager.aim_input_detected.connect( func():
 		$AimingVisual.update_aiming_visual())
@@ -373,7 +376,6 @@ func item_moving_state_fn() -> void:
 		movement_state_transition_to(MovementStates.JUMPING)
 
 
-@export var ledge_climb_speed = 200.0
 func ledge_grabbing_state_fn() -> void:
 	check_for_jump()
 	if Input.is_action_just_pressed("move_up") and ledge_grab_climb_target_pos:

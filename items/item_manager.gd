@@ -3,10 +3,13 @@ extends Node2D
 class_name ItemManager
 
 var item_interface: ItemInterface
+var items_container
+
 signal item_moving_started()
 signal item_moving_stopped()
 signal item_targeted_something( pos_or_null )
 signal item_ray_target_position_changed( pos: Vector2 )
+
 
 @export var input_manager: InputManager # -- local source of input truth
 @export var player_ref: Player
@@ -28,23 +31,30 @@ func _physics_process(_delta: float) -> void:
 		
 
 func pick_up( item_rsc: PackedScene,  fn: Callable):
+	if item_interface:
+		item_interface.destroy()
+	
 	var item = item_rsc.instantiate()
 	item_interface = item.item_interface
 	if is_moving_item() or is_spawning_item():
 		# NOTE
-		# we're implying an interface here for moving or spawning item 
-		# => RaycastItemComponent
-		# -- choices: 1: make it all reactive / declarative
-		#             2: make a dedicated case in item manager
-		var raycast_component = item.get_node("RaycastItemComponent")
-		raycast_component.intersected_something.connect( func(pos_or_null):
-			emit_signal("item_targeted_something", pos_or_null))
-		raycast_component.target_position_changed.connect( func(pos: Vector2):
-			emit_signal("item_ray_target_position_changed", pos))
-		item.player_ref = player_ref
-		item.input_manager = input_manager
-		add_child(item)
+		var components = item.get_children().filter( func(c): 
+			return c is RayCastItemComponent)
+		var raycast_component = components[0] if components.size() > 0 else null
+		if raycast_component:
+			raycast_component.intersected_something.connect( func(pos_or_null):
+				emit_signal("item_targeted_something", pos_or_null))
+			raycast_component.target_position_changed.connect( func(pos: Vector2):
+				emit_signal("item_ray_target_position_changed", pos))
 
+
+		if is_moving_item():
+			item.input_manager = input_manager
+			item.player_ref = player_ref
+		elif items_container:
+			item.items_container_ref = items_container
+		add_child(item)
+	# -- this is a callback from the pickup item handle to clean up after itself
 	fn.call()
 
 

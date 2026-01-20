@@ -20,13 +20,14 @@ var player_ref: Player
 
 
 func _ready() -> void:
-	#---------------------------------------
+	assert(input_manager and item_interface)
+	
+	#--------------------------------------- Raycast interface
 	$RaycastItemComponent.initialize_ray(grapple_max_distance,
 										 func(the_ray: RayCast2D):
 											the_ray.look_at(input_manager.aiming_pos()))
 	# -- pickup -> item_manager -> instanitates this, assigns it stuff
-	assert(input_manager and item_interface)
-	# -- dependency injection
+	#----------------------------------- item interface / dependency injection
 	item_interface.can_use_fn = func(): return true # you can always use this
 	item_interface.used.connect( func():
 		if target:
@@ -36,7 +37,8 @@ func _ready() -> void:
 			item_interface.finished_using_item = false
 			launch())
 	item_interface.stopped.connect( retract )
-
+	item_interface.destroyed.connect( func():
+		call_deferred("queue_free"))
 
 func _physics_process(delta: float) -> void:
 	if target:
