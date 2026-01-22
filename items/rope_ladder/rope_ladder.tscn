@@ -17,6 +17,7 @@ size = Vector2(20, 100)
 script = ExtResource("1_snyf7")
 
 [node name="Line2D" type="Line2D" parent="."]
+z_index = -100
 material = SubResource("ShaderMaterial_bgftd")
 points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0

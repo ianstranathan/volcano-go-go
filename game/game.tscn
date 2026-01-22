@@ -105,7 +105,7 @@ rotation = 1.5707964
 coll_extents = Vector2(1000, 50)
 
 [node name="RH_WALL2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(616, -640)
+position = Vector2(560, -640)
 rotation = 1.5707964
 coll_extents = Vector2(1000, 50)
 
@@ -155,13 +155,13 @@ scene_resource = ExtResource("13_vsp63")
 _texture = ExtResource("14_b686c")
 
 [node name="RopePickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
-position = Vector2(464, -56)
+position = Vector2(256, 0)
 scene_resource = ExtResource("15_pxxsx")
 _type = 1
 _texture = ExtResource("16_u8s88")
 
 [node name="RopePickup2" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
-position = Vector2(384, -56)
+position = Vector2(176, 0)
 scene_resource = ExtResource("15_pxxsx")
 _type = 1
 _texture = ExtResource("16_u8s88")
@@ -173,7 +173,7 @@ _type = 1
 _texture = ExtResource("16_u8s88")
 
 [node name="RopePickup4" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
-position = Vector2(536, -150)
+position = Vector2(-560, -36)
 scene_resource = ExtResource("15_pxxsx")
 _type = 1
 _texture = ExtResource("16_u8s88")

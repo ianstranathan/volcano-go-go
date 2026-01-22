@@ -100,8 +100,8 @@ target_position = Vector2(-25, 0)
 position = Vector2(0, 36)
 target_position = Vector2(-25, 0)
 
-[node name="WallJumpTimer" type="Timer" parent="."]
-wait_time = 0.3
+[node name="WallJumpBufferTimer" type="Timer" parent="."]
+wait_time = 0.25
 one_shot = true
 
 [node name="LedgeRayContainer" type="Node2D" parent="."]
@@ -124,7 +124,6 @@ input_manager = NodePath("../InputManager")
 player_ref = NodePath("..")
 
 [node name="AimingVisual" parent="." instance=ExtResource("6_g6k8r")]
-player_line_offest = null
 
 [node name="LedgeGrabBufferTimer" type="Timer" parent="."]
 wait_time = 0.3
