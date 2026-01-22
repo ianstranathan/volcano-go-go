@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://7e73ch2pkjhn"]
+
+[ext_resource type="Script" uid="uid://ojtheoogmgnx" path="res://testing/test_rock.gd" id="1_dhvfo"]
+[ext_resource type="Texture2D" uid="uid://b0t0mm4qoyfnn" path="res://assets/tmp/Cave - SmallRocks.png" id="1_x3ecp"]
+[ext_resource type="Script" uid="uid://bhkxeye46mno" path="res://grabbable/grabbable.gd" id="3_jybef"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x3ecp"]
+radius = 26.172504
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dhvfo"]
+radius = 44.011364
+
+[node name="TestRock" type="RigidBody2D"]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("1_dhvfo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_x3ecp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_x3ecp")
+region_enabled = true
+region_rect = Rect2(106, 79, 131, 128)
+
+[node name="Grabbable" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+script = ExtResource("3_jybef")
+metadata/_custom_type_script = "uid://bhkxeye46mno"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Grabbable"]
+shape = SubResource("CircleShape2D_dhvfo")

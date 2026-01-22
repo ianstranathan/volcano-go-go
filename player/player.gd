@@ -73,6 +73,10 @@ enum MovementStates
 
 
 func _ready() -> void:
+	#--------------------------------------------- grabbable component
+	#signal got_tossed( dir: Vector2)
+#signal got_grabbed( n: Node2D)
+	#--------------------------------------------- grab manager
 	assert(items_container)
 	$ItemManager.items_container = items_container
 	#--------------------------------------------- this controls aiming line

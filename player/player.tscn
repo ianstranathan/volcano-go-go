@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=11 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://nlnarpn8nmxn" path="res://input_manager/input_manager.tscn" id="4_yw30f"]
 [ext_resource type="PackedScene" uid="uid://ckljhiydi3u8p" path="res://items/item_manager.tscn" id="5_qjkh3"]
 [ext_resource type="PackedScene" uid="uid://dgtxfvo2esvyd" path="res://player/aiming_visual/aiming_visual.tscn" id="6_g6k8r"]
+[ext_resource type="Script" uid="uid://c0bg2g4soysfi" path="res://player/grab_manager.gd" id="7_boad6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
 shader = ExtResource("2_g1dw6")
@@ -16,6 +17,9 @@ shader_parameter/height = 0.355
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ugqs2"]
 radius = 20.0
 height = 100.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_boad6"]
+size = Vector2(50, 20)
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
@@ -128,3 +132,13 @@ player_ref = NodePath("..")
 [node name="LedgeGrabBufferTimer" type="Timer" parent="."]
 wait_time = 0.3
 one_shot = true
+
+[node name="GrabManager" type="Area2D" parent="." node_paths=PackedStringArray("player_ref")]
+collision_layer = 2
+collision_mask = 16
+script = ExtResource("7_boad6")
+player_ref = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GrabManager"]
+scale = Vector2(3.790234, -5.1270866)
+shape = SubResource("RectangleShape2D_boad6")
