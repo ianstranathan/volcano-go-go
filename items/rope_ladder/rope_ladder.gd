@@ -10,16 +10,21 @@ var rope_length: float
 
 
 func _ready() -> void:
-	assert( target ) # -- has to have a target from spawner
-
+	assert( target ) # -- must have a target from spawner
 	$Line2D.set_point_position(1, to_local(target))
-	print("Target global:", target)
-	print("Rope global pos:", global_position)
-	print("Line global pos:", $Line2D.global_position)
-	print("Line local:", $Line2D.to_local(target))
-	#var tween = create_tween()
-	#tween.tween_property( self, "global_position", target, rope_anim_length)
-	#tween.tween_callback( func():
-		#var next_tween = create_tween()
-		#next_tween.tween_property( self, "global_position", target, rope_anim_length)
-		#)
+	
+	# -- line2d is in local space
+	var line_height = $Line2D.get_point_position(1).y
+	#$Area2D/CollisionShape2D.shape.size = Vector2(2.0 * $Line2D.width, line_height)
+	var shape : RectangleShape2D = $Area2D/CollisionShape2D.shape.duplicate()
+	$Area2D/CollisionShape2D.shape = shape
+	$Area2D/CollisionShape2D.shape.size = Vector2(1.3 * $Line2D.width, floor(abs(line_height)))
+	$Area2D/CollisionShape2D.position.y = line_height / 2.
+	
+	# -- this feels ugly
+	$Area2D.body_entered.connect( func(body):
+		if body is Player:
+			body.can_climb = true)
+	$Area2D.body_exited.connect( func(body):
+		if body is Player:
+			body.can_climb = false)

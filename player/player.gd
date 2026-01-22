@@ -31,7 +31,8 @@ class_name Player
 
 var current_platform = null # -- for calculating relative velocities
 var last_move_input: float  # -- side somersault variable
-var move_input: float
+var horizontal_move_input: float
+var vertical_move_input: float
 @export_group("platformer stuff")
 ## Time to allow jump after leaving ground
 @export var COYOTE_TIME_DURATION: float = 0.15
@@ -41,7 +42,7 @@ var move_input: float
 @export var platform_snap_distance = 20
 @onready var coyote_timer: Timer = $CoyoteTimeTimer
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
-
+var can_climb := false
 
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
 @onready var g: float = jump_gravity
@@ -67,6 +68,7 @@ enum MovementStates
 @export_category("Scene Heirarchy Stuff")
 ## the dedicated container in the same scene depth as the player that holds item instances
 @export var items_container: Node2D
+
 
 func _ready() -> void:
 	assert(items_container)
@@ -126,7 +128,9 @@ func check_for_jump() -> void:
 			do_jump(JumpTypes.WALL)
 		elif is_ledge_grabbing():
 			do_jump(JumpTypes.REGULAR)
-
+		# NOTE change this man
+		elif movement_state == MovementStates.CLIMBING:
+			do_jump(JumpTypes.REGULAR)
 
 func do_jump(jump_type):
 	# -- logic of what to do for a specific jump
@@ -160,9 +164,14 @@ func coyote_time_resolution() -> void:
 
 func _physics_process(delta: float) -> void:
 	
-	move_input = Input.get_axis("move_left", "move_right")
+	horizontal_move_input = Input.get_axis("move_left", "move_right")
+	vertical_move_input =  Input.get_axis("move_down", "move_up")
+	
+	if should_start_climbing(): # -- magic number dead zone
+		start_climbing()
+	
 	if !last_move_input: # -- initializing last_move_input
-		last_move_input = move_input
+		last_move_input = horizontal_move_input
 	
 	# -- call the movement state function matching the movement_state variable
 	call(MovementStates.keys()[movement_state].to_lower() + "_state_fn")
@@ -182,7 +191,7 @@ func _physics_process(delta: float) -> void:
 			current_platform_check( collision )
 			velocity.y = 0
 
-	last_move_input = move_input
+	last_move_input = horizontal_move_input
 
 
 func current_platform_check(coll: KinematicCollision2D):
@@ -192,7 +201,7 @@ func current_platform_check(coll: KinematicCollision2D):
 
 
 func there_is_move_input():
-	return !is_zero_approx(move_input)
+	return !is_zero_approx(horizontal_move_input)
 
 
 func my_is_on_floor() -> bool:
@@ -275,8 +284,8 @@ func walking_state_fn() -> void:
 	## -- two +tive nums multiplied together is a positive
 	## -- two differnt signed nums multiplied together is a negative
 	if there_is_move_input():
-		move(move_input * move_speed, ACCL, true)
-		var switched_dir = true if last_move_input * move_input < 0 else false
+		move(horizontal_move_input * move_speed, ACCL, true)
+		var switched_dir = true if last_move_input * horizontal_move_input < 0 else false
 		if switched_dir:
 			$SideSomersaultTimer.start()
 	else:
@@ -286,23 +295,27 @@ func walking_state_fn() -> void:
 func jumping_state_fn() -> void:
 	handle_corner_correction()
 	if there_is_move_input():
-		move(move_input * move_speed, ACCL)
+		move(horizontal_move_input * move_speed, ACCL)
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
+# -- Climbing utils
+func should_start_climbing():
+	return (can_climb and vertical_move_input > 0.2 and movement_state != MovementStates.CLIMBING)
 
-func climbing_state_fn():
-	var input_vector = $InputManager.movement_vector()
-	velocity= velocity.move_toward(climb_speed * input_vector, ACCL)
 
-
-var climbing_dir: Vector2 = Vector2.ZERO
-func start_climbing( the_climbing_dir: Vector2 ):
-	climbing_dir = the_climbing_dir
+func start_climbing() -> void:
+	velocity = Vector2.ZERO
+	g = 0.0
 	movement_state_transition_to(MovementStates.CLIMBING)
 
-# -- Utility functions to make platforming easier
 
+func climbing_state_fn():
+	velocity.y = move_toward(velocity.y, climb_speed * -vertical_move_input, ACCL)
+	check_for_jump() # -- will change to jump state
+
+
+# -- Utility functions to make platforming easier
 # NOTE handle_platform_fall_near_miss_correction
 #      &
 #      handle_corner_correction
@@ -340,7 +353,7 @@ func falling_state_fn() -> void:
 	handle_platform_fall_near_miss_correction()
 	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
-		move(move_input * move_speed, ACCL)
+		move(horizontal_move_input * move_speed, ACCL)
 	# ++++++++++++++++
 	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
 		# -- we stop gravity and falling velocity, save the climbing pos
@@ -368,7 +381,7 @@ func wall_sliding_state_fn() -> void:
 
 
 func item_moving_state_fn() -> void:
-	move(move_input * move_speed, ACCL)
+	move(horizontal_move_input * move_speed, ACCL)
 	if !jump_buffer_timer.is_stopped():
 		$ItemManager.stop_using_item()
 		# -- accumulate velocity from the swing
@@ -466,6 +479,10 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 						g = jump_gravity
 			MovementStates.ITEM_MOVING:
 				g = jump_gravity
+			MovementStates.CLIMBING:
+				match new_movement_state:
+					MovementStates.JUMPING:
+						g = jump_gravity
 
 		# ----------------------------------
 		set_debug_label( new_movement_state )

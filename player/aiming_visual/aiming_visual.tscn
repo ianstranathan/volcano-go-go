@@ -24,7 +24,6 @@ width = 20.0
 texture_mode = 1
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 2.0
 one_shot = true
 
 [node name="TargetVisual" type="Sprite2D" parent="."]
