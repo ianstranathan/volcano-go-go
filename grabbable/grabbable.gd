@@ -28,8 +28,8 @@ func grab( _grabber: Area2D) -> Dictionary:
 	return {"weight": weight_prop_coeff()}
 
 
-func toss( dir ):
-	emit_signal( "got_tossed", dir * throw_dir_coeff())
+func toss( v ):
+	emit_signal( "got_tossed", Vector2(v * throw_dir_coeff(), 0.0))
 	grabber = null
 
 

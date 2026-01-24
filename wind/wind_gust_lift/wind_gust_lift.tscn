@@ -1,0 +1,29 @@
+[gd_scene load_steps=7 format=3 uid="uid://camohv0etu6x2"]
+
+[ext_resource type="Shader" uid="uid://dq5w4yv6n32qn" path="res://wind/wind_gust_lift/wind_gust_lift.gdshader" id="1_1ih8y"]
+[ext_resource type="Script" uid="uid://kup1jbk37byy" path="res://wind/wind_gust_lift/wind_gust_lift.gd" id="1_wstiy"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_g272u"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_cjgt1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wstiy"]
+size = Vector2(300, 1000)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_211qb"]
+shader = ExtResource("1_1ih8y")
+shader_parameter/noise_tex = ExtResource("2_g272u")
+
+[node name="WindGustLift" type="Node2D" node_paths=PackedStringArray("coll_shape", "sprite")]
+script = ExtResource("1_wstiy")
+coll_extents = Vector2(300, 1000)
+coll_shape = NodePath("Area2D/CollisionShape2D")
+sprite = NodePath("Sprite2D")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_wstiy")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_211qb")
+scale = Vector2(2.34375, 7.8125)
+texture = ExtResource("3_cjgt1")

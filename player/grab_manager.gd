@@ -43,7 +43,7 @@ func can_grab( grabbable_item : Node2D) -> bool:
 	# -- are we facing the way? / is the item in front of us
 	var r = grabbable_item.global_position - global_position
 	var facing_dir = player_ref.last_horizontal_move_input
-	return (facing_dir * r.x > 0)
+	return (facing_dir * r.x >= 0)
 
 
 # -- will either return a grabbable or none
