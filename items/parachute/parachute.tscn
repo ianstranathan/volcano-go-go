@@ -1,30 +1,36 @@
-[gd_scene load_steps=9 format=3 uid="uid://driwls6hfysss"]
+[gd_scene load_steps=11 format=3 uid="uid://driwls6hfysss"]
 
 [ext_resource type="Shader" uid="uid://b1fkq6ee3erlu" path="res://items/parachute/parachute.gdshader" id="1_64bp3"]
 [ext_resource type="Script" uid="uid://upxnhtje4bl" path="res://items/parachute/parachute.gd" id="1_fysdi"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_4hgu8"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_fysdi"]
 [ext_resource type="Script" uid="uid://du6dcuy4lm2fk" path="res://items/item_interface.gd" id="2_u8r2o"]
+[ext_resource type="Script" uid="uid://dmm17nhn1wysy" path="res://items/item_components/movement_override_component.gd" id="6_l5lux"]
 
 [sub_resource type="Resource" id="Resource_l5lux"]
 script = ExtResource("2_u8r2o")
 use_mode = 2
 metadata/_custom_type_script = "uid://du6dcuy4lm2fk"
 
+[sub_resource type="Curve" id="Curve_l5lux"]
+_data = [Vector2(0.00440529, 0), 0.0, 0.0, 0, 0, Vector2(0.568282, 0.6067416), 2.814413, 2.814413, 0, 0, Vector2(0.99559474, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fysdi"]
 shader = ExtResource("1_64bp3")
 shader_parameter/noise_tex = ExtResource("2_fysdi")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u8r2o"]
-radius = 78.00641
+radius = 80.05623
 
 [node name="Parachute" type="Node2D"]
 script = ExtResource("1_fysdi")
 item_interface = SubResource("Resource_l5lux")
+accl_curve = SubResource("Curve_l5lux")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_fysdi")
-scale = Vector2(2, 2)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_4hgu8")
 
 [node name="Area2D" type="Area2D" parent="."]
@@ -33,4 +39,12 @@ texture = ExtResource("2_4hgu8")
 shape = SubResource("CircleShape2D_u8r2o")
 
 [node name="TryTimer" type="Timer" parent="."]
-wait_time = 0.5
+one_shot = true
+
+[node name="MovementOverrideComponent" type="Node" parent="."]
+script = ExtResource("6_l5lux")
+metadata/_custom_type_script = "uid://dmm17nhn1wysy"
+
+[node name="DeploymentTimer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true

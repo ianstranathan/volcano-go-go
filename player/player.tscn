@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=12 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://ckljhiydi3u8p" path="res://items/item_manager.tscn" id="5_qjkh3"]
 [ext_resource type="PackedScene" uid="uid://dgtxfvo2esvyd" path="res://player/aiming_visual/aiming_visual.tscn" id="6_g6k8r"]
 [ext_resource type="Script" uid="uid://c0bg2g4soysfi" path="res://player/grab_manager.gd" id="7_boad6"]
+[ext_resource type="Script" uid="uid://by03gqnwcld5s" path="res://player/climb_interface.gd" id="8_rgyib"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
 shader = ExtResource("2_g1dw6")
@@ -134,6 +135,7 @@ wait_time = 0.3
 one_shot = true
 
 [node name="GrabManager" type="Area2D" parent="." node_paths=PackedStringArray("player_ref")]
+visible = false
 collision_layer = 2
 collision_mask = 16
 script = ExtResource("7_boad6")
@@ -142,3 +144,12 @@ player_ref = NodePath("..")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GrabManager"]
 scale = Vector2(3.790234, -5.1270866)
 shape = SubResource("RectangleShape2D_boad6")
+
+[node name="ClimbingInterface" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 32
+script = ExtResource("8_rgyib")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbingInterface"]
+visible = false
+shape = SubResource("CapsuleShape2D_ugqs2")

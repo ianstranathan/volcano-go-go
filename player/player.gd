@@ -30,9 +30,13 @@ class_name Player
 @export var ledge_climb_speed = 200.0
 
 var current_platform = null # -- for calculating relative velocities
-var last_horizontal_move_input: float  # -- side somersault variable
-var horizontal_move_input: float
-var vertical_move_input: float
+
+#var move_input: Vector2
+var last_move_input: Vector2
+
+#var last_horizontal_move_input: float  # -- side somersault variable
+#var horizontal_move_input: float
+#var vertical_move_input: float
 @export_group("platformer stuff")
 ## Time to allow jump after leaving ground
 @export var COYOTE_TIME_DURATION: float = 0.15
@@ -44,8 +48,8 @@ var vertical_move_input: float
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
 @onready var wall_jump_buffer_timer: Timer = $WallJumpBufferTimer
 
+# -- misc
 var can_climb := false
-
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
 @onready var g: float = jump_gravity
 
@@ -71,11 +75,15 @@ enum MovementStates
 ## the dedicated container in the same scene depth as the player that holds item instances
 @export var items_container: Node2D
 
+signal touched_ground
 
 func _ready() -> void:
+	$ClimbingInterface.climbing_area_entered.connect( func(): can_climb = true )
+	$ClimbingInterface.climbing_area_exited.connect( func(): can_climb = false)
+
 	#--------------------------------------------- grabbable component
 	#signal got_tossed( dir: Vector2)
-#signal got_grabbed( n: Node2D)
+	#signal got_grabbed( n: Node2D)
 	#--------------------------------------------- grab manager
 	assert(items_container)
 	$ItemManager.items_container = items_container
@@ -99,7 +107,7 @@ func _ready() -> void:
 
 	coyote_timer.timeout.connect( coyote_time_resolution)
 		
-
+	# ???
 	#$WallJumpTimer.timeout.connect( func():
 		## -- turn on all the wall raycasts after a certain amount time after wall jump
 		#$WallCheckContainer.get_children().map( 
@@ -149,7 +157,7 @@ func do_jump(jump_type):
 			var tween = create_tween()
 			tween.tween_property(self, 
 						"global_rotation",
-						global_rotation + sign(last_horizontal_move_input) * TAU, time_to_peak)
+						global_rotation + sign(last_move_input.x) * TAU, time_to_peak)
 		JumpTypes.WALL:
 			var _wall_normal = wall_normal()
 			if _wall_normal:
@@ -171,15 +179,12 @@ func coyote_time_resolution() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if !last_move_input:
+		last_move_input = $InputManager.movement_vector()
 	
-	horizontal_move_input = Input.get_axis("move_left", "move_right")
-	vertical_move_input =  Input.get_axis("move_down", "move_up")
-	
-	if should_start_climbing(): # -- magic number dead zone
+	# -- climbing check
+	if should_start_climbing():
 		start_climbing()
-	
-	if !last_horizontal_move_input: # -- initializing last_horizontal_move_input
-		last_horizontal_move_input = horizontal_move_input
 	
 	# -- call the movement state function matching the movement_state variable
 	call(MovementStates.keys()[movement_state].to_lower() + "_state_fn", delta)
@@ -199,7 +204,7 @@ func _physics_process(delta: float) -> void:
 			current_platform_check( collision )
 			velocity.y = 0
 
-	last_horizontal_move_input = horizontal_move_input
+	last_move_input = $InputManager.movement_vector()
 
 
 func current_platform_check(coll: KinematicCollision2D):
@@ -209,7 +214,7 @@ func current_platform_check(coll: KinematicCollision2D):
 
 
 func there_is_move_input():
-	return !is_zero_approx(horizontal_move_input)
+	return !is_zero_approx($InputManager.movement_vector().x)
 
 
 func my_is_on_floor() -> bool:
@@ -228,7 +233,7 @@ func is_wall_sliding() -> bool:
 	var _wall_normal = wall_normal()
 	# -- falsy will short circuit, so this can be a one liner
 	return (_wall_normal and (!wall_jump_buffer_timer.is_stopped() or 
-							  last_horizontal_move_input * _wall_normal.x < 0))
+							  last_move_input.x * _wall_normal.x < 0))
 
 
 func wall_normal():
@@ -246,14 +251,14 @@ func wall_normal():
 @onready var lhs_ledge_grab_pair: Array[RayCast2D] = [$LedgeRayContainer/LHS, $WallCheckContainer/LHS1]
 @onready var ledge_grab_arrs = [rhs_ledge_grab_pair, lhs_ledge_grab_pair]
 func is_ledge_grabbing() -> bool:
-	var arr = lhs_ledge_grab_pair if last_horizontal_move_input < 0 else rhs_ledge_grab_pair
+	var arr = lhs_ledge_grab_pair if last_move_input.x < 0 else rhs_ledge_grab_pair
 	var ledge_ray = arr[0]
 	var wall_ray = arr[1]
 	return wall_ray.is_colliding() and !ledge_ray.is_colliding()
 
 
 func ledge_grabbing_climb_position():
-	var arr = lhs_ledge_grab_pair if last_horizontal_move_input < 0 else rhs_ledge_grab_pair
+	var arr = lhs_ledge_grab_pair if last_move_input.x < 0 else rhs_ledge_grab_pair
 	var ledge_ray = arr[0]
 	var wall_ray = arr[1]
 	# -- the world position of where the ray is pointing right now
@@ -294,8 +299,8 @@ func walking_state_fn(_delta) -> void:
 	## -- two +tive nums multiplied together is a positive
 	## -- two differnt signed nums multiplied together is a negative
 	if there_is_move_input():
-		move(horizontal_move_input * move_speed, ACCL, true)
-		var switched_dir = true if last_horizontal_move_input * horizontal_move_input < 0 else false
+		move($InputManager.movement_vector().x * move_speed, ACCL, true)
+		var switched_dir = true if last_move_input.x * $InputManager.movement_vector().x < 0 else false
 		if switched_dir:
 			$SideSomersaultTimer.start()
 	else:
@@ -305,14 +310,14 @@ func walking_state_fn(_delta) -> void:
 func jumping_state_fn(_delta) -> void:
 	handle_corner_correction()
 	if there_is_move_input():
-		move(horizontal_move_input * move_speed, ACCL)
+		move($InputManager.movement_vector().x * move_speed, ACCL)
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
 
 # -- Climbing utils
 func should_start_climbing():
-	return (can_climb and vertical_move_input > 0.2 and movement_state != MovementStates.CLIMBING)
+	return (can_climb and $InputManager.movement_vector().y > 0.2 and movement_state != MovementStates.CLIMBING)
 
 
 func start_climbing() -> void:
@@ -322,12 +327,15 @@ func start_climbing() -> void:
 
 
 func climbing_state_fn(_delta):
-	#if there_is_move_input():
-		#move(horizontal_move_input * move_speed, ACCL)
-	velocity.y = move_toward(velocity.y, climb_speed * -vertical_move_input, ACCL)
+	var d = $InputManager.movement_vector()
+	if there_is_move_input():
+		move(d.x * move_speed, ACCL)
+	# -- do stuff with data, e.g. velocity curve mutation from slipperiness
+	velocity.y = move_toward(velocity.y, climb_speed * - d.y, ACCL)
 	check_for_jump() # -- will change to jump state
-	#if !can_climb:
-		#movement_state_transition_to(MovementStates.FALLING)
+	if !can_climb:
+		g = fall_gravity
+		movement_state_transition_to(MovementStates.FALLING)
 
 # -- Utility functions to make platforming easier
 # NOTE handle_platform_fall_near_miss_correction
@@ -373,7 +381,7 @@ func falling_state_fn(_delta) -> void:
 	handle_platform_fall_near_miss_correction()
 	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
-		move(horizontal_move_input * move_speed, ACCL)
+		move($InputManager.movement_vector().x * move_speed, ACCL)
 	# ++++++++++++++++
 	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
 		# -- we stop gravity and falling velocity, save the climbing pos
@@ -389,7 +397,7 @@ func falling_state_fn(_delta) -> void:
 
 func wall_sliding_state_fn(_delta) -> void:
 	check_for_jump()
-	if last_horizontal_move_input * horizontal_move_input < 0:
+	if last_move_input.x * $InputManager.movement_vector().x < 0:
 		$WallJumpBufferTimer.start() 
 	
 	if my_is_on_floor():
@@ -404,7 +412,7 @@ func wall_sliding_state_fn(_delta) -> void:
 
 
 func item_moving_state_fn(_delta) -> void:
-	move(horizontal_move_input * move_speed, ACCL)
+	move($InputManager.movement_vector().x * move_speed, ACCL)
 	if !jump_buffer_timer.is_stopped():
 		$ItemManager.stop_using_item()
 		# -- accumulate velocity from the swing
@@ -507,6 +515,7 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				match new_movement_state:
 					MovementStates.IDLE:
 						g = fall_gravity
+						touched_ground.emit()
 					MovementStates.WALL_SLIDING:
 						# -- design choice
 						# -- the wall slide should be predictable, but not boring

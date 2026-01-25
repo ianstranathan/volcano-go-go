@@ -13,6 +13,8 @@ var current_input_source: InputSourceType = InputSourceType.CONTROLLER
 
 const DEADZONE := 0.1
 
+
+
 func _input(event: InputEvent) -> void:
 	# -------------------------------------- change controller types
 	if (current_input_source == InputSourceType.CONTROLLER and
@@ -40,9 +42,9 @@ func _input(event: InputEvent) -> void:
 				emit_signal("aim_input_detected")
 			#JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y:
 				#on_left_stick_input()
-			
+
 func movement_vector():
-	return Input.get_vector("move_left", "move_right", "move_up", "move_down") 
+	return Input.get_vector("move_left", "move_right", "move_down", "move_up") 
 
 # -- NOTE
 # -- CHANGE ME

@@ -20,7 +20,7 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("grab"):
 		if grabbed_item_ref:
-			grabbed_item_ref.toss( player_ref.last_horizontal_move_input * throw_speed)
+			grabbed_item_ref.toss( player_ref.last_move_input.x * throw_speed)
 			grabbed_item_ref = null
 		elif grabbable_items_near_player.size() > 0:
 			grabbed_item_ref = get_closest_grabbable()
@@ -42,7 +42,7 @@ func set_props_from_grabbed_item( data: Dictionary):
 func can_grab( grabbable_item : Node2D) -> bool:
 	# -- are we facing the way? / is the item in front of us
 	var r = grabbable_item.global_position - global_position
-	var facing_dir = player_ref.last_horizontal_move_input
+	var facing_dir = player_ref.last_move_input.x
 	return (facing_dir * r.x >= 0)
 
 
