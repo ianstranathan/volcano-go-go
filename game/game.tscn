@@ -151,7 +151,7 @@ coll_extents = Vector2(250, 250)
 [node name="PickupItemsContainer" type="Node2D" parent="."]
 
 [node name="GrapplingHookPickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
-position = Vector2(-672, 0)
+position = Vector2(-144, -200)
 scene_resource = ExtResource("13_vsp63")
 _texture = ExtResource("14_b686c")
 

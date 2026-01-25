@@ -322,9 +322,12 @@ func start_climbing() -> void:
 
 
 func climbing_state_fn(_delta):
+	#if there_is_move_input():
+		#move(horizontal_move_input * move_speed, ACCL)
 	velocity.y = move_toward(velocity.y, climb_speed * -vertical_move_input, ACCL)
 	check_for_jump() # -- will change to jump state
-
+	#if !can_climb:
+		#movement_state_transition_to(MovementStates.FALLING)
 
 # -- Utility functions to make platforming easier
 # NOTE handle_platform_fall_near_miss_correction

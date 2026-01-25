@@ -31,3 +31,6 @@ texture = ExtResource("2_4hgu8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_u8r2o")
+
+[node name="TryTimer" type="Timer" parent="."]
+wait_time = 0.5

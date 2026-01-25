@@ -31,14 +31,28 @@ func _ready() -> void:
 	item_interface.can_use_fn = func(): return true # you can always use this
 	item_interface.used.connect( func():
 		if target:
-			retract()
-			item_interface.finished_using_item = true
+			stop()
+			#item_interface.finished_using_item = true
 		else:
-			item_interface.finished_using_item = false
-			launch())
-	item_interface.stopped.connect( retract )
+			start()
+		)
+			#item_interface.finished_using_item = false
+			#$MovementOverrideComponent.start()
+			#launch())
+	item_interface.stopped.connect( stop )
 	item_interface.destroyed.connect( func():
 		call_deferred("queue_free"))
+
+
+func start():
+	$MovementOverrideComponent.start()
+	launch()
+
+
+func stop():
+	retract()
+	$MovementOverrideComponent.finish()
+
 
 func _physics_process(delta: float) -> void:
 	if target:
