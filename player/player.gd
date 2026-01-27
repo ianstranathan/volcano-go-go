@@ -75,7 +75,7 @@ enum MovementStates
 ## the dedicated container in the same scene depth as the player that holds item instances
 @export var items_container: Node2D
 
-signal touched_ground
+#signal touched_ground
 
 func _ready() -> void:
 	$ClimbingInterface.climbing_area_entered.connect( func(): can_climb = true )
@@ -99,7 +99,6 @@ func _ready() -> void:
 	$ItemManager.item_moving_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
 	$ItemManager.item_moving_stopped.connect( func():
-		#is_on_ground = true
 		coyote_timer.start())
 	assert(lava_ref)
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
@@ -174,7 +173,10 @@ func coyote_time_resolution() -> void:
 		MovementStates.WALKING:
 			movement_state_transition_to(MovementStates.FALLING)
 		MovementStates.ITEM_MOVING:
-			movement_state_transition_to(MovementStates.FALLING)
+			if is_falling():
+				movement_state_transition_to(MovementStates.FALLING)
+			else:
+				movement_state_transition_to(MovementStates.IDLE)
 	is_on_ground = false
 
 
@@ -330,6 +332,8 @@ func climbing_state_fn(_delta):
 	var d = $InputManager.movement_vector()
 	if there_is_move_input():
 		move(d.x * move_speed, ACCL)
+	else:
+		move(0.0, DECL, true)
 	# -- do stuff with data, e.g. velocity curve mutation from slipperiness
 	velocity.y = move_toward(velocity.y, climb_speed * - d.y, ACCL)
 	check_for_jump() # -- will change to jump state
@@ -415,7 +419,6 @@ func item_moving_state_fn(_delta) -> void:
 	move($InputManager.movement_vector().x * move_speed, ACCL)
 	if !jump_buffer_timer.is_stopped():
 		$ItemManager.stop_using_item()
-		# -- accumulate velocity from the swing
 		velocity.y += jump_speed
 		movement_state_transition_to(MovementStates.JUMPING)
 
@@ -515,7 +518,7 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				match new_movement_state:
 					MovementStates.IDLE:
 						g = fall_gravity
-						touched_ground.emit()
+						#touched_ground.emit()
 					MovementStates.WALL_SLIDING:
 						# -- design choice
 						# -- the wall slide should be predictable, but not boring
@@ -553,6 +556,12 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 		set_debug_label( new_movement_state )
 		movement_state = new_movement_state
 
+# ------------------------------------------------------- utils for parachute
+func get_g() -> float:
+	return g
+
+func can_parachute() -> bool:
+	return (is_falling() or movement_state == MovementStates.FALLING)
 
 #--TODO
 # -- completely replace this w/ proper visual, just here for tmp feedback

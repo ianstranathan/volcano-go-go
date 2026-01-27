@@ -180,6 +180,16 @@ position = Vector2(-544, 0)
 scene_resource = ExtResource("17_5e03w")
 _texture = ExtResource("17_mhvfb")
 
+[node name="Parachute2" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(-352, -1058)
+scene_resource = ExtResource("17_5e03w")
+_texture = ExtResource("17_mhvfb")
+
+[node name="Parachute3" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(72, -784)
+scene_resource = ExtResource("17_5e03w")
+_texture = ExtResource("17_mhvfb")
+
 [node name="VFX_container" type="Node2D" parent="." node_paths=PackedStringArray("lava_ref", "camera_ref", "post_processing_quad")]
 script = ExtResource("15_hb504")
 lava_ref = NodePath("../Lava")
@@ -200,3 +210,4 @@ position = Vector2(-304, 12)
 
 [node name="WindGustLift" parent="." instance=ExtResource("21_dxwpq")]
 position = Vector2(-840, -488)
+base_gust_strength = 3000.0

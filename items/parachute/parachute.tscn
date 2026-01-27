@@ -39,6 +39,7 @@ texture = ExtResource("2_4hgu8")
 shape = SubResource("CircleShape2D_u8r2o")
 
 [node name="TryTimer" type="Timer" parent="."]
+wait_time = 0.1
 one_shot = true
 
 [node name="MovementOverrideComponent" type="Node" parent="."]

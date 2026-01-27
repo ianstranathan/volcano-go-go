@@ -18,10 +18,6 @@ func _ready() -> void:
 	assert( input_manager and player_ref)
 
 
-#var item_moving_use_callback = func( finished: bool) -> void: 
-	#(self.emit_signal("item_moving_stopped") if finished else 
-	 #self.emit_signal("item_moving_started"))
-
 func _physics_process(_delta: float) -> void:
 	if !item_interface:
 		return
