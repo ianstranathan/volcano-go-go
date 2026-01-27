@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://drynsnq4ane30"]
+
+[ext_resource type="Shader" uid="uid://cfk8ofnmlncw1" path="res://shaders/ice_patch_old.gdshader" id="1_7g34f"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_xigk8"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_qrlkn"]
+
+[sub_resource type="Gradient" id="Gradient_xigk8"]
+offsets = PackedFloat32Array(0.124223605, 0.29192546, 1)
+colors = PackedColorArray(0.107795216, 0.34480062, 1, 1, 0.039215688, 0.8745098, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qrlkn"]
+gradient = SubResource("Gradient_xigk8")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xigk8"]
+shader = ExtResource("1_7g34f")
+shader_parameter/color_grad_tex = SubResource("GradientTexture1D_qrlkn")
+shader_parameter/noise_tex = ExtResource("2_xigk8")
+
+[node name="SlipArea" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_xigk8")
+texture = ExtResource("3_qrlkn")

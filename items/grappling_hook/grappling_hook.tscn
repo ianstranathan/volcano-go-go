@@ -34,4 +34,6 @@ texture_mode = 1
 
 [node name="MovementOverrideComponent" type="Node" parent="."]
 script = ExtResource("6_g5xqo")
+_allows_jump = true
+_allows_horizontal_movement = true
 metadata/_custom_type_script = "uid://dmm17nhn1wysy"

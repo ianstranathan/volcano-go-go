@@ -32,13 +32,9 @@ func _ready() -> void:
 	item_interface.used.connect( func():
 		if target:
 			stop()
-			#item_interface.finished_using_item = true
 		else:
 			start()
 		)
-			#item_interface.finished_using_item = false
-			#$MovementOverrideComponent.start()
-			#launch())
 	item_interface.stopped.connect( stop )
 	item_interface.destroyed.connect( func():
 		call_deferred("queue_free"))
