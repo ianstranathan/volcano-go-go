@@ -95,11 +95,16 @@ func _ready() -> void:
 		$AimingVisual.update_target_pos( pos_or_null))
 	$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
 		$AimingVisual.update_dir( pos ))
-	
+	$ItemManager.targeting_item_removed.connect( func():
+		$AimingVisual.stop_aiming( ))
+	$ItemManager.targeting_item_added.connect( func():
+		$AimingVisual.start_aiming( ))
+		
 	$ItemManager.item_moving_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
 	$ItemManager.item_moving_stopped.connect( func():
 		coyote_timer.start())
+	#---------------------------------------------
 	assert(lava_ref)
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
 	jump_buffer_timer.wait_time = JUMP_BUFFER_DURATION
@@ -381,22 +386,41 @@ var is_ledge_climbing := false
 var ledge_climb_tween: Tween
 var ledge_climb_progress := 0.0
 
-func falling_state_fn(_delta) -> void:
-	handle_platform_fall_near_miss_correction()
-	if there_is_move_input():
-		# -- maybe we wanna go through the air slightly slower?
-		move($InputManager.movement_vector().x * move_speed, ACCL)
-	# ++++++++++++++++
+
+func fall_transitions_check():
+	# -- return value is to see if mvoement has transitioned
 	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
 		# -- we stop gravity and falling velocity, save the climbing pos
 		velocity = Vector2.ZERO
 		g = 0
 		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
 		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
+		return true
 	elif is_wall_sliding():
 		movement_state_transition_to(MovementStates.WALL_SLIDING)
+		return true
 	elif my_is_on_floor():
 		movement_state_transition_to(MovementStates.IDLE)
+		return true
+	return false
+
+func falling_state_fn(_delta) -> void:
+	handle_platform_fall_near_miss_correction()
+	if there_is_move_input():
+		# -- maybe we wanna go through the air slightly slower?
+		move($InputManager.movement_vector().x * move_speed, ACCL)
+	# ++++++++++++++++
+	fall_transitions_check()
+	#if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
+		## -- we stop gravity and falling velocity, save the climbing pos
+		#velocity = Vector2.ZERO
+		#g = 0
+		#ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
+		#movement_state_transition_to(MovementStates.LEDGE_GRABBING)
+	#elif is_wall_sliding():
+		#movement_state_transition_to(MovementStates.WALL_SLIDING)
+	#elif my_is_on_floor():
+		#movement_state_transition_to(MovementStates.IDLE)
 
 
 func wall_sliding_state_fn(_delta) -> void:
@@ -421,7 +445,10 @@ func item_moving_state_fn(_delta) -> void:
 		$ItemManager.stop_using_item()
 		velocity.y += jump_speed
 		movement_state_transition_to(MovementStates.JUMPING)
-
+	
+	# -- does this allow me to remove fall check in parachute?
+	if fall_transitions_check( ):
+		$ItemManager.stop_using_item()
 
 func try_ledge_climb():
 	if is_ledge_climbing or !ledge_grab_climb_target_pos or !Input.is_action_just_pressed("move_up"):

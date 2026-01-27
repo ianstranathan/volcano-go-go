@@ -18,8 +18,9 @@ Timer:
 	aiming visual toggle visibility and hide timer is started
 """
 
-var should_show := false
 
+var should_show := false
+var can_show := true
 func _ready() -> void:
 	assert(targeted_visual)
 	hide()
@@ -32,7 +33,7 @@ func update_aiming_visual( ):
 	# -- this is a callback to the input manager detecting 
 	# -- mouse input or controller R-stick input
 	# -- (we want the aiming to hide after a certain amount of time)
-	if should_show:
+	if can_show and should_show:
 		set_physics_process(true)
 		show()
 		$Timer.start()
@@ -64,3 +65,12 @@ func update_target_pos(pos_or_null):
 	else:
 		$Line2D.material.set_shader_parameter("hit_modulation", 0.0)
 		targeted_visual.visible = false
+
+
+func stop_aiming():
+	can_show = false
+	hide()
+
+
+func start_aiming():
+	can_show = true

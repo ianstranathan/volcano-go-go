@@ -9,7 +9,8 @@ signal item_moving_started()
 signal item_moving_stopped()
 signal item_targeted_something( pos_or_null )
 signal item_ray_target_position_changed( pos: Vector2 )
-
+signal targeting_item_removed
+signal targeting_item_added
 
 @export var input_manager: InputManager # -- local source of input truth
 @export var player_ref: Player
@@ -24,12 +25,8 @@ func _physics_process(_delta: float) -> void:
 	else:
 		if input_manager.just_pressed_action("use_item") and item_interface.can_use():
 			item_interface.use( )
-			#if is_moving_item():
-				#if item_interface.finished_using_item:
-					#emit_signal("item_moving_stopped")
-				#else:
-					#emit_signal("item_moving_started")
-		
+
+
 var components_managed = ["raycast", "movement_override"]
 
 func pick_up( item_rsc: PackedScene,  fn: Callable):
@@ -47,9 +44,11 @@ func pick_up( item_rsc: PackedScene,  fn: Callable):
 			"raycast":
 				comp = get_component( item, func(c): return c is RayCastItemComponent)
 				if comp:
-					signals = [comp.intersected_something, comp.target_position_changed]
+					signals = [comp.intersected_something, comp.target_position_changed, comp.tree_exited]
 					connections_fns = [func(pos_or_null): self.emit_signal("item_targeted_something", pos_or_null),
-									   func(pos: Vector2): self.emit_signal("item_ray_target_position_changed", pos)]
+									   func(pos: Vector2): self.emit_signal("item_ray_target_position_changed", pos),
+									   func(): emit_signal("targeting_item_removed")]
+				targeting_item_added.emit()
 			"movement_override":
 				comp = get_component( item, func(c): return c is MovementOverrideComponent)
 				#print(comp)
@@ -68,7 +67,7 @@ func pick_up( item_rsc: PackedScene,  fn: Callable):
 			item.player_ref = player_ref
 		elif items_container:
 			item.items_container_ref = items_container
-		add_child(item)
+		call_deferred("add_child", item)
 
 	# -- this is a callback from the pickup item handle to clean up after itself
 	fn.call()

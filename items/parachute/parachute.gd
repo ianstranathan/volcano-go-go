@@ -70,7 +70,7 @@ func turn_off_coll_and_sprite(b: bool, try_just_coll: bool = false):
 
 
 func stop():
-	print("STOPPED")
+	#print("STOPPED")
 	parachute_type = ParachuteTypes.NONE
 	turn_off_coll_and_sprite(true)
 	$MovementOverrideComponent.finish()
@@ -100,9 +100,9 @@ func _physics_process(delta: float) -> void:
 												#10. * accl_curve.sample(t))
 		ParachuteTypes.PARACHUTING:
 			player_ref.velocity.y -= 0.98 * player_ref.get_g() * delta
-			if player_ref.my_is_on_floor():
-				stop()
-	print(player_ref.velocity.y)
+			#if player_ref.my_is_on_floor():
+				#stop()
+	#print(player_ref.velocity.y)
 	global_position = player_ref.global_position - offset
 
 
