@@ -1,15 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://dgtxfvo2esvyd"]
+[gd_scene load_steps=7 format=3 uid="uid://dgtxfvo2esvyd"]
 
 [ext_resource type="Shader" uid="uid://cbch10kyqw5wi" path="res://player/aiming_visual/aiming_visual.gdshader" id="1_xub1r"]
 [ext_resource type="Script" uid="uid://chbflob20nvcg" path="res://player/aiming_visual/aiming_visual.gd" id="1_xxfxa"]
-[ext_resource type="PackedScene" uid="uid://bi0lgolvqnqgj" path="res://player/reticle/reticle.tscn" id="3_j2kcq"]
+[ext_resource type="Shader" uid="uid://brmxlrecwgktm" path="res://player/aiming_visual/star_reticle.gdshader" id="3_j2kcq"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_xaj8m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xxfxa"]
 shader = ExtResource("1_xub1r")
-shader_parameter/glow_color = Color(0, 0, 0, 1)
+shader_parameter/hit_modulation = 0.0
+shader_parameter/src_col = Color(0.94509804, 0.41568628, 0.7607843, 1)
 
-[node name="AimingVisual" type="Node2D"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j2kcq"]
+shader = ExtResource("3_j2kcq")
+
+[node name="AimingVisual" type="Node2D" node_paths=PackedStringArray("targeted_visual")]
 script = ExtResource("1_xxfxa")
+targeted_visual = NodePath("TargetVisual")
 
 [node name="Line2D" type="Line2D" parent="."]
 material = SubResource("ShaderMaterial_xxfxa")
@@ -17,4 +23,11 @@ points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0
 texture_mode = 1
 
-[node name="Reticle" parent="." instance=ExtResource("3_j2kcq")]
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="TargetVisual" type="Sprite2D" parent="."]
+z_index = 100
+material = SubResource("ShaderMaterial_j2kcq")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_xaj8m")

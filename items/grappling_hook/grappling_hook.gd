@@ -1,61 +1,77 @@
-extends Item
+#extends Item
+extends Node2D
 
+@export var item_interface: ItemInterface
 @export var swing_power: float = 100 # -- coefficient for swinging manually
 @export var reel_in_speed: float = 50
 @export var grapple_change_rate := 200.0
 @export var swing_damping := 1.0
 @export var grapple_max_distance: float = 800
 @export var grapple_min_distance: float = 50
+
 @onready var rest_length = grapple_min_distance
-@onready var ray := $RayCast2D
+@onready var ray_component = $RaycastItemComponent
 @onready var rope := $Line2D
 
-var launched = false
-var target: Vector2
+
+var target
+var input_manager: InputManager
+var player_ref: Player
+
 
 func _ready() -> void:
-	$RayCast2D.target_position = Vector2(grapple_max_distance, 0.0)
-
-
-func _physics_process(delta: float) -> void:
-	ray.look_at(input_manager.aiming_pos())
-	if launched:
-		handle_grapple(delta)
-	if Input.is_action_just_pressed("use_item"):
-		use()
-	if Input.is_action_just_released("use_item"):
-		finish_using()
+	assert(input_manager and item_interface)
 	
-	# -- inverting these to match intuion
-	var move_input := Input.get_axis("move_up", "move_down")
-	rest_length += delta * move_input * grapple_change_rate
-	rest_length = clamp(rest_length, grapple_min_distance, grapple_max_distance)
+	#--------------------------------------- Raycast interface
+	$RaycastItemComponent.initialize_ray(grapple_max_distance,
+										 func(the_ray: RayCast2D):
+											the_ray.look_at(input_manager.aiming_pos()))
+	# -- pickup -> item_manager -> instanitates this, assigns it stuff
+	#----------------------------------- item interface / dependency injection
+	item_interface.can_use_fn = func(): return true # you can always use this
+	item_interface.used.connect( func():
+		if target:
+			stop()
+			#item_interface.finished_using_item = true
+		else:
+			start()
+		)
+			#item_interface.finished_using_item = false
+			#$MovementOverrideComponent.start()
+			#launch())
+	item_interface.stopped.connect( stop )
+	item_interface.destroyed.connect( func():
+		call_deferred("queue_free"))
 
 
-func use():
-	super()
+func start():
+	$MovementOverrideComponent.start()
 	launch()
 
 
-func finish_using():
-	super()
+func stop():
 	retract()
+	$MovementOverrideComponent.finish()
 
 
-func stop_using():
-	retract()
+func _physics_process(delta: float) -> void:
+	if target:
+		handle_grapple(delta)
+		# -- inverting these to match intuion
+		var move_input: float = input_manager.movement_vector().y
+		rest_length += delta * move_input * grapple_change_rate
+		rest_length = clamp(rest_length, grapple_min_distance, grapple_max_distance)
+
 
 func launch():
-	#print("launching")
-	if ray.is_colliding():
-		launched = true
-		target = ray.get_collision_point()
-		rope.show()
+	target = ray_component.get_intersection_pos()
+	rope.show()
 
 
 func retract():
-	launched = false
+	target = null
 	rope.hide()
+
 
 func handle_grapple(delta):
 	var to_anchor = target - player_ref.global_position
