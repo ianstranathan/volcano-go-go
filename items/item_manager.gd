@@ -3,6 +3,7 @@ extends Node2D
 class_name ItemManager
 
 var item_interface: ItemInterface
+var active_movement_override: MovementOverrideComponent
 var items_container
 
 signal item_moving_started()
@@ -53,6 +54,7 @@ func pick_up( item_rsc: PackedScene,  fn: Callable):
 				comp = get_component( item, func(c): return c is MovementOverrideComponent)
 				#print(comp)
 				if comp:
+					active_movement_override = comp
 					signals = [comp.movement_override_started, comp.movement_override_finished]
 					connections_fns = [func(): self.emit_signal("item_moving_started"),
 									   func(): self.emit_signal("item_moving_stopped")]

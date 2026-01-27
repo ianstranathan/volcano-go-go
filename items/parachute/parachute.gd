@@ -56,7 +56,9 @@ func _ready() -> void:
 			gust_area = area
 			start( ParachuteTypes.GUSTING ))
 	$Area2D.area_exited.connect( func(area): 
-		if area is WindGustLift:
+		if (area is WindGustLift and 
+			parachute_type == ParachuteTypes.GUSTING and 
+			!$Area2D/CollisionShape2D.disabled):
 			player_ref.velocity.y *= 0.25
 			parachute_type = ParachuteTypes.PARACHUTING)
 
@@ -94,15 +96,9 @@ func _physics_process(delta: float) -> void:
 			return
 		ParachuteTypes.GUSTING:
 			player_ref.velocity.y -= 1.2 * player_ref.get_g() * delta
-			#var t = curve_sample_t() if !$DeploymentTimer.is_stopped() else 1.0
-			#player_ref.velocity.y = move_toward(player_ref.velocity.y, 
-												#10. * gust_area.get_wind_strength( t ),
-												#10. * accl_curve.sample(t))
 		ParachuteTypes.PARACHUTING:
 			player_ref.velocity.y -= 0.98 * player_ref.get_g() * delta
-			#if player_ref.my_is_on_floor():
-				#stop()
-	#print(player_ref.velocity.y)
+
 	global_position = player_ref.global_position - offset
 
 
@@ -114,10 +110,3 @@ func try_parachute():
 		turn_off_coll_and_sprite( false, true ) # -- allow area2d to change state
 		$TryTimer.start() # if the area2d doesn't change state after X time
 						  # stop needlessly checking
-
-
-func curve_sample_t(reversed=false):
-	var t  = ($DeploymentTimer.wait_time - $DeploymentTimer.time_left) / $DeploymentTimer.wait_time
-	if reversed:
-		t = (1. - t)
-	return t

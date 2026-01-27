@@ -44,6 +44,8 @@ one_shot = true
 
 [node name="MovementOverrideComponent" type="Node" parent="."]
 script = ExtResource("6_l5lux")
+_stops_on_floor = true
+_allows_horizontal_movement = true
 metadata/_custom_type_script = "uid://dmm17nhn1wysy"
 
 [node name="DeploymentTimer" type="Timer" parent="."]

@@ -387,40 +387,40 @@ var ledge_climb_tween: Tween
 var ledge_climb_progress := 0.0
 
 
-func fall_transitions_check():
-	# -- return value is to see if mvoement has transitioned
-	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
-		# -- we stop gravity and falling velocity, save the climbing pos
-		velocity = Vector2.ZERO
-		g = 0
-		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
-		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
-		return true
-	elif is_wall_sliding():
-		movement_state_transition_to(MovementStates.WALL_SLIDING)
-		return true
-	elif my_is_on_floor():
-		movement_state_transition_to(MovementStates.IDLE)
-		return true
-	return false
-
-func falling_state_fn(_delta) -> void:
-	handle_platform_fall_near_miss_correction()
-	if there_is_move_input():
-		# -- maybe we wanna go through the air slightly slower?
-		move($InputManager.movement_vector().x * move_speed, ACCL)
-	# ++++++++++++++++
-	fall_transitions_check()
+#func fall_transitions_check():
+	## -- return value is to see if mvoement has transitioned
 	#if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
 		## -- we stop gravity and falling velocity, save the climbing pos
 		#velocity = Vector2.ZERO
 		#g = 0
 		#ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
 		#movement_state_transition_to(MovementStates.LEDGE_GRABBING)
+		#return true
 	#elif is_wall_sliding():
 		#movement_state_transition_to(MovementStates.WALL_SLIDING)
+		#return true
 	#elif my_is_on_floor():
 		#movement_state_transition_to(MovementStates.IDLE)
+		#return true
+	#return false
+
+# -- TODO 
+# -- abstract out repeating ledge grab check!
+func falling_state_fn(_delta) -> void:
+	handle_platform_fall_near_miss_correction()
+	if there_is_move_input():
+		# -- maybe we wanna go through the air slightly slower?
+		move($InputManager.movement_vector().x * move_speed, ACCL)
+	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
+		# -- we stop gravity and falling velocity, save the climbing pos
+		velocity = Vector2.ZERO
+		g = 0
+		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
+		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
+	elif is_wall_sliding():
+		movement_state_transition_to(MovementStates.WALL_SLIDING)
+	elif my_is_on_floor():
+		movement_state_transition_to(MovementStates.IDLE)
 
 
 func wall_sliding_state_fn(_delta) -> void:
@@ -438,17 +438,31 @@ func wall_sliding_state_fn(_delta) -> void:
 	if !is_wall_sliding():
 		movement_state_transition_to(MovementStates.FALLING)
 
-
+# -- probably move this elsewhere
 func item_moving_state_fn(_delta) -> void:
-	move($InputManager.movement_vector().x * move_speed, ACCL)
-	if !jump_buffer_timer.is_stopped():
+	if $ItemManager.active_movement_override.allows_horizontal_movement():
+		move($InputManager.movement_vector().x * move_speed, ACCL)
+	if $ItemManager.active_movement_override.allows_jump() and !jump_buffer_timer.is_stopped():
+			$ItemManager.stop_using_item()
+			velocity.y += jump_speed
+			movement_state_transition_to(MovementStates.JUMPING)
+	if ($ItemManager.active_movement_override.allows_ledge_grab() and 
+		is_ledge_grabbing() and 
+		$LedgeGrabBufferTimer.is_stopped()):
+		# -- we stop gravity and falling velocity, save the climbing pos
 		$ItemManager.stop_using_item()
-		velocity.y += jump_speed
-		movement_state_transition_to(MovementStates.JUMPING)
-	
+		velocity = Vector2.ZERO
+		g = 0
+		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
+		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
 	# -- does this allow me to remove fall check in parachute?
-	if fall_transitions_check( ):
+	if $ItemManager.active_movement_override.stops_on_floor() and my_is_on_floor():
 		$ItemManager.stop_using_item()
+		movement_state_transition_to(MovementStates.IDLE)
+	if $ItemManager.active_movement_override.allows_rope_climb() and should_start_climbing():
+		$ItemManager.stop_using_item()
+		start_climbing()
+
 
 func try_ledge_climb():
 	if is_ledge_climbing or !ledge_grab_climb_target_pos or !Input.is_action_just_pressed("move_up"):
@@ -588,7 +602,7 @@ func get_g() -> float:
 	return g
 
 func can_parachute() -> bool:
-	return (is_falling() or movement_state == MovementStates.FALLING)
+	return (movement_state == MovementStates.FALLING or movement_state == MovementStates.JUMPING)
 
 #--TODO
 # -- completely replace this w/ proper visual, just here for tmp feedback
