@@ -2,11 +2,9 @@ extends Node2D
 
 var target: Vector2
 var rope_length: float
+
 # -- do a little shader animation
-
-# -- up
-# -- down
-
+# -- TODO put this on a component
 var climbing_data = {"slippery": false}
 
 func _ready() -> void:

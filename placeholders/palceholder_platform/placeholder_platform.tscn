@@ -1,29 +1,38 @@
-[gd_scene load_steps=6 format=3 uid="uid://4d5kvc0vxnc1"]
+[gd_scene load_steps=7 format=3 uid="uid://4d5kvc0vxnc1"]
 
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="1_8c8f6"]
-[ext_resource type="Script" uid="uid://hmtvrk1i1cd6" path="res://placeholders/palceholder_platform/placeholder_platform.gd" id="1_o478t"]
+[ext_resource type="Script" uid="uid://bd7gyi28pticl" path="res://placeholders/palceholder_platform/placeholder_platform.gd" id="1_o478t"]
 [ext_resource type="Shader" uid="uid://bv5njxihvo5tf" path="res://placeholders/palceholder_platform/placeholder_platform.gdshader" id="2_6iyk5"]
+[ext_resource type="Script" uid="uid://htngcgst146o" path="res://utils/sprite_collider_sync.gd" id="3_6iyk5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_htw8n"]
 resource_local_to_scene = true
 shader = ExtResource("2_6iyk5")
-shader_parameter/source_col = Color(0.5, 0.5, 0.5, 1)
+shader_parameter/source_col = Color(1, 0.5019608, 0.5019608, 1)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6iyk5"]
-size = Vector2(250, 50)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_htw8n"]
+size = Vector2(50, 50)
 
-[node name="PlaceholderPlatform" type="Node2D" node_paths=PackedStringArray("coll_shape", "sprite")]
+[node name="PlaceholderPlatform" type="Node2D" node_paths=PackedStringArray("sync_component")]
 script = ExtResource("1_o478t")
-coll_extents = Vector2(250, 50)
-coll_shape = NodePath("StaticBody2D/CollisionShape2D")
-sprite = NodePath("Sprite2D")
+sync_component = NodePath("SpriteCollisionSync")
+coll_extents = Vector2(50, 50)
+color = Color(0.5, 0.5, 0.5, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_htw8n")
-scale = Vector2(1.953125, 0.390625)
+scale = Vector2(0.390625, 0.390625)
 texture = ExtResource("1_8c8f6")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-shape = SubResource("RectangleShape2D_6iyk5")
+shape = SubResource("RectangleShape2D_htw8n")
+
+[node name="SpriteCollisionSync" type="Node2D" parent="." node_paths=PackedStringArray("sprite", "coll_shape")]
+script = ExtResource("3_6iyk5")
+sprite = NodePath("../Sprite2D")
+coll_shape = NodePath("../StaticBody2D/CollisionShape2D")
+coll_extents = Vector2(50, 50)
+color = Color(0.5, 0.5, 0.5, 1)
+metadata/_custom_type_script = "uid://htngcgst146o"

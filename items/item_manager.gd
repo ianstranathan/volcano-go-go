@@ -21,11 +21,11 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if !item_interface:
-		return
-	else:
-		if input_manager.just_pressed_action("use_item") and item_interface.can_use():
+	if item_interface and is_instance_valid(item_interface):
+		if (input_manager.just_pressed_action("use_item") and item_interface.can_use()):
 			item_interface.use( )
+	else:
+		return
 
 
 var components_managed = ["raycast", "movement_override"]
@@ -49,7 +49,7 @@ func pick_up( item_rsc: PackedScene,  fn: Callable):
 					connections_fns = [func(pos_or_null): self.emit_signal("item_targeted_something", pos_or_null),
 									   func(pos: Vector2): self.emit_signal("item_ray_target_position_changed", pos),
 									   func(): emit_signal("targeting_item_removed")]
-				targeting_item_added.emit()
+					targeting_item_added.emit()
 			"movement_override":
 				comp = get_component( item, func(c): return c is MovementOverrideComponent)
 				#print(comp)
