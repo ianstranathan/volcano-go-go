@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://r5pnkb3dttqn"]
+
+[ext_resource type="Script" uid="uid://dvcl1wfgp6er4" path="res://player/surface_manager/surface_manager.gd" id="1_u6hoh"]
+
+[node name="SurfaceManager" type="Node2D"]
+script = ExtResource("1_u6hoh")

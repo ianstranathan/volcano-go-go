@@ -39,4 +39,5 @@ func deploy():
 	rope_ladder.global_position = global_position
 	#print(rope_ladder.target)
 	items_container_ref.add_child( rope_ladder )
+	
 	call_deferred("queue_free")
