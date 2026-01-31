@@ -1,7 +1,6 @@
-[gd_scene load_steps=27 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=20 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
-[ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="1_l1rk1"]
 [ext_resource type="PackedScene" uid="uid://boqw66q2xy4sh" path="res://camera/camera.tscn" id="2_vasa2"]
 [ext_resource type="Shader" uid="uid://i3hhhyyohcb4" path="res://player/capsule_visual.gdshader" id="3_4fuuu"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_dxrkv"]
@@ -42,10 +41,10 @@ shader_parameter/distortion_uv_height = 0.0
 shader_parameter/distortion_thickness = 0.20000000298024
 shader_parameter/ss_blur = 0.499999988824
 
-[node name="Game" type="Node2D" node_paths=PackedStringArray("player", "lava")]
+[node name="Game" type="Node2D"]
 script = ExtResource("1_dxrkv")
-player = NodePath("Player")
-lava = NodePath("Lava")
+
+[node name="Players" type="Node2D" parent="."]
 
 [node name="HeightTestContainer" type="Node2D" parent="."]
 
@@ -68,14 +67,8 @@ material = SubResource("ShaderMaterial_dakft")
 position = Vector2(0, -300)
 texture = ExtResource("4_dxrkv")
 
-[node name="Player" parent="." node_paths=PackedStringArray("lava_ref", "items_container") instance=ExtResource("1_l1rk1")]
-lava_ref = NodePath("../Lava")
-items_container = NodePath("../ItemsContainer")
-metadata/_edit_group_ = true
-
-[node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
+[node name="Camera" parent="." instance=ExtResource("2_vasa2")]
 zoom = Vector2(0.7, 0.7)
-target = NodePath("../Player")
 
 [node name="StaticBodyCOntainer" type="Node2D" parent="."]
 
@@ -196,6 +189,23 @@ material = SubResource("ShaderMaterial_4cobl")
 position = Vector2(0, -32)
 texture = ExtResource("4_dxrkv")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://by5kd51cixxgu")
+spawn_path = NodePath("../Players")
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Spawn1" type="Node2D" parent="SpawnPoints"]
+position = Vector2(-490, 0)
+
+[node name="Spawn2" type="Node2D" parent="SpawnPoints"]
+position = Vector2(-314, 0)
+
+[node name="Spawn3" type="Node2D" parent="SpawnPoints"]
+position = Vector2(-73, 0)
+
+[node name="Spawn4" type="Node2D" parent="SpawnPoints"]
+position = Vector2(241, 0)
 [node name="ItemsContainer" type="Node2D" parent="."]
 
 [node name="Props" type="Node2D" parent="."]

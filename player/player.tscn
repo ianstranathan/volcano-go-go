@@ -19,6 +19,10 @@ shader_parameter/height = 0.355
 radius = 20.0
 height = 100.0
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_g6k8r"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_boad6"]
 size = Vector2(50, 20)
 
@@ -134,6 +138,8 @@ player_ref = NodePath("..")
 wait_time = 0.3
 one_shot = true
 
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_g6k8r")
 [node name="GrabManager" type="Area2D" parent="." node_paths=PackedStringArray("player_ref")]
 visible = false
 collision_layer = 2
