@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://cj0wl1cex0hqf"]
+
+[ext_resource type="Shader" uid="uid://cqy0flgk5khvk" path="res://movement_areas/slowing_zone/slowing_zone.gdshader" id="1_2dh4g"]
+[ext_resource type="Script" uid="uid://cl7b7bvhqm3sw" path="res://movement_areas/slowing_zone/slowing_zone.gd" id="1_umvhm"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_684h5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_seq3y"]
+shader = ExtResource("1_2dh4g")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2dh4g"]
+radius = 64.0
+
+[node name="SlowingZone" type="Node2D"]
+script = ExtResource("1_umvhm")
+psuedo_scale = 1.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_seq3y")
+texture = ExtResource("2_684h5")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_2dh4g")

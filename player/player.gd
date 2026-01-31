@@ -9,8 +9,11 @@ class_name Player
 # -- Head Bonk
 
 @export_group("Kinematics")
-@export var move_speed: float = 200
+@export var baseline_speed: float = 200.0
+@onready var move_speed: float = baseline_speed
+
 @export var ACCL := 20.0
+@onready var MOV_ACCL := ACCL
 @export var DECL := 30.0
 @export var jump_height: float = 200;
 @export var jump_distance_to_peak: float = 120
@@ -18,15 +21,22 @@ class_name Player
 @export var somersault_factor = 1.25 ## as a ratio of the jump velocity
 
 
-@onready var time_to_peak = jump_distance_to_peak / move_speed
-@onready var time_to_ground = fall_distance_from_peak / move_speed
+@onready var time_to_peak = jump_distance_to_peak / baseline_speed
+@onready var time_to_ground = fall_distance_from_peak / baseline_speed
 
-@onready var jump_gravity = 2 * jump_height / (time_to_peak * time_to_peak);
-@onready var fall_gravity = 2 * jump_height / (time_to_ground * time_to_ground);
+@onready var baseline_jump_gravity = 2 * jump_height / (time_to_peak * time_to_peak);
+@onready var jump_gravity = baseline_jump_gravity
+@onready var baseline_fall_gravity = 2 * jump_height / (time_to_ground * time_to_ground);
+@onready var fall_gravity = baseline_fall_gravity
 @onready var wall_slide_gravity = fall_gravity / 1000.0
-@onready var jump_speed = -2 * jump_height / time_to_peak;
+@onready var baseline_jump_speed = -2 * jump_height / time_to_peak;
+@onready var jump_speed = baseline_jump_speed
 
-@export var climb_speed = move_speed * 0.5
+var move_speed_modifier = 1.0
+var jump_speed_modifier = 1.0
+var gravity_modifier = 1.0
+
+@export var climb_speed = baseline_speed * 0.5
 @export var ledge_climb_speed = 200.0
 
 var current_platform = null # -- for calculating relative velocities
@@ -155,9 +165,9 @@ func do_jump(jump_type):
 	jump_buffer_timer.stop()
 	match jump_type:
 		JumpTypes.REGULAR:
-			velocity.y = jump_speed
+			velocity.y = jump_speed * jump_speed_modifier
 		JumpTypes.SOMERSAULT_FLIP:
-			velocity.y = jump_speed * somersault_factor
+			velocity.y = jump_speed * jump_speed_modifier * somersault_factor
 			var tween = create_tween()
 			tween.tween_property(self, 
 						"global_rotation",
@@ -165,7 +175,7 @@ func do_jump(jump_type):
 		JumpTypes.WALL:
 			var _wall_normal = wall_normal()
 			if _wall_normal:
-				velocity = jump_speed * (-_wall_normal  + Vector2.DOWN).normalized()
+				velocity = jump_speed * jump_speed_modifier * (-_wall_normal  + Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
 
 
@@ -195,6 +205,8 @@ func _physics_process(delta: float) -> void:
 	
 	# -- call the movement state function matching the movement_state variable
 	call(MovementStates.keys()[movement_state].to_lower() + "_state_fn", delta)
+	
+	
 	tmp_burn_handle() # TODO # -- temporary burn visual feedback
 	
 	if current_platform: # -- account for relative velocities
@@ -306,7 +318,7 @@ func walking_state_fn(_delta) -> void:
 	## -- two +tive nums multiplied together is a positive
 	## -- two differnt signed nums multiplied together is a negative
 	if there_is_move_input():
-		move($InputManager.movement_vector().x * move_speed, ACCL, true)
+		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL, true)
 		var switched_dir = true if last_move_input.x * $InputManager.movement_vector().x < 0 else false
 		if switched_dir:
 			$SideSomersaultTimer.start()
@@ -317,7 +329,7 @@ func walking_state_fn(_delta) -> void:
 func jumping_state_fn(_delta) -> void:
 	handle_corner_correction()
 	if there_is_move_input():
-		move($InputManager.movement_vector().x * move_speed, ACCL)
+		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
@@ -336,14 +348,14 @@ func start_climbing() -> void:
 func climbing_state_fn(_delta):
 	var d = $InputManager.movement_vector()
 	if there_is_move_input():
-		move(d.x * move_speed, ACCL)
+		move(d.x * move_speed * move_speed_modifier, MOV_ACCL)
 	else:
 		move(0.0, DECL, true)
 	# -- do stuff with data, e.g. velocity curve mutation from slipperiness
-	velocity.y = move_toward(velocity.y, climb_speed * - d.y, ACCL)
+	velocity.y = move_toward(velocity.y, climb_speed * - d.y, MOV_ACCL)
 	check_for_jump() # -- will change to jump state
 	if !can_climb:
-		g = fall_gravity
+		g = fall_gravity * gravity_modifier
 		movement_state_transition_to(MovementStates.FALLING)
 
 # -- Utility functions to make platforming easier
@@ -410,7 +422,7 @@ func falling_state_fn(_delta) -> void:
 	handle_platform_fall_near_miss_correction()
 	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
-		move($InputManager.movement_vector().x * move_speed, ACCL)
+		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
 	if is_ledge_grabbing() and $LedgeGrabBufferTimer.is_stopped():
 		# -- we stop gravity and falling velocity, save the climbing pos
 		velocity = Vector2.ZERO
@@ -441,10 +453,10 @@ func wall_sliding_state_fn(_delta) -> void:
 # -- probably move this elsewhere
 func item_moving_state_fn(_delta) -> void:
 	if $ItemManager.active_movement_override.allows_horizontal_movement():
-		move($InputManager.movement_vector().x * move_speed, ACCL)
+		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
 	if $ItemManager.active_movement_override.allows_jump() and !jump_buffer_timer.is_stopped():
 			$ItemManager.stop_using_item()
-			velocity.y += jump_speed
+			velocity.y += jump_speed * jump_speed_modifier
 			movement_state_transition_to(MovementStates.JUMPING)
 	if ($ItemManager.active_movement_override.allows_ledge_grab() and 
 		is_ledge_grabbing() and 
@@ -509,7 +521,7 @@ func ledge_grabbing_state_fn(delta) -> void:
 			ledge_climb_progress
 		)
 		velocity = (target_pos - global_position) / delta
-		velocity = velocity.clamp( -Vector2(move_speed, move_speed),  Vector2(move_speed, move_speed))
+		velocity = velocity.clamp( -Vector2(move_speed * move_speed_modifier, move_speed * move_speed_modifier),  Vector2(move_speed * move_speed_modifier, move_speed * move_speed_modifier))
 
 	if Input.is_action_just_pressed("move_down"):
 		ledge_grab_climb_target_pos = null
@@ -528,10 +540,10 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.WALKING:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity
+						g = jump_gravity * gravity_modifier
 						current_platform = null
 					MovementStates.FALLING:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 						current_platform = null
 					#MovementStates.ITEM_MOVING:
 						#pass
@@ -540,31 +552,31 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.IDLE:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity
+						g = jump_gravity * gravity_modifier
 						current_platform = null
 					MovementStates.FALLING:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 						current_platform = null
 			MovementStates.JUMPING:
 				match new_movement_state:
 					MovementStates.FALLING:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 					MovementStates.WALL_SLIDING:
 						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 100))
-						g = fall_gravity / 100.0
+						g = fall_gravity * gravity_modifier / 100.0
 						#g = _wall_slide_gravity()
 					MovementStates.LEDGE_GRABBING:
 						pass
 			MovementStates.FALLING:
 				match new_movement_state:
 					MovementStates.IDLE:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 						#touched_ground.emit()
 					MovementStates.WALL_SLIDING:
 						# -- design choice
 						# -- the wall slide should be predictable, but not boring
 						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 100))
-						g = fall_gravity / 100.0
+						g = fall_gravity * gravity_modifier / 100.0
 						#_wall_slide_gravity()
 					MovementStates.LEDGE_GRABBING:
 						pass
@@ -575,29 +587,41 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.IDLE:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity
+						g = jump_gravity * gravity_modifier
 					MovementStates.FALLING:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 			MovementStates.LEDGE_GRABBING:
 				match new_movement_state:
 					MovementStates.IDLE:
 						pass
 					MovementStates.FALLING:
-						g = fall_gravity
+						g = fall_gravity * gravity_modifier
 					MovementStates.JUMPING:
-						g = jump_gravity
+						g = jump_gravity * gravity_modifier
 			MovementStates.ITEM_MOVING:
-				g = jump_gravity
+				g = jump_gravity * gravity_modifier
 			MovementStates.CLIMBING:
 				match new_movement_state:
 					MovementStates.JUMPING:
-						g = jump_gravity
+						g = jump_gravity * gravity_modifier
 
 		# ----------------------------------
 		set_debug_label( new_movement_state )
 		movement_state = new_movement_state
 
-# ------------------------------------------------------- utils for parachute
+# ------------------------------------------------------- utils
+
+func slow(b: bool):
+	if b:
+		move_speed_modifier *= 0.5
+		jump_speed_modifier *= 0.5
+		gravity_modifier *= 0.5
+	else:
+		move_speed_modifier /= 0.5
+		jump_speed_modifier /= 0.5
+		gravity_modifier /= 0.5
+	
+
 func get_g() -> float:
 	return g
 

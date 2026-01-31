@@ -26,7 +26,6 @@ size = Vector2(50, 20)
 collision_layer = 2
 collision_mask = 13
 script = ExtResource("1_yf0e5")
-move_speed = 250.0
 jump_distance_to_peak = 125.0
 fall_distance_from_peak = 80.0
 
