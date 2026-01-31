@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=28 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="1_l1rk1"]
@@ -23,6 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://s7qk4ylbme1f" path="res://assets/parachute.svg" id="17_mhvfb"]
 [ext_resource type="PackedScene" uid="uid://7e73ch2pkjhn" path="res://testing/test_rock.tscn" id="20_u8s88"]
 [ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="21_dxwpq"]
+[ext_resource type="PackedScene" uid="uid://cj0wl1cex0hqf" path="res://movement_areas/slowing_zone/slowing_zone.tscn" id="24_leid8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dakft"]
 shader = ExtResource("3_4fuuu")
@@ -206,3 +207,9 @@ position = Vector2(-304, 12)
 [node name="WindGustLift" parent="." instance=ExtResource("21_dxwpq")]
 position = Vector2(-840, -488)
 base_gust_strength = 3000.0
+
+[node name="MovementAreaContainers" type="Node2D" parent="."]
+
+[node name="SlowingZone" parent="MovementAreaContainers" instance=ExtResource("24_leid8")]
+position = Vector2(-1856, 72)
+psuedo_scale = 5.0
