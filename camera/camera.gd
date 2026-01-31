@@ -15,8 +15,8 @@ Goals for camera movement:
 var lerp_x_t:= 0.0
 ## coefficient on physics tick delta accumulation
 @export var interpolation_speed = 0.25
-@export var target: CharacterBody2D
 @export var target_height_offset: float
+var target: CharacterBody2D
 var target_x_dir := 1.0
 # -- maximum offset in pixels
 var x_offset = 200.0
@@ -31,13 +31,11 @@ var lerping_to_turned_dir := false
 
 
 func _ready():
-	assert(target)
+	#assert(target) Setting in game.gd after players are spawned
 	set_vertical_movement_thresholds()
 	# -- TODO
 	get_tree().get_root().size_changed.connect(set_vertical_movement_thresholds)
 	
-	global_position = Vector2(target.global_position.x + (x_offset), 
-							  target.global_position.y - 100.0)
 
 
 # -- needs to be a separate function for callbacks

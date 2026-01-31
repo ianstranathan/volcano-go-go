@@ -60,14 +60,17 @@ enum MovementStates
 @export var movement_state: MovementStates = MovementStates.IDLE
 
 #var item_is_overriding_velocity: bool = false
-
+func _enter_tree() -> void:
+	set_multiplayer_authority(int(name))
+	
 func _ready() -> void:
 	$ItemManager.item_started.connect( func():
 		movement_state_transition_to( MovementStates.ITEM_MOVING))
 	$ItemManager.item_finished.connect( func():
 		is_on_ground = true
 		coyote_timer.start())
-	assert(lava_ref)
+	lava_ref = get_node("/root/Game/Lava")
+	assert(lava_ref) 
 	coyote_timer.wait_time = COYOTE_TIME_DURATION
 	jump_buffer_timer.wait_time = JUMP_BUFFER_DURATION
 
@@ -119,7 +122,7 @@ func do_jump(jump_type):
 		JumpTypes.SOMERSAULT_FLIP:
 			velocity.y = jump_speed * somersault_factor
 			var tween = create_tween()
-			tween.tween_property(self, "global_rotation", global_rotation + sign(last_move_input) * TAU, time_to_peak)
+			tween.tween_property(self, "rotation", rotation + sign(last_move_input) * TAU, time_to_peak)
 		JumpTypes.WALL:
 			var _wall_normal = wall_normal()
 			if _wall_normal:
@@ -141,7 +144,8 @@ func coyote_time_resolution() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	
+	if !is_multiplayer_authority():
+		return
 	move_input = Input.get_axis("move_left", "move_right")
 	if !last_move_input: # -- initializing last_move_input
 		last_move_input = move_input
@@ -154,7 +158,7 @@ func _physics_process(delta: float) -> void:
 		move_and_collide(current_platform.get_velocity() * delta)
 	
 	# -- velocity verlet update
-	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
+	position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
 	velocity.y += g * delta
 	var collision = move_and_collide(Vector2.ZERO)
 	if collision:
@@ -220,11 +224,11 @@ func ledge_grabbing_climb_position():
 	var ledge_ray = arr[0]
 	var wall_ray = arr[1]
 	# -- the world position of where the ray is pointing right now
-	var ledge_ray_world_pos = ledge_ray.global_position + ledge_ray.target_position
+	var ledge_ray_world_pos = ledge_ray.position + ledge_ray.target_position
 	# -- there's a small offset due to the height difference between the ledge ray and
 	# -- and the wall ray
 	# -- I'm making this slightly smaller so we're avoid unreachable spots or whatever
-	var ledge_ray_height_diff = 0.9 * (ledge_ray_world_pos.y - wall_ray.global_position.y)
+	var ledge_ray_height_diff = 0.9 * (ledge_ray_world_pos.y - wall_ray.position.y)
 	var target_pos = ledge_ray_world_pos - Vector2(0., ($CollisionShape2D.shape.height / 2.0 )
 														+ ledge_ray_height_diff)
 	return target_pos
@@ -287,11 +291,11 @@ func handle_platform_fall_near_miss_correction():
 	if ($FloorCheckContainer/LHS.is_colliding() and 
 	   !$FloorCheckContainer/RHS.is_colliding()):
 		# Move player right to clear the corner
-		global_position.x -= nudge_to_edge_speed
+		position.x -= nudge_to_edge_speed
 	elif ($FloorCheckContainer/RHS.is_colliding() and 
 		 !$FloorCheckContainer/LHS.is_colliding()):
 		# Move player left to clear the corner
-		global_position.x += nudge_to_edge_speed
+		position.x += nudge_to_edge_speed
 
 ## nudges player in direction toward edge of platform if hitting from below, i.e jumping
 func handle_corner_correction():
@@ -300,11 +304,11 @@ func handle_corner_correction():
 		if ($CeilingCheckContainer/LHS.is_colliding() and 
 		   !$CeilingCheckContainer/RHS.is_colliding()):
 			# Move player right to clear the corner
-			global_position.x += nudge_to_edge_speed
+			position.x += nudge_to_edge_speed
 		elif ($CeilingCheckContainer/RHS.is_colliding() and 
 			 !$CeilingCheckContainer/LHS.is_colliding()):
 			# Move player left to clear the corner
-			global_position.x -= nudge_to_edge_speed
+			position.x -= nudge_to_edge_speed
 
 var ledge_grab_climb_target_pos
 func falling_state_fn() -> void:
@@ -351,14 +355,14 @@ func item_moving_state_fn() -> void:
 func ledge_grabbing_state_fn() -> void:
 	check_for_jump()
 	if Input.is_action_just_pressed("move_up") and ledge_grab_climb_target_pos:
-		while global_position.distance_to(ledge_grab_climb_target_pos) > 5.0:
-			var dir = global_position.direction_to(ledge_grab_climb_target_pos)
+		while position.distance_to(ledge_grab_climb_target_pos) > 5.0:
+			var dir = position.direction_to(ledge_grab_climb_target_pos)
 			velocity = ledge_climb_speed * dir
 			await get_tree().process_frame
 			if !ledge_grab_climb_target_pos:
 				return
 		
-		global_position = ledge_grab_climb_target_pos
+		position = ledge_grab_climb_target_pos
 		velocity = Vector2.ZERO
 		movement_state_transition_to( MovementStates.IDLE)
 
@@ -448,7 +452,7 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 # -- completely replace this w/ proper visual, just here for tmp feedback
 var can_burn: bool = true
 func tmp_burn_handle() -> void:
-	var d = abs((global_position.y + 0.5 * $CollisionShape2D.shape.height)- lava_ref.lava_fn( global_position.x))
+	var d = abs((position.y + 0.5 * $CollisionShape2D.shape.height)- lava_ref.lava_fn( position.x))
 	var hit_lava = d < 5
 	
 	if can_burn and hit_lava and lava_ref:

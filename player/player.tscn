@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=10 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
@@ -16,6 +16,11 @@ shader_parameter/height = 0.355
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ugqs2"]
 radius = 20.0
 height = 100.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_g6k8r"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
@@ -128,3 +133,6 @@ input_manager = NodePath("../InputManager")
 [node name="LedgeGrabBufferTimer" type="Timer" parent="."]
 wait_time = 0.3
 one_shot = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_g6k8r")
