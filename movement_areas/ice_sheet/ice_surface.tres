@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="SurfaceType" load_steps=2 format=3 uid="uid://bfs7d58qksuj"]
+
+[ext_resource type="Script" uid="uid://c83wwhqheg4jt" path="res://movement_areas/surface_type.gd" id="1_5fbmc"]
+
+[resource]
+script = ExtResource("1_5fbmc")
+metadata/_custom_type_script = "uid://c83wwhqheg4jt"

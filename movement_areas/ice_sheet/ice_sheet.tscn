@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://dmof8pl70iw4h"]
+
+[ext_resource type="Script" uid="uid://c44t6vfvlkkou" path="res://movement_areas/ice_sheet/ice_sheet.gd" id="1_5l4dc"]
+[ext_resource type="Shader" uid="uid://dho4jn457q5e1" path="res://movement_areas/ice_sheet/ice_sheet.gdshader" id="1_exwpm"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_h4wwy"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_q1ees"]
+[ext_resource type="Resource" uid="uid://bfs7d58qksuj" path="res://movement_areas/ice_sheet/ice_surface.tres" id="2_v1xy7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q1ees"]
+shader = ExtResource("1_exwpm")
+shader_parameter/noise_tex = ExtResource("2_q1ees")
+shader_parameter/light_blue = Color(0, 0.7490196, 0.84705883, 1)
+shader_parameter/dark_blue = Color(0, 0, 0.7529412, 1)
+
+[node name="IceSheet" type="Node2D"]
+script = ExtResource("1_5l4dc")
+surface_type = ExtResource("2_v1xy7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_q1ees")
+texture = ExtResource("2_h4wwy")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]

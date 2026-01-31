@@ -1,13 +1,39 @@
-[gd_scene load_steps=2 format=3 uid="uid://cvpf74tya22rc"]
+[gd_scene load_steps=9 format=3 uid="uid://cvpf74tya22rc"]
 
 [ext_resource type="Script" uid="uid://cdvokl05npfna" path="res://items/grappling_hook/grappling_hook.gd" id="1_wx7rf"]
+[ext_resource type="Script" uid="uid://du6dcuy4lm2fk" path="res://items/item_interface.gd" id="2_cj714"]
+[ext_resource type="Shader" uid="uid://ceb75jub2at3q" path="res://items/grappling_hook/grappling_hook.gdshader" id="3_2q40j"]
+[ext_resource type="Texture2D" uid="uid://ojr7fheqa0xi" path="res://assets/Test.png" id="4_5rvkf"]
+[ext_resource type="PackedScene" uid="uid://1yqyqa8jm5k" path="res://items/raycast_item_component.tscn" id="5_bnf5e"]
+[ext_resource type="Script" uid="uid://dmm17nhn1wysy" path="res://items/item_components/movement_override_component.gd" id="6_g5xqo"]
+
+[sub_resource type="Resource" id="Resource_2q40j"]
+script = ExtResource("2_cj714")
+use_mode = 2
+metadata/_custom_type_script = "uid://du6dcuy4lm2fk"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5rvkf"]
+shader = ExtResource("3_2q40j")
+shader_parameter/tex = ExtResource("4_5rvkf")
 
 [node name="GrapplingHook" type="Node2D"]
 script = ExtResource("1_wx7rf")
+item_interface = SubResource("Resource_2q40j")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(50, 0)
 
 [node name="Line2D" type="Line2D" parent="."]
+material = SubResource("ShaderMaterial_5rvkf")
 points = PackedVector2Array(0, 0, 0, 0)
 width = 20.0
 default_color = Color(0.4238622, 0.2185036, 0.0974899, 1)
+texture_mode = 1
+
+[node name="RaycastItemComponent" parent="." instance=ExtResource("5_bnf5e")]
+
+[node name="MovementOverrideComponent" type="Node" parent="."]
+script = ExtResource("6_g5xqo")
+_allows_jump = true
+_allows_horizontal_movement = true
+metadata/_custom_type_script = "uid://dmm17nhn1wysy"

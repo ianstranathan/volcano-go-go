@@ -9,13 +9,19 @@
 [ext_resource type="PackedScene" uid="uid://bgbt8cdrdgm7j" path="res://level_components/platform/path_platform.tscn" id="8_y36n6"]
 [ext_resource type="Script" uid="uid://bm3k0fooylrpl" path="res://lava_body/lava_bodies_manager.gd" id="9_l8g03"]
 [ext_resource type="PackedScene" uid="uid://dw8xbw1eowf42" path="res://lava_body/lava_body.tscn" id="10_3vho3"]
-[ext_resource type="PackedScene" uid="uid://csxlguu7f4gt6" path="res://items/pickup_item.tscn" id="12_qf6n1"]
+[ext_resource type="PackedScene" uid="uid://csxlguu7f4gt6" path="res://items/pickup_item/pickup_item.tscn" id="12_qf6n1"]
 [ext_resource type="PackedScene" uid="uid://j2as0dklypue" path="res://platforms/coll_sprite_matcher.tscn" id="12_vsp63"]
 [ext_resource type="PackedScene" uid="uid://cvpf74tya22rc" path="res://items/grappling_hook/grappling_hook.tscn" id="13_vsp63"]
 [ext_resource type="Texture2D" uid="uid://c4oflmcqxtgy3" path="res://assets/grapple.svg" id="14_b686c"]
 [ext_resource type="Script" uid="uid://ft8ft4puh52p" path="res://game/vfx_container.gd" id="15_hb504"]
+[ext_resource type="PackedScene" uid="uid://b1v1urff5hmj2" path="res://items/rope_ladder/rope_ladder_spawner.tscn" id="15_pxxsx"]
 [ext_resource type="Shader" uid="uid://bex3q7bc4xrdf" path="res://game/lava_heat_distortion.gdshader" id="16_ee6o4"]
+[ext_resource type="Texture2D" uid="uid://5bw8tr2frxw4" path="res://assets/rope-coil.svg" id="16_u8s88"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="17_4cobl"]
+[ext_resource type="PackedScene" uid="uid://driwls6hfysss" path="res://items/parachute/parachute.tscn" id="17_5e03w"]
+[ext_resource type="Texture2D" uid="uid://s7qk4ylbme1f" path="res://assets/parachute.svg" id="17_mhvfb"]
+[ext_resource type="PackedScene" uid="uid://7e73ch2pkjhn" path="res://testing/test_rock.tscn" id="20_u8s88"]
+[ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="21_dxwpq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dakft"]
 shader = ExtResource("3_4fuuu")
@@ -24,7 +30,7 @@ shader_parameter/height = 0.355
 
 [sub_resource type="Curve2D" id="Curve2D_y36n6"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, -8, 0, 0, 0, 0, 0, -416)
+"points": PackedVector2Array(622.6469, 22.032684, -622.6469, -22.032684, 0, -8, 0, 0, 0, 0, 0, -416)
 }
 point_count = 2
 
@@ -67,49 +73,49 @@ zoom = Vector2(0.7, 0.7)
 [node name="StaticBodyCOntainer" type="Node2D" parent="."]
 
 [node name="PlaceholderPlatform" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(0, 75)
-color = Color(0.9032129, 0.9695106, 0.998074, 1)
-coll_extents = Vector2(1300, 50)
+position = Vector2(-1328, 75)
+coll_extents = Vector2(4000, 50)
 
 [node name="PlaceholderPlatform2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
 position = Vector2(-125, -125)
-color = Color(0.2227377, 0.2758213, 0.79406697, 1)
-coll_extents = Vector2(100, 50)
+coll_extents = Vector2(150, 50)
 
 [node name="PlaceholderPlatform3" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
 position = Vector2(175, -125)
-color = Color(0.2227377, 0.2758213, 0.79406697, 1)
-coll_extents = Vector2(100, 50)
+coll_extents = Vector2(150, 50)
 
 [node name="PlaceholderPlatform4" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(436, 0)
-color = Color(0.9647059, 0.6, 0, 1)
+position = Vector2(435, 0)
 coll_extents = Vector2(200, 50)
 
 [node name="LH_WALL" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(-372, -184)
-rotation = 1.5707964
+position = Vector2(-372, -236)
+coll_extents = Vector2(50, 300)
+
+[node name="LH_WALL2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
+position = Vector2(-560, -80)
 
 [node name="RH_WALL" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
 position = Vector2(410, -640)
-rotation = 1.5707964
-coll_extents = Vector2(1000, 50)
+coll_extents = Vector2(50, 1000)
 
 [node name="RH_WALL2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(616, -640)
+position = Vector2(560, -640)
 rotation = 1.5707964
 coll_extents = Vector2(1000, 50)
 
 [node name="PlaceholderPlatform5" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
 position = Vector2(-26, -704)
+coll_extents = Vector2(300, 50)
 
 [node name="PlaceholderPlatform6" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(-416, -968)
+position = Vector2(-336, -968)
+coll_extents = Vector2(200, 50)
 
 [node name="Lava" parent="." instance=ExtResource("7_y36n6")]
 
 [node name="PathPlatform" parent="." instance=ExtResource("8_y36n6")]
-position = Vector2(-752, 160)
+position = Vector2(-1160, -128)
 curve = SubResource("Curve2D_y36n6")
 
 [node name="LavaBodiesManager" type="Node2D" parent="." node_paths=PackedStringArray("lava_ref")]
@@ -138,12 +144,39 @@ body = NodePath("..")
 color = Color(0, 0.57911354, 0.5474907, 1)
 coll_extents = Vector2(250, 250)
 
-[node name="ItemsContainer" type="Node2D" parent="."]
+[node name="PickupItemsContainer" type="Node2D" parent="."]
 
-[node name="PickupItem" parent="ItemsContainer" instance=ExtResource("12_qf6n1")]
-position = Vector2(-112, 26)
+[node name="GrapplingHookPickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(-144, -200)
 scene_resource = ExtResource("13_vsp63")
-_texture = ExtResource("14_b686c")
+texture = ExtResource("14_b686c")
+
+[node name="RopePickup" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(256, 0)
+scene_resource = ExtResource("15_pxxsx")
+type = 1
+texture = ExtResource("16_u8s88")
+
+[node name="RopePickup2" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(176, 0)
+scene_resource = ExtResource("15_pxxsx")
+type = 1
+texture = ExtResource("16_u8s88")
+
+[node name="Parachute" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(-544, 0)
+scene_resource = ExtResource("17_5e03w")
+texture = ExtResource("17_mhvfb")
+
+[node name="Parachute2" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(-352, -1058)
+scene_resource = ExtResource("17_5e03w")
+texture = ExtResource("17_mhvfb")
+
+[node name="Parachute3" parent="PickupItemsContainer" instance=ExtResource("12_qf6n1")]
+position = Vector2(72, -784)
+scene_resource = ExtResource("17_5e03w")
+texture = ExtResource("17_mhvfb")
 
 [node name="VFX_container" type="Node2D" parent="." node_paths=PackedStringArray("lava_ref", "camera_ref", "post_processing_quad")]
 script = ExtResource("15_hb504")
@@ -173,3 +206,13 @@ position = Vector2(-73, 0)
 
 [node name="Spawn4" type="Node2D" parent="SpawnPoints"]
 position = Vector2(241, 0)
+[node name="ItemsContainer" type="Node2D" parent="."]
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="TestRock" parent="Props" instance=ExtResource("20_u8s88")]
+position = Vector2(-304, 12)
+
+[node name="WindGustLift" parent="." instance=ExtResource("21_dxwpq")]
+position = Vector2(-840, -488)
+base_gust_strength = 3000.0
