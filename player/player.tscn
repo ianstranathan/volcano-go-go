@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=13 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/capsule_player.gdshader" id="2_g1dw6"]
@@ -8,6 +8,10 @@
 [ext_resource type="PackedScene" uid="uid://dgtxfvo2esvyd" path="res://player/aiming_visual/aiming_visual.tscn" id="6_g6k8r"]
 [ext_resource type="Script" uid="uid://c0bg2g4soysfi" path="res://player/grab_manager.gd" id="7_boad6"]
 [ext_resource type="Script" uid="uid://by03gqnwcld5s" path="res://player/climb_interface.gd" id="8_rgyib"]
+
+[sub_resource type="Curve" id="Curve_rgyib"]
+_data = [Vector2(0.2511628, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6966293), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
 shader = ExtResource("2_g1dw6")
@@ -28,6 +32,7 @@ collision_mask = 13
 script = ExtResource("1_yf0e5")
 jump_distance_to_peak = 125.0
 fall_distance_from_peak = 80.0
+hang_time_curve = SubResource("Curve_rgyib")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_yw30f")

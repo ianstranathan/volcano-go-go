@@ -10,34 +10,48 @@ class_name Player
 @export var ACCL := 50.0
 @onready var MOV_ACCL := ACCL
 @export var DECL := 40.0
+@export var TERMINAL_FALL_SPEED = 1400
+
 @export var jump_height: float = 200;
 @export var jump_distance_to_peak: float = 120
 @export var fall_distance_from_peak: float = 100
-## as a ratio of the jump velocity
+## is a coeeficient of the jump velocity, so jump speed * this
 @export var somersault_factor = 1.2
 
+# -- NOTE: these are all kinematically decided, i.e. functions
+# -------- of jump_height, jump_distance_to_peak, baseline_speed
 @onready var time_to_peak = jump_distance_to_peak / baseline_speed
 @onready var time_to_ground = fall_distance_from_peak / baseline_speed
 
-@onready var baseline_jump_gravity = 2 * jump_height / (time_to_peak * time_to_peak);
-@onready var jump_gravity = baseline_jump_gravity
-@onready var baseline_fall_gravity = 2 * jump_height / (time_to_ground * time_to_ground);
-@onready var fall_gravity = baseline_fall_gravity
+@onready var jump_gravity = 2 * jump_height / (time_to_peak * time_to_peak);
+@onready var fall_gravity = 2 * jump_height / (time_to_ground * time_to_ground);
 @onready var wall_slide_gravity = fall_gravity / 100.0
-@onready var baseline_jump_speed = -2 * jump_height / time_to_peak;
-@onready var jump_speed = baseline_jump_speed
-@export var climb_speed = baseline_speed * 0.5
-@export var ledge_climb_speed = 200.0
+
+@onready var jump_speed = -2 * jump_height / time_to_peak;
+@export var climb_speed = baseline_speed * 0.7
+
+@export var ledge_climb_duration := 0.6
+var ledge_grab_climb_target_pos
+var ledge_grab_start_pos
+var is_ledge_climbing := false
+var ledge_climb_tween: Tween
+var ledge_climb_progress := 0.0
 
 @onready var g: float = jump_gravity
+
 # -------------------------------------------------- Movvement Modifiers
 var move_speed_modifier = 1.0
 var jump_speed_modifier = 1.0
 var gravity_modifier = 1.0
+var hang_time_modifier = 1.0
+## curve sample for jumping and falling state
+## makes gravity less near peak of jump
+@export var hang_time_curve: Curve
 
 # -------------------------------------------------- Utils var for platforming
 var current_platform = null # -- for calculating relative velocities
 var last_move_input: Vector2
+var last_wall_normal: Vector2 = Vector2.ZERO
 
 # -------------------------------------------------- Buffer Timers
 # -- wait times are set in inspector
@@ -153,7 +167,7 @@ func do_jump(jump_type):
 						"global_rotation",
 						global_rotation + sign(last_move_input.x) * TAU, time_to_peak)
 		JumpTypes.WALL:
-			# TODO
+			# TODO this needs to be played with / isn't quite right
 			velocity.y = (jump_speed / 1.2) * jump_speed_modifier
 			velocity.x = -last_wall_normal.x * (jump_speed / 2.0)
 			#velocity = jump_speed * jump_speed_modifier * (-last_wall_normal  +  Vector2.DOWN).normalized()
@@ -195,7 +209,8 @@ func _physics_process(delta: float) -> void:
 	
 	# -- velocity verlet update
 	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
-	velocity.y += g * delta
+	if velocity.y < TERMINAL_FALL_SPEED:
+		velocity.y += get_g() * delta
 	var collision = move_and_collide(Vector2.ZERO)
 	if collision:
 		# -- projection of ground normal is mostly vertical
@@ -290,6 +305,10 @@ func walking_state_fn(_delta) -> void:
 
 
 func jumping_state_fn(_delta) -> void:
+	# -- be carefule, I consciously took away an absolute value check
+	# -- jumping should always be a negative direction
+	hang_time_modifier = hang_time_curve.sample(1. - (velocity.y / jump_speed))
+	
 	handle_corner_correction()
 	if there_is_move_input():
 		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
@@ -318,7 +337,7 @@ func climbing_state_fn(_delta):
 	velocity.y = move_toward(velocity.y, climb_speed * - d.y, MOV_ACCL)
 	check_for_jump() # -- will change to jump state
 	if !can_climb:
-		g = fall_gravity * gravity_modifier
+		g = fall_gravity
 		movement_state_transition_to(MovementStates.FALLING)
 
 # -- Utility functions to make platforming easier
@@ -354,14 +373,6 @@ func handle_corner_correction():
 			# Move player left to clear the corner
 			global_position.x -= nudge_to_edge_speed
 
-@export var ledge_climb_duration := 0.6
-var ledge_grab_climb_target_pos
-var ledge_grab_start_pos
-var is_ledge_climbing := false
-var ledge_climb_tween: Tween
-var ledge_climb_progress := 0.0
-
-
 
 func can_wall_slide():
 	var input = $InputManager.movement_vector()
@@ -375,6 +386,9 @@ func can_wall_slide():
 # -- TODO 
 # -- abstract out repeating ledge grab check!
 func falling_state_fn(_delta) -> void:
+	# -- be carefule, I consciously took away an absolute value check
+	# -- falling should always be positive direction
+	hang_time_modifier = hang_time_curve.sample(velocity.y / TERMINAL_FALL_SPEED)
 	handle_platform_fall_near_miss_correction()
 	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
@@ -406,8 +420,6 @@ func can_wall_jump():
 	return (!last_wall_normal.is_equal_approx(Vector2.ZERO) and 
 			!wall_jump_coyote_timer.is_stopped())
 
-
-var last_wall_normal: Vector2 = Vector2.ZERO
 
 func wall_sliding_state_fn(_delta) -> void:
 	if can_wall_slide():
@@ -471,12 +483,7 @@ func start_ledge_climb():
 	ledge_climb_tween.set_trans(Tween.TRANS_SINE)
 	ledge_climb_tween.set_ease(Tween.EASE_OUT)
 
-	ledge_climb_tween.tween_property(
-		self,
-		"ledge_climb_progress",
-		1.0,
-		ledge_climb_duration
-	)
+	ledge_climb_tween.tween_property(self, "ledge_climb_progress", 1.0, ledge_climb_duration)
 	ledge_climb_tween.finished.connect( func():
 		global_position = ledge_grab_climb_target_pos
 		velocity = Vector2.ZERO
@@ -516,10 +523,10 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.WALKING:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity * gravity_modifier
+						g = jump_gravity
 						current_platform = null
 					MovementStates.FALLING:
-						g = fall_gravity * gravity_modifier
+						g = fall_gravity
 						current_platform = null
 					#MovementStates.ITEM_MOVING:
 						#pass
@@ -528,31 +535,33 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.IDLE:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity * gravity_modifier
+						g = jump_gravity
 						current_platform = null
 					MovementStates.FALLING:
-						g = fall_gravity * gravity_modifier
+						g = fall_gravity
 						current_platform = null
 			MovementStates.JUMPING:
 				match new_movement_state:
 					MovementStates.FALLING:
-						g = fall_gravity * gravity_modifier
+						hang_time_modifier = 1.0
+						g = fall_gravity
 					MovementStates.WALL_SLIDING:
 						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 100))
-						g = fall_gravity * gravity_modifier / 100.0
+						g = fall_gravity / 100.0
 						#g = _wall_slide_gravity()
 					MovementStates.LEDGE_GRABBING:
 						pass
 			MovementStates.FALLING:
+				hang_time_modifier = 1.0
 				match new_movement_state:
 					MovementStates.IDLE:
-						g = fall_gravity * gravity_modifier
+						g = fall_gravity
 						#touched_ground.emit()
 					MovementStates.WALL_SLIDING:
 						# -- design choice
 						# -- the wall slide should be predictable, but not boring
 						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 100))
-						g = fall_gravity * gravity_modifier / 100.0
+						g = fall_gravity / 100.0
 						#_wall_slide_gravity()
 					MovementStates.LEDGE_GRABBING:
 						pass
@@ -563,23 +572,23 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 					MovementStates.IDLE:
 						pass
 					MovementStates.JUMPING:
-						g = jump_gravity * gravity_modifier
+						g = jump_gravity
 					MovementStates.FALLING:
-						g = fall_gravity * gravity_modifier
+						g = fall_gravity
 			MovementStates.LEDGE_GRABBING:
 				match new_movement_state:
 					MovementStates.IDLE:
 						pass
 					MovementStates.FALLING:
-						g = fall_gravity * gravity_modifier
+						g = fall_gravity
 					MovementStates.JUMPING:
-						g = jump_gravity * gravity_modifier
+						g = jump_gravity
 			MovementStates.ITEM_MOVING:
-				g = jump_gravity * gravity_modifier
+				g = jump_gravity
 			MovementStates.CLIMBING:
 				match new_movement_state:
 					MovementStates.JUMPING:
-						g = jump_gravity * gravity_modifier
+						g = jump_gravity
 
 		# ----------------------------------
 		set_debug_label( new_movement_state )
@@ -599,9 +608,9 @@ func slow(b: bool):
 		gravity_modifier /= slow_factor
 	
 
-# -- Utils for the outside world
+# -- Utils to keep kinematic state straight with the outside world
 func get_g() -> float:
-	return g
+	return (g * gravity_modifier * hang_time_modifier)
 
 func can_parachute() -> bool:
 	return (movement_state == MovementStates.FALLING or movement_state == MovementStates.JUMPING)
