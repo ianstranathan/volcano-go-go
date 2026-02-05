@@ -70,6 +70,7 @@ position = Vector2(0, -300)
 texture = ExtResource("4_dxrkv")
 
 [node name="Player" parent="." node_paths=PackedStringArray("lava_ref", "items_container") instance=ExtResource("1_l1rk1")]
+position = Vector2(176, -208)
 lava_ref = NodePath("../Lava")
 items_container = NodePath("../ItemsContainer")
 metadata/_edit_group_ = true
@@ -108,7 +109,7 @@ position = Vector2(410, -640)
 coll_extents = Vector2(50, 1000)
 
 [node name="RH_WALL2" parent="StaticBodyCOntainer" instance=ExtResource("7_u5opy")]
-position = Vector2(560, -640)
+position = Vector2(624, -640)
 rotation = 1.5707964
 coll_extents = Vector2(1000, 50)
 
