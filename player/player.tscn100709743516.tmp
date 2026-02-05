@@ -147,14 +147,10 @@ one_shot = true
 wait_time = 0.15
 one_shot = true
 
-[node name="WallJumpCoyoteTimeTimer" type="Timer" parent="BufferTimersContainer"]
-wait_time = 0.25
+[node name="WallJumpBufferTimer" type="Timer" parent="BufferTimersContainer"]
+wait_time = 0.2
 one_shot = true
 
 [node name="LedgeGrabBufferTimer" type="Timer" parent="BufferTimersContainer"]
 wait_time = 0.3
-one_shot = true
-
-[node name="DisableHorizontalMovementTimer" type="Timer" parent="BufferTimersContainer"]
-wait_time = 0.05
 one_shot = true
