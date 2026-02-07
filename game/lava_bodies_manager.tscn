@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://7rp4pf112rgf"]
+
+[ext_resource type="Script" uid="uid://bm3k0fooylrpl" path="res://lava_body/lava_bodies_manager.gd" id="1_t3bvp"]
+[ext_resource type="PackedScene" uid="uid://dw8xbw1eowf42" path="res://lava_body/lava_body.tscn" id="2_8iuk1"]
+[ext_resource type="PackedScene" uid="uid://j2as0dklypue" path="res://platforms/coll_sprite_matcher.tscn" id="3_8pffe"]
+
+[node name="LavaBodiesManager" type="Node2D" node_paths=PackedStringArray("lava_ref")]
+script = ExtResource("1_t3bvp")
+lava_ref = NodePath("")
+
+[node name="AnimatableBody2D" parent="." instance=ExtResource("2_8iuk1")]
+position = Vector2(816, 64)
+
+[node name="CollSpriteMatch" parent="AnimatableBody2D" node_paths=PackedStringArray("body") instance=ExtResource("3_8pffe")]
+body = NodePath("..")
+
+[node name="AnimatableBody2D2" parent="." instance=ExtResource("2_8iuk1")]
+position = Vector2(1560, 0)
+
+[node name="CollSpriteMatcher" parent="AnimatableBody2D2" node_paths=PackedStringArray("body") instance=ExtResource("3_8pffe")]
+body = NodePath("..")
+color = Color(0.13651088, 0.4934469, 0.91841954, 1)
+coll_extents = Vector2(500, 500)
+
+[node name="AnimatableBody2D3" parent="." instance=ExtResource("2_8iuk1")]
+position = Vector2(1072, 0)
+
+[node name="CollSpriteMatcher" parent="AnimatableBody2D3" node_paths=PackedStringArray("body") instance=ExtResource("3_8pffe")]
+body = NodePath("..")
+color = Color(0, 0.57911354, 0.5474907, 1)
+coll_extents = Vector2(250, 250)

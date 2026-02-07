@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	# -- we need a data packet
-	# -- it's either filled by the network
+	# -- it's either filled bythe network
 	# -- or filled by local client
 	if controller:
 		controller.update_command(current_command, delta)

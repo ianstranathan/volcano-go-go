@@ -2,7 +2,7 @@
 
 [ext_resource type="Shader" uid="uid://dq5w4yv6n32qn" path="res://wind/wind_gust_lift/wind_gust_lift.gdshader" id="1_1ih8y"]
 [ext_resource type="Script" uid="uid://kup1jbk37byy" path="res://wind/wind_gust_lift/wind_gust_lift.gd" id="1_wstiy"]
-[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_g272u"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/shaders/reusuable_fastnoise.tres" id="2_g272u"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_cjgt1"]
 
 [sub_resource type="Curve" id="Curve_wstiy"]

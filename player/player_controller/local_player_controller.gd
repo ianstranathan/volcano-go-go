@@ -14,10 +14,10 @@ var current_input_source: InputSourceType = InputSourceType.CONTROLLER
 const DEADZONE := 0.1
 
 func update_command(player_command_ref: PlayerCommand, _delta):
-	player_command_ref.move = movement_vector()
+	player_command_ref.move_dir = movement_vector()
 	player_command_ref.jump_pressed = just_pressed_action("jump")
 	player_command_ref.jump_released = just_released_action("jump")
-	player_command_ref.aiming_vector = aiming_vector()
+	player_command_ref.aiming_dir = aiming_vector()
 	player_command_ref.using_controller = is_using_controller()
 
 

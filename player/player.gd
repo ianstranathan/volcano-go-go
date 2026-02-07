@@ -39,13 +39,13 @@ var ledge_climb_progress := 0.0
 
 @onready var g: float = jump_gravity
 
-# -------------------------------------------------- Movvement Modifiers
+# -------------------------------------------------- Movement Modifiers
 var move_speed_modifier = 1.0
 var jump_speed_modifier = 1.0
 var gravity_modifier = 1.0
 var hang_time_modifier = 1.0
 ## curve sample for jumping and falling state
-## makes gravity less near peak of jump
+## makes gravity less near peak of jump, see falling or jump state fn
 @export var hang_time_curve: Curve
 
 # -------------------------------------------------- Utils var for platforming
@@ -65,8 +65,7 @@ var last_wall_normal: Vector2 = Vector2.ZERO
 var can_climb := false
 var is_on_ground := true # -- our "truth" about being on the ground (e.g. slightly off ledge)
 
-
-@export var lava_ref: Node2D
+#@export var lava_ref: Node2D
 
 enum MovementStates
 {
@@ -87,6 +86,8 @@ enum MovementStates
 ## the dedicated container in the same scene depth as the player that holds item instances
 @export var items_container: Node2D
 
+@export_category("NETWORKING DEBUG")
+@export var NETWORK_DEBUG: bool
 
 func _ready() -> void:
 	$ClimbingInterface.climbing_area_entered.connect( func(): can_climb = true )
@@ -95,27 +96,32 @@ func _ready() -> void:
 	#signal got_tossed( dir: Vector2)
 	#signal got_grabbed( n: Node2D)
 	#--------------------------------------------- grab manager
-	assert(items_container)
-	$ItemManager.items_container = items_container
-	#--------------------------------------------- this controls aiming line
-	$InputManager.aim_input_detected.connect( func():
-		$AimingVisual.update_aiming_visual())
-	#--------------------------------------------- this controls aiming target
-	$ItemManager.item_targeted_something.connect( func(pos_or_null):
-		$AimingVisual.update_target_pos( pos_or_null))
-	$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
-		$AimingVisual.update_dir( pos ))
-	$ItemManager.targeting_item_removed.connect( func():
-		$AimingVisual.stop_aiming( ))
-	$ItemManager.targeting_item_added.connect( func():
-		$AimingVisual.start_aiming( ))
+	if !NETWORK_DEBUG:
+		assert(items_container)
 		
-	$ItemManager.item_moving_started.connect( func():
-		movement_state_transition_to( MovementStates.ITEM_MOVING))
-	$ItemManager.item_moving_stopped.connect( func():
-		coyote_timer.start())
-	#---------------------------------------------
-	assert(lava_ref)
+		$ItemManager.items_container = items_container
+		#--------------------------------------------- this controls aiming line
+		$InputManager.aim_input_detected.connect( func():
+			$AimingVisual.update_aiming_visual())
+		#--------------------------------------------- this controls aiming target
+		$ItemManager.item_targeted_something.connect( func(pos_or_null):
+			$AimingVisual.update_target_pos( pos_or_null))
+		$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
+			$AimingVisual.update_dir( pos ))
+		$ItemManager.targeting_item_removed.connect( func():
+			$AimingVisual.stop_aiming( ))
+		$ItemManager.targeting_item_added.connect( func():
+			$AimingVisual.start_aiming( ))
+			
+		$ItemManager.item_moving_started.connect( func():
+			movement_state_transition_to( MovementStates.ITEM_MOVING))
+		$ItemManager.item_moving_stopped.connect( func():
+			coyote_timer.start())
+	else:
+		$ItemManager.set_physics_process(false)
+		$ItemManager.set_process(false)
+		$ItemManager.hide()
+	
 
 	coyote_timer.timeout.connect( coyote_time_resolution)
 
@@ -126,8 +132,9 @@ func _input(event: InputEvent) -> void:
 	# -- this is for short jumps
 	if (event.is_action_released("jump") and 
 		movement_state == MovementStates.JUMPING):
-		velocity.y = 0.0
+		velocity.y *= 0.4
 		movement_state_transition_to(MovementStates.FALLING)
+
 
 enum JumpTypes
 {
@@ -168,8 +175,8 @@ func do_jump(jump_type):
 						global_rotation + sign(last_move_input.x) * TAU, time_to_peak)
 		JumpTypes.WALL:
 			# TODO this needs to be played with / isn't quite right
-			velocity.y = (jump_speed / 1.2) * jump_speed_modifier
-			velocity.x = -last_wall_normal.x * (jump_speed / 2.0)
+			velocity.y = (jump_speed / 1.5) * jump_speed_modifier
+			velocity.x = -last_wall_normal.x * (jump_speed / 2.2)
 			#velocity = jump_speed * jump_speed_modifier * (-last_wall_normal  +  Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
 
@@ -202,7 +209,7 @@ func _physics_process(delta: float) -> void:
 	call(MovementStates.keys()[movement_state].to_lower() + "_state_fn", delta)
 	
 	
-	tmp_burn_handle() # TODO # -- temporary burn visual feedback
+	#tmp_burn_handle() # TODO # -- temporary burn visual feedback
 	
 	if current_platform: # -- account for relative velocities
 		move_and_collide(current_platform.get_velocity() * delta)
@@ -276,10 +283,10 @@ func set_debug_label(new_movement_state: MovementStates) -> void:
 func move(target_speed: float, 
 		  x_rate_change: float, 
 		  should_check_for_falling: bool = false) -> void:
-	if disable_horizontal_movement_timer.is_stopped():
-		velocity.x = move_toward(velocity.x, target_speed, x_rate_change)
-		if should_check_for_falling and is_falling() and coyote_timer.is_stopped():
-			coyote_timer.start()  # -- transitions to FALLING on timeout
+	#if disable_horizontal_movement_timer.is_stopped():
+	velocity.x = move_toward(velocity.x, target_speed, x_rate_change)
+	if should_check_for_falling and is_falling() and coyote_timer.is_stopped():
+		coyote_timer.start()  # -- transitions to FALLING on timeout
 
 # -- consolidate the stuff that's always true on the ground
 func idle_state_fn(_delta) -> void:
@@ -556,11 +563,14 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				match new_movement_state:
 					MovementStates.IDLE:
 						g = fall_gravity
-						#touched_ground.emit()
+					
+					# -- CASE wall jumping coyote time
+					MovementStates.JUMPING:
+						g = jump_gravity
 					MovementStates.WALL_SLIDING:
 						# -- design choice
 						# -- the wall slide should be predictable, but not boring
-						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 100))
+						velocity = velocity.clamp(Vector2(0., 50), Vector2(0., 150))
 						g = fall_gravity / 100.0
 						#_wall_slide_gravity()
 					MovementStates.LEDGE_GRABBING:
@@ -618,18 +628,18 @@ func can_parachute() -> bool:
 #
 #--TODO
 # -- completely replace this w/ proper visual, just here for tmp feedback
-var can_burn: bool = true
-func tmp_burn_handle() -> void:
-	var d = abs((global_position.y + 0.5 * $CollisionShape2D.shape.height)- lava_ref.lava_fn( global_position.x))
-	var hit_lava = d < 5
-	
-	if can_burn and hit_lava and lava_ref:
-		var mat = $Sprite2D.material
-		var burn_tween = create_tween()
-		mat.set_shader_parameter("dummy_burn_timer", 0.)
-		burn_tween.tween_property(mat, "shader_parameter/dummy_burn_timer", 5.0, 3.)
-		can_burn = false
-
-	# -- going back accross lava threshold after getting burned
-	if !can_burn and hit_lava:
-		can_burn = true
+#var can_burn: bool = true
+#func tmp_burn_handle() -> void:
+	#var d = abs((global_position.y + 0.5 * $CollisionShape2D.shape.height)- lava_ref.lava_fn( global_position.x))
+	#var hit_lava = d < 5
+	#
+	#if can_burn and hit_lava and lava_ref:
+		#var mat = $Sprite2D.material
+		#var burn_tween = create_tween()
+		#mat.set_shader_parameter("dummy_burn_timer", 0.)
+		#burn_tween.tween_property(mat, "shader_parameter/dummy_burn_timer", 5.0, 3.)
+		#can_burn = false
+#
+	## -- going back accross lava threshold after getting burned
+	#if !can_burn and hit_lava:
+		#can_burn = true

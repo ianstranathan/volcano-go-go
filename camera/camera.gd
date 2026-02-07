@@ -18,6 +18,7 @@ var lerp_x_t:= 0.0
 @export var target: CharacterBody2D
 @export var target_height_offset: float
 var target_x_dir := 1.0
+
 # -- maximum offset in pixels
 var x_offset = 200.0
 var y_offset = 100.0

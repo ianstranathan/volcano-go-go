@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c44t6vfvlkkou" path="res://movement_areas/ice_sheet/ice_sheet.gd" id="1_5l4dc"]
 [ext_resource type="Shader" uid="uid://dho4jn457q5e1" path="res://movement_areas/ice_sheet/ice_sheet.gdshader" id="1_exwpm"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_h4wwy"]
-[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_q1ees"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/shaders/reusuable_fastnoise.tres" id="2_q1ees"]
 [ext_resource type="Resource" uid="uid://bfs7d58qksuj" path="res://movement_areas/ice_sheet/ice_surface.tres" id="2_v1xy7"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_q1ees"]

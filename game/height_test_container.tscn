@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://x20vvp67gm6s"]
+
+[ext_resource type="Shader" uid="uid://i3hhhyyohcb4" path="res://player/testing/capsule_visual.gdshader" id="1_1npb7"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_ajhsx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dakft"]
+shader = ExtResource("1_1npb7")
+shader_parameter/radius = 0.0
+shader_parameter/height = 0.355
+
+[node name="HeightTestContainer" type="Node2D"]
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_dakft")
+texture = ExtResource("2_ajhsx")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_dakft")
+position = Vector2(0, -100)
+texture = ExtResource("2_ajhsx")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_dakft")
+position = Vector2(0, -200)
+texture = ExtResource("2_ajhsx")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_dakft")
+position = Vector2(0, -300)
+texture = ExtResource("2_ajhsx")

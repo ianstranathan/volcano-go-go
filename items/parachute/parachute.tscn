@@ -3,7 +3,7 @@
 [ext_resource type="Shader" uid="uid://b1fkq6ee3erlu" path="res://items/parachute/parachute.gdshader" id="1_64bp3"]
 [ext_resource type="Script" uid="uid://upxnhtje4bl" path="res://items/parachute/parachute.gd" id="1_fysdi"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_4hgu8"]
-[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_fysdi"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/shaders/reusuable_fastnoise.tres" id="2_fysdi"]
 [ext_resource type="Script" uid="uid://du6dcuy4lm2fk" path="res://items/item_interface.gd" id="2_u8r2o"]
 [ext_resource type="Script" uid="uid://dmm17nhn1wysy" path="res://items/item_components/movement_override_component.gd" id="6_l5lux"]
 

@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://ct8gg7rdpraj8"]
+
+[ext_resource type="Script" uid="uid://ft8ft4puh52p" path="res://game/vfx_container.gd" id="1_oj3hr"]
+[ext_resource type="Shader" uid="uid://bex3q7bc4xrdf" path="res://game/lava_heat_distortion.gdshader" id="2_5cqc1"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/shaders/reusuable_fastnoise.tres" id="3_fbtt3"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_qb1h1"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4cobl"]
+shader = ExtResource("2_5cqc1")
+shader_parameter/noise_tex = ExtResource("3_fbtt3")
+shader_parameter/distortion_uv_height = 0.0
+shader_parameter/distortion_thickness = 0.20000000298024
+shader_parameter/ss_blur = 0.499999988824
+
+[node name="VFX_container" type="Node2D" node_paths=PackedStringArray("lava_ref", "camera_ref", "post_processing_quad")]
+script = ExtResource("1_oj3hr")
+lava_ref = NodePath("")
+camera_ref = NodePath("")
+post_processing_quad = NodePath("PostProcessingQuad")
+
+[node name="PostProcessingQuad" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_4cobl")
+position = Vector2(0, -32)
+texture = ExtResource("4_qb1h1")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://drynsnq4ane30"]
 
-[ext_resource type="Shader" uid="uid://cfk8ofnmlncw1" path="res://shaders/ice_patch_old.gdshader" id="1_7g34f"]
-[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://shaders/reusuable_fastnoise.tres" id="2_xigk8"]
+[ext_resource type="Shader" uid="uid://cfk8ofnmlncw1" path="res://VFX/shaders/ice_patch_old.gdshader" id="1_7g34f"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/shaders/reusuable_fastnoise.tres" id="2_xigk8"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_qrlkn"]
 
 [sub_resource type="Gradient" id="Gradient_xigk8"]
