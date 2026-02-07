@@ -176,7 +176,7 @@ func do_jump(jump_type):
 		JumpTypes.WALL:
 			# TODO this needs to be played with / isn't quite right
 			velocity.y = (jump_speed / 1.5) * jump_speed_modifier
-			velocity.x = -last_wall_normal.x * (jump_speed / 2.2)
+			velocity.x = -last_wall_normal.x * (jump_speed / 1.5)
 			#velocity = jump_speed * jump_speed_modifier * (-last_wall_normal  +  Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
 
