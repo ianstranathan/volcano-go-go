@@ -156,6 +156,7 @@ func check_for_jump() -> void:
 		elif movement_state == MovementStates.CLIMBING:
 			do_jump(JumpTypes.REGULAR)
 
+
 func do_jump(jump_type):
 	# -- logic of what to do for a specific jump
 	jump_buffer_timer.stop()

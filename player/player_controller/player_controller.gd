@@ -23,3 +23,12 @@ func _physics_process(delta):
 		controller.update_command(current_command, delta)
 	if player:
 		player.apply_command(current_command)
+
+func inject_remote_intent(
+	move: Vector2,
+	jump_pressed: bool,
+	jump_released: bool
+) -> void:
+	# Only remote controllers accept external input
+	if controller is RemotePlayerController:
+		controller.inject_remote_intent(move, jump_pressed, jump_released)

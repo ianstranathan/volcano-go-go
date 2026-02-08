@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bk2g0qdrck6uw"]
+
+[ext_resource type="Script" uid="uid://bxhvvekn83t74" path="res://testing/pseudo_network_interface.gd" id="1_phjbh"]
+
+[node name="PseudoNetworkInterface" type="Node2D"]
+script = ExtResource("1_phjbh")

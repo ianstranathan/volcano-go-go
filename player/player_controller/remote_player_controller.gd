@@ -1,4 +1,3 @@
-# RemoteController.gd
 extends Node2D
 class_name RemotePlayerController
 
@@ -12,6 +11,9 @@ func update_command(player_command_ref: PlayerCommand, _delta):
 	player_command_ref.using_controller = last_command.using_controller
 
 
-@rpc("unreliable")
-func receive_command(remote_player_command_ref: PlayerCommand):
-	last_command = remote_player_command_ref
+func inject_remote_intent(move: Vector2, 
+						  jump_pressed: bool,
+						  jump_released: bool) -> void:
+	last_command.move_input = move
+	last_command.jump_pressed = jump_pressed
+	last_command.jump_released = jump_released
