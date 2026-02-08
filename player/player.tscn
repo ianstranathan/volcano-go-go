@@ -1,12 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=11 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/testing/capsule_player.gdshader" id="2_g1dw6"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_rkbax"]
-[ext_resource type="PackedScene" uid="uid://nlnarpn8nmxn" path="res://input_manager/input_manager.tscn" id="4_yw30f"]
-[ext_resource type="PackedScene" uid="uid://ckljhiydi3u8p" path="res://items/item_manager.tscn" id="5_qjkh3"]
-[ext_resource type="PackedScene" uid="uid://dgtxfvo2esvyd" path="res://player/aiming_visual/aiming_visual.tscn" id="6_g6k8r"]
 [ext_resource type="Script" uid="uid://c0bg2g4soysfi" path="res://player/grab_manager.gd" id="7_boad6"]
+[ext_resource type="Script" uid="uid://cyisxpb4cr1db" path="res://player/player_controller/player_controller.gd" id="7_rgyib"]
 [ext_resource type="Script" uid="uid://by03gqnwcld5s" path="res://player/climb_interface.gd" id="8_rgyib"]
 
 [sub_resource type="Curve" id="Curve_rgyib"]
@@ -14,10 +12,12 @@ _data = [Vector2(0.2511628, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6966293), 0.0, 0.0,
 point_count = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yw30f"]
+resource_local_to_scene = true
 shader = ExtResource("2_g1dw6")
 shader_parameter/dummy_burn_timer = 5.0
 shader_parameter/radius = 0.0
 shader_parameter/height = 0.355
+shader_parameter/src_col = Color(0.98786384, 0.96506363, 0.992632, 1)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ugqs2"]
 radius = 20.0
@@ -73,10 +73,6 @@ offset_right = 26.0
 offset_bottom = -47.0
 text = "HELLO"
 
-[node name="SideSomersaultTimer" type="Timer" parent="."]
-wait_time = 0.35
-one_shot = true
-
 [node name="WallCheckContainer" type="Node2D" parent="."]
 
 [node name="RHS1" type="RayCast2D" parent="WallCheckContainer"]
@@ -113,15 +109,6 @@ position = Vector2(0, -49)
 target_position = Vector2(50, 0)
 collision_mask = 5
 
-[node name="InputManager" parent="." instance=ExtResource("4_yw30f")]
-metadata/_edit_group_ = true
-
-[node name="ItemManager" parent="." node_paths=PackedStringArray("input_manager", "player_ref") instance=ExtResource("5_qjkh3")]
-input_manager = NodePath("../InputManager")
-player_ref = NodePath("..")
-
-[node name="AimingVisual" parent="." instance=ExtResource("6_g6k8r")]
-
 [node name="GrabManager" type="Area2D" parent="." node_paths=PackedStringArray("player_ref")]
 visible = false
 collision_layer = 2
@@ -145,21 +132,29 @@ shape = SubResource("CapsuleShape2D_ugqs2")
 [node name="BufferTimersContainer" type="Node2D" parent="."]
 
 [node name="JumpBufferTimer" type="Timer" parent="BufferTimersContainer"]
+process_callback = 0
 wait_time = 0.15
 one_shot = true
 
 [node name="CoyoteTimeTimer" type="Timer" parent="BufferTimersContainer"]
+process_callback = 0
 wait_time = 0.15
 one_shot = true
 
 [node name="WallJumpCoyoteTimeTimer" type="Timer" parent="BufferTimersContainer"]
+process_callback = 0
 wait_time = 0.25
 one_shot = true
 
 [node name="LedgeGrabBufferTimer" type="Timer" parent="BufferTimersContainer"]
+process_callback = 0
 wait_time = 0.3
 one_shot = true
 
-[node name="DisableHorizontalMovementTimer" type="Timer" parent="BufferTimersContainer"]
-wait_time = 0.05
+[node name="SideSomersaultTimer" type="Timer" parent="BufferTimersContainer"]
+wait_time = 0.2
 one_shot = true
+
+[node name="PlayerController" type="Node2D" parent="."]
+script = ExtResource("7_rgyib")
+metadata/_custom_type_script = "uid://cyisxpb4cr1db"

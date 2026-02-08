@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 class_name Player
 
+@export var DEBUG_IS_LOCAL = true
 
 @export_group("Kinematics")
 @export var baseline_speed: float = 250.0
@@ -10,6 +11,7 @@ class_name Player
 @export var ACCL := 50.0
 @onready var MOV_ACCL := ACCL
 @export var DECL := 40.0
+@export var AIR_DECL := 10.0
 @export var TERMINAL_FALL_SPEED = 1400
 
 @export var jump_height: float = 200;
@@ -50,7 +52,8 @@ var hang_time_modifier = 1.0
 
 # -------------------------------------------------- Utils var for platforming
 var current_platform = null # -- for calculating relative velocities
-var last_move_input: Vector2
+var move_input: Vector2 = Vector2.ZERO
+var last_move_input: Vector2 = Vector2.ZERO
 var last_wall_normal: Vector2 = Vector2.ZERO
 
 # -------------------------------------------------- Buffer Timers
@@ -59,7 +62,11 @@ var last_wall_normal: Vector2 = Vector2.ZERO
 @onready var jump_buffer_timer: Timer = $BufferTimersContainer/JumpBufferTimer
 @onready var wall_jump_coyote_timer: Timer = $BufferTimersContainer/WallJumpCoyoteTimeTimer
 @onready var ledge_grab_buffer_timer: Timer = $BufferTimersContainer/LedgeGrabBufferTimer
-@onready var disable_horizontal_movement_timer: Timer = $BufferTimersContainer/LedgeGrabBufferTimer
+@onready var side_somersault_timer: Timer = $BufferTimersContainer/SideSomersaultTimer
+#@onready var disable_horizontal_movement_timer: Timer = $BufferTimersContainer/LedgeGrabBufferTimer
+## The number of frames where you can't move horizontally after wall jump 
+var manual_wall_jump_frame_counter: int = 0
+@export var num_frame_you_cant_move_after_wall_jump = 6.0
 
 # -- misc
 var can_climb := false
@@ -86,54 +93,41 @@ enum MovementStates
 ## the dedicated container in the same scene depth as the player that holds item instances
 @export var items_container: Node2D
 
-@export_category("NETWORKING DEBUG")
-@export var NETWORK_DEBUG: bool
+#---------------------------------------------------------- sprite vars
+@export var color: Color = Color(1., 1., 1., 1.);
 
 func _ready() -> void:
+	$Sprite2D.material.set_shader_parameter("src_col", color)
+	
 	$ClimbingInterface.climbing_area_entered.connect( func(): can_climb = true )
 	$ClimbingInterface.climbing_area_exited.connect( func(): can_climb = false)
 	#--------------------------------------------- grabbable component
 	#signal got_tossed( dir: Vector2)
 	#signal got_grabbed( n: Node2D)
 	#--------------------------------------------- grab manager
-	if !NETWORK_DEBUG:
-		assert(items_container)
-		
-		$ItemManager.items_container = items_container
-		#--------------------------------------------- this controls aiming line
-		$InputManager.aim_input_detected.connect( func():
-			$AimingVisual.update_aiming_visual())
-		#--------------------------------------------- this controls aiming target
-		$ItemManager.item_targeted_something.connect( func(pos_or_null):
-			$AimingVisual.update_target_pos( pos_or_null))
-		$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
-			$AimingVisual.update_dir( pos ))
-		$ItemManager.targeting_item_removed.connect( func():
-			$AimingVisual.stop_aiming( ))
-		$ItemManager.targeting_item_added.connect( func():
-			$AimingVisual.start_aiming( ))
-			
-		$ItemManager.item_moving_started.connect( func():
-			movement_state_transition_to( MovementStates.ITEM_MOVING))
-		$ItemManager.item_moving_stopped.connect( func():
-			coyote_timer.start())
-	else:
-		$ItemManager.set_physics_process(false)
-		$ItemManager.set_process(false)
-		$ItemManager.hide()
 	
+	#assert(items_container)
+	#
+	#$ItemManager.items_container = items_container
+	##--------------------------------------------- this controls aiming line
+	#$InputManager.aim_input_detected.connect( func():
+		#$AimingVisual.update_aiming_visual())
+	##--------------------------------------------- this controls aiming target
+	#$ItemManager.item_targeted_something.connect( func(pos_or_null):
+		#$AimingVisual.update_target_pos( pos_or_null))
+	#$ItemManager.item_ray_target_position_changed.connect( func(pos: Vector2):
+		#$AimingVisual.update_dir( pos ))
+	#$ItemManager.targeting_item_removed.connect( func():
+		#$AimingVisual.stop_aiming( ))
+	#$ItemManager.targeting_item_added.connect( func():
+		#$AimingVisual.start_aiming( ))
+		#
+	#$ItemManager.item_moving_started.connect( func():
+		#movement_state_transition_to( MovementStates.ITEM_MOVING))
+	#$ItemManager.item_moving_stopped.connect( func():
+		#coyote_timer.start())
 
 	coyote_timer.timeout.connect( coyote_time_resolution)
-
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("jump"):
-		jump_buffer_timer.start()
-	# -- this is for short jumps
-	if (event.is_action_released("jump") and 
-		movement_state == MovementStates.JUMPING):
-		velocity.y *= 0.4
-		movement_state_transition_to(MovementStates.FALLING)
 
 
 enum JumpTypes
@@ -147,12 +141,13 @@ func check_for_jump() -> void:
 	if !jump_buffer_timer.is_stopped():
 		if is_on_ground:
 			is_on_ground = false
-			if !$SideSomersaultTimer.is_stopped():
+			if !side_somersault_timer.is_stopped():
 				do_jump(JumpTypes.SOMERSAULT_FLIP)
 			else:
 				do_jump(JumpTypes.REGULAR)
 		elif can_wall_jump():
-			disable_horizontal_movement_timer.start()
+			move_input = Vector2(-last_wall_normal.x, move_input.y)
+			manual_wall_jump_frame_counter = num_frame_you_cant_move_after_wall_jump
 			wall_jump_coyote_timer.stop()
 			do_jump(JumpTypes.WALL)
 		elif is_ledge_grabbing():
@@ -174,9 +169,12 @@ func do_jump(jump_type):
 						"global_rotation",
 						global_rotation + sign(last_move_input.x) * TAU, time_to_peak)
 		JumpTypes.WALL:
-			# TODO this needs to be played with / isn't quite right
-			velocity.y = (jump_speed / 1.5) * jump_speed_modifier
-			velocity.x = -last_wall_normal.x * (jump_speed / 1.5)
+			velocity = Vector2(-last_wall_normal.x * (jump_speed / 1.6),
+								(jump_speed / 1.5))
+			velocity *= jump_speed_modifier
+			# Force the move_input to match the jump direction 
+			# so the movement logic "helps" the jump instead of fighting it
+			
 			#velocity = jump_speed * jump_speed_modifier * (-last_wall_normal  +  Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
 
@@ -199,11 +197,15 @@ func coyote_time_resolution() -> void:
 
 func _physics_process(delta: float) -> void:
 	if !last_move_input:
-		last_move_input = $InputManager.movement_vector()
+		last_move_input = move_input
 	
 	# -- climbing check
 	if should_start_climbing():
 		start_climbing()
+	
+	# -- manual wall jumping frame management:
+	if manual_wall_jump_frame_counter > 0:
+		manual_wall_jump_frame_counter -= 1
 	
 	# -- call the movement state function matching the movement_state variable
 	call(MovementStates.keys()[movement_state].to_lower() + "_state_fn", delta)
@@ -216,9 +218,12 @@ func _physics_process(delta: float) -> void:
 	
 	# -- velocity verlet update
 	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * g))
+	
 	if velocity.y < TERMINAL_FALL_SPEED:
 		velocity.y += get_g() * delta
+
 	var collision = move_and_collide(Vector2.ZERO)
+	
 	if collision:
 		# -- projection of ground normal is mostly vertical
 		is_on_ground = collision.get_normal().dot(Vector2.UP) > 0.7
@@ -226,7 +231,7 @@ func _physics_process(delta: float) -> void:
 			current_platform_check( collision )
 			velocity.y = 0
 
-	last_move_input = $InputManager.movement_vector()
+	last_move_input = move_input
 
 
 func current_platform_check(coll: KinematicCollision2D):
@@ -234,9 +239,6 @@ func current_platform_check(coll: KinematicCollision2D):
 	if collider is MoveablePlatform:
 		current_platform = collider
 
-
-func there_is_move_input():
-	return !is_zero_approx($InputManager.movement_vector().x)
 
 
 func my_is_on_floor() -> bool:
@@ -280,35 +282,68 @@ func set_debug_label(new_movement_state: MovementStates) -> void:
 
 
 #------------------------------------------------- movement state fns
-func move(target_speed: float, 
-		  x_rate_change: float, 
-		  should_check_for_falling: bool = false) -> void:
-	#if disable_horizontal_movement_timer.is_stopped():
-	velocity.x = move_toward(velocity.x, target_speed, x_rate_change)
-	if should_check_for_falling and is_falling() and coyote_timer.is_stopped():
-		coyote_timer.start()  # -- transitions to FALLING on timeout
+#func move(move_func_override = null) -> void:
+	#if move_func_override:
+		#move_func_override.call()
+	#else:
+		#var should_move = !is_zero_approx(move_input.x) and manual_wall_jump_frame_counter == 0
+		#if should_move:
+			#velocity.x = move_toward(velocity.x, move_input.x * move_speed * move_speed_modifier, MOV_ACCL)
+
+func move(move_func_override = null) -> void:
+	if move_func_override:
+		move_func_override.call()
+		return
+
+	if manual_wall_jump_frame_counter > 0:
+		return
+
+	
+	var target_speed = move_input.x * move_speed * move_speed_modifier
+	
+	# 3. Only apply movement if we aren't "flying" faster than our max speed
+	# OR if we are trying to move in the opposite direction of our current flight.
+	var should_move = !is_zero_approx(move_input.x)
+	if should_move:
+		var is_flying_fast = abs(velocity.x) > (move_speed * move_speed_modifier)
+		var is_braking = sign(move_input.x) != sign(velocity.x) and !is_zero_approx(move_input.x)
+		if is_flying_fast and !is_braking:
+			# We are going faster than max_speed (from the wall jump)
+			# Apply air friction/drag instead of the move_toward logic
+			var _decl = (AIR_DECL if movement_state == MovementStates.FALLING or 
+						 movement_state == MovementStates.JUMPING else DECL)
+			velocity.x = move_toward(velocity.x, 0, _decl * get_physics_process_delta_time())
+		else:
+			# Normal ground/air acceleration
+			velocity.x = move_toward(velocity.x, target_speed, MOV_ACCL)
+
+
+func check_for_falling() -> bool:
+	return is_falling() and coyote_timer.is_stopped()
+
 
 # -- consolidate the stuff that's always true on the ground
 func idle_state_fn(_delta) -> void:
 	check_for_jump()
-	move(0.0, DECL, true)
-	if there_is_move_input():
+	velocity.x = move_toward(velocity.x, 0.0, MOV_ACCL)
+	if !is_zero_approx(move_input.x):
 		movement_state_transition_to( MovementStates.WALKING)
+	if check_for_falling():
+		coyote_timer.start()
 
 
 func walking_state_fn(_delta) -> void:
+	if is_zero_approx(move_input.x) and side_somersault_timer.is_stopped():
+		movement_state_transition_to( MovementStates.IDLE)
+
 	check_for_jump()
-	## -- side somersault check:
-	## -- two -tive nums multiplied together is a positive
-	## -- two +tive nums multiplied together is a positive
-	## -- two differnt signed nums multiplied together is a negative
-	if there_is_move_input():
-		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL, true)
-		var switched_dir = true if last_move_input.x * $InputManager.movement_vector().x < 0 else false
-		if switched_dir:
-			$SideSomersaultTimer.start()
-	else:
-		movement_state_transition_to(MovementStates.IDLE)
+	move()
+	var switched_dir = true if last_move_input.x * move_input.x < 0 else false
+	if switched_dir:
+		side_somersault_timer.start()
+
+	if check_for_falling():
+		coyote_timer.start()
 
 
 func jumping_state_fn(_delta) -> void:
@@ -317,15 +352,14 @@ func jumping_state_fn(_delta) -> void:
 	hang_time_modifier = hang_time_curve.sample(1. - (velocity.y / jump_speed))
 	
 	handle_corner_correction()
-	if there_is_move_input():
-		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
+	move()
 	if is_falling():
 		movement_state_transition_to(MovementStates.FALLING)
 
 
 # -- Climbing utils
 func should_start_climbing():
-	return (can_climb and $InputManager.movement_vector().y > 0.2 and movement_state != MovementStates.CLIMBING)
+	return (can_climb and move_input.y > 0.2 and movement_state != MovementStates.CLIMBING)
 
 
 func start_climbing() -> void:
@@ -334,15 +368,11 @@ func start_climbing() -> void:
 	movement_state_transition_to(MovementStates.CLIMBING)
 
 
+var climb_move_override: Callable = (func(): 
+	velocity = velocity.move_toward(move_input * climb_speed * move_speed_modifier, MOV_ACCL))
 func climbing_state_fn(_delta):
-	var d = $InputManager.movement_vector()
-	if there_is_move_input():
-		move(d.x * move_speed * move_speed_modifier, MOV_ACCL)
-	else:
-		move(0.0, DECL, true)
-	# -- do stuff with data, e.g. velocity curve mutation from slipperiness
-	velocity.y = move_toward(velocity.y, climb_speed * - d.y, MOV_ACCL)
 	check_for_jump() # -- will change to jump state
+	move( climb_move_override )
 	if !can_climb:
 		g = fall_gravity
 		movement_state_transition_to(MovementStates.FALLING)
@@ -382,7 +412,7 @@ func handle_corner_correction():
 
 
 func can_wall_slide():
-	var input = $InputManager.movement_vector()
+	var input = move_input
 	var _wall_normal = wall_normal()
 	last_wall_normal = _wall_normal
 	var is_touching_wall = !_wall_normal.is_equal_approx(Vector2.ZERO)
@@ -397,9 +427,9 @@ func falling_state_fn(_delta) -> void:
 	# -- falling should always be positive direction
 	hang_time_modifier = hang_time_curve.sample(velocity.y / TERMINAL_FALL_SPEED)
 	handle_platform_fall_near_miss_correction()
-	if there_is_move_input():
 		# -- maybe we wanna go through the air slightly slower?
-		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
+	
+	move()
 	if is_ledge_grabbing() and ledge_grab_buffer_timer.is_stopped():
 		# -- we stop gravity and falling velocity, save the climbing pos
 		velocity = Vector2.ZERO
@@ -446,29 +476,29 @@ func wall_sliding_state_fn(_delta) -> void:
 		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
 
 # -- probably move this elsewhere
-func item_moving_state_fn(_delta) -> void:
-	if $ItemManager.active_movement_override.allows_horizontal_movement():
-		move($InputManager.movement_vector().x * move_speed * move_speed_modifier, MOV_ACCL)
-	if $ItemManager.active_movement_override.allows_jump() and !jump_buffer_timer.is_stopped():
-			$ItemManager.stop_using_item()
-			velocity.y += jump_speed * jump_speed_modifier
-			movement_state_transition_to(MovementStates.JUMPING)
-	if ($ItemManager.active_movement_override.allows_ledge_grab() and 
-		is_ledge_grabbing() and 
-		ledge_grab_buffer_timer.is_stopped()):
-		# -- we stop gravity and falling velocity, save the climbing pos
-		$ItemManager.stop_using_item()
-		velocity = Vector2.ZERO
-		g = 0
-		ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
-		movement_state_transition_to(MovementStates.LEDGE_GRABBING)
-	# -- does this allow me to remove fall check in parachute?
-	if $ItemManager.active_movement_override.stops_on_floor() and my_is_on_floor():
-		$ItemManager.stop_using_item()
-		movement_state_transition_to(MovementStates.IDLE)
-	if $ItemManager.active_movement_override.allows_rope_climb() and should_start_climbing():
-		$ItemManager.stop_using_item()
-		start_climbing()
+#func item_moving_state_fn(_delta) -> void:
+	#if $ItemManager.active_movement_override.allows_horizontal_movement():
+		#move(move_input.x * move_speed * move_speed_modifier, MOV_ACCL)
+	#if $ItemManager.active_movement_override.allows_jump() and !jump_buffer_timer.is_stopped():
+			#$ItemManager.stop_using_item()
+			#velocity.y += jump_speed * jump_speed_modifier
+			#movement_state_transition_to(MovementStates.JUMPING)
+	#if ($ItemManager.active_movement_override.allows_ledge_grab() and 
+		#is_ledge_grabbing() and 
+		#ledge_grab_buffer_timer.is_stopped()):
+		## -- we stop gravity and falling velocity, save the climbing pos
+		#$ItemManager.stop_using_item()
+		#velocity = Vector2.ZERO
+		#g = 0
+		#ledge_grab_climb_target_pos = ledge_grabbing_climb_position()
+		#movement_state_transition_to(MovementStates.LEDGE_GRABBING)
+	## -- does this allow me to remove fall check in parachute?
+	#if $ItemManager.active_movement_override.stops_on_floor() and my_is_on_floor():
+		#$ItemManager.stop_using_item()
+		#movement_state_transition_to(MovementStates.IDLE)
+	#if $ItemManager.active_movement_override.allows_rope_climb() and should_start_climbing():
+		#$ItemManager.stop_using_item()
+		#start_climbing()
 
 
 func try_ledge_climb():
@@ -624,6 +654,25 @@ func get_g() -> float:
 
 func can_parachute() -> bool:
 	return (movement_state == MovementStates.FALLING or movement_state == MovementStates.JUMPING)
+
+
+# ------------------------------------------------------------------------------
+func apply_command( c: PlayerCommand):
+	move_input = c.move_input
+	if c.jump_pressed:
+		jump_buffer_timer.start()
+	#var jump_pressed := false
+	#var jump_released := false
+	if c.jump_released and movement_state == MovementStates.JUMPING:
+		velocity.y *= 0.4
+		movement_state_transition_to(MovementStates.FALLING)
+	#var aim_dir: Vector2 = Vector2.ZERO
+	#var using_controller := false
+	#var carrying_item := false
+
+	# -- client side predication stuff
+	#var sequence_id := 0
+# ------------------------------------------------------------------------------
 
 #
 #--TODO

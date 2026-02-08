@@ -16,8 +16,7 @@ uniform float dummy_burn_timer: hint_range(0.0, 5.0, 0.1);
 uniform float radius;
 uniform float height;
 
-const vec3 lava_top_col = vec3(1.0, 0.5, 0.25);
-const vec3 lava_body_col = vec3(1., 0.1, 0.2);
+uniform vec4 src_col: source_color = vec4(1.);
 
 void fragment() {
 	vec2 uv = 2. * UV - 1.;
@@ -25,7 +24,7 @@ void fragment() {
 	float m = 1. - smoothstep(0.3, 0.35, d);
 	float t = exp(-dummy_burn_timer);
 	
-	vec3 col = mix(vec3(1.), vec3(1., 0., 0.) + sin(20. * TIME), t);
+	vec3 col = mix(src_col.xyz, vec3(1., 0., 0.) + sin(20. * TIME), t);
 	COLOR = vec4(col, m);
 }
 

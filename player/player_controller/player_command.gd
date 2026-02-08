@@ -5,11 +5,11 @@ class_name PlayerCommand
 My attempt at a high level packet abstraction describing player
 intent for one simulation step, basically a one way communication envelope
 """
-
-var move_dir: Vector2 = Vector2.ZERO
+# -- stuff for player simulation
+var move_input: Vector2 = Vector2.ZERO
 var jump_pressed := false
 var jump_released := false
-var aim_dir: Vector2 = Vector2.ZERO
+var aiming_input: Vector2 = Vector2.ZERO
 var using_controller := false
 var carrying_item := false
 

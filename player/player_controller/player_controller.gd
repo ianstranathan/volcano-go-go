@@ -1,15 +1,14 @@
-
-# PlayerController.gd
 extends Node2D
 class_name PlayerController
 
-@export var player: Player
+@onready var player: Player = get_parent()
 
 var current_command := PlayerCommand.new()
-var controller: Node
+var controller: Node2D
+
 
 func _ready() -> void:
-	if is_multiplayer_authority():
+	if player.DEBUG_IS_LOCAL: #if is_multiplayer_authority():
 		controller = LocalPlayerController.new()
 	else:
 		controller = RemotePlayerController.new()
@@ -17,8 +16,9 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	# -- we need a data packet
-	# -- it's either filled bythe network
+	# -- it's either filled by the network
 	# -- or filled by local client
+	
 	if controller:
 		controller.update_command(current_command, delta)
 	if player:

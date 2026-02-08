@@ -5,15 +5,13 @@
 [ext_resource type="PackedScene" uid="uid://boqw66q2xy4sh" path="res://camera/camera.tscn" id="2_vasa2"]
 [ext_resource type="PackedScene" uid="uid://4d5kvc0vxnc1" path="res://placeholders/palceholder_platform/placeholder_platform.tscn" id="7_u5opy"]
 
-[node name="Game" type="Node2D" node_paths=PackedStringArray("player", "lava")]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("player")]
 script = ExtResource("1_dxrkv")
 player = NodePath("Players/Player")
-lava = NodePath("")
 
 [node name="Players" type="Node2D" parent="."]
 
 [node name="Player" parent="Players" instance=ExtResource("1_l1rk1")]
-NETWORK_DEBUG = true
 
 [node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
 zoom = Vector2(0.7, 0.7)

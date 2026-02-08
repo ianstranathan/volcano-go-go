@@ -4,6 +4,13 @@ class_name LocalPlayerController
 signal input_source_type_changed
 signal aim_input_detected
  
+var pending_command := PlayerCommand.new()
+
+#TODO
+# buffer inputs
+# timestamp inputs
+# send RPCs
+
 enum InputSourceType{
 	CONTROLLER,
 	KEYBOARD
@@ -14,10 +21,10 @@ var current_input_source: InputSourceType = InputSourceType.CONTROLLER
 const DEADZONE := 0.1
 
 func update_command(player_command_ref: PlayerCommand, _delta):
-	player_command_ref.move_dir = movement_vector()
+	player_command_ref.move_input = movement_vector()
 	player_command_ref.jump_pressed = just_pressed_action("jump")
 	player_command_ref.jump_released = just_released_action("jump")
-	player_command_ref.aiming_dir = aiming_vector()
+	player_command_ref.aiming_input = aiming_vector()
 	player_command_ref.using_controller = is_using_controller()
 
 
@@ -46,8 +53,13 @@ func _input(event: InputEvent) -> void:
 		match event.axis:
 			JOY_AXIS_RIGHT_X, JOY_AXIS_RIGHT_Y:
 				emit_signal("aim_input_detected")
-			#JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y:
-				#on_left_stick_input()
+	
+	#if event.is_action_pressed("jump"):
+		#pending_command.jump_pressed = true
+	## -- this is for short jumps
+	#if event.is_action_released("jump"):
+		#pending_command.jump_released = true
+
 
 func movement_vector():
 	return Input.get_vector("move_left", "move_right", "move_down", "move_up") 
