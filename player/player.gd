@@ -35,7 +35,7 @@ class_name Player
 @export var ledge_climb_duration := 0.6
 var ledge_grab_climb_target_pos
 var ledge_grab_start_pos
-var is_ledge_climbing := false
+var already_is_ledge_climbing := false
 var ledge_climb_tween: Tween
 var ledge_climb_progress := 0.0
 
@@ -172,10 +172,7 @@ func do_jump(jump_type):
 			velocity = Vector2(-last_wall_normal.x * (jump_speed / 1.6),
 								(jump_speed / 1.5))
 			velocity *= jump_speed_modifier
-			# Force the move_input to match the jump direction 
-			# so the movement logic "helps" the jump instead of fighting it
 			
-			#velocity = jump_speed * jump_speed_modifier * (-last_wall_normal  +  Vector2.DOWN).normalized()
 	movement_state_transition_to(MovementStates.JUMPING)
 
 
@@ -501,16 +498,10 @@ func wall_sliding_state_fn(_delta) -> void:
 		#start_climbing()
 
 
-func try_ledge_climb():
-	if is_ledge_climbing or !ledge_grab_climb_target_pos or !Input.is_action_just_pressed("move_up"):
-		return
-	start_ledge_climb()
-
-
 func start_ledge_climb():
 	ledge_grab_start_pos = global_position
 	# -- put into state fn
-	is_ledge_climbing = true
+	already_is_ledge_climbing = true
 	# -- kill any leftover tween
 	# -- how to flush all tweens on game reset state?
 	if ledge_climb_tween and ledge_climb_tween.is_valid():
@@ -520,22 +511,32 @@ func start_ledge_climb():
 	ledge_climb_tween.set_trans(Tween.TRANS_SINE)
 	ledge_climb_tween.set_ease(Tween.EASE_OUT)
 
+	# -- we're just smoothly moving 0 to 1
 	ledge_climb_tween.tween_property(self, "ledge_climb_progress", 1.0, ledge_climb_duration)
 	ledge_climb_tween.finished.connect( func():
-		global_position = ledge_grab_climb_target_pos
-		velocity = Vector2.ZERO
-		ledge_climb_progress = 0.0
-		is_ledge_climbing = false
-		ledge_grab_start_pos = null
-		ledge_grab_climb_target_pos = null
-		movement_state_transition_to( MovementStates.IDLE))
+		#if !ledge_grab_climb_target_pos:
+			#movement_state_transition_to( MovementStates.FALLING)
+		#else:
+			#global_position = ledge_grab_climb_target_pos
+		movement_state_transition_to( MovementStates.FALLING)
+		reset_ledge_grab_vars()
+		)
+
+func reset_ledge_grab_vars():
+	ledge_climb_progress = 0.0
+	already_is_ledge_climbing = false
+	ledge_grab_start_pos = null
+	ledge_grab_climb_target_pos = null
 
 
 func ledge_grabbing_state_fn(delta) -> void:
 	check_for_jump()
-	try_ledge_climb() # if OK, starts tween which we're sampling below
+	assert(ledge_grab_climb_target_pos)
+	if !already_is_ledge_climbing and move_input.y > 0.6:
+		start_ledge_climb() # if OK, starts tween which we're sampling below
 	if ledge_grab_start_pos:
 		# -- target position is being lerped from @start climbing pos to @ climb target pos
+		# -- the tween is just an easing function [0, 1]
 		var target_pos : Vector2 = ledge_grab_start_pos.lerp(
 			ledge_grab_climb_target_pos,
 			ledge_climb_progress
@@ -543,8 +544,8 @@ func ledge_grabbing_state_fn(delta) -> void:
 		velocity = (target_pos - global_position) / delta
 		velocity = velocity.clamp( -Vector2(move_speed * move_speed_modifier, move_speed * move_speed_modifier),  Vector2(move_speed * move_speed_modifier, move_speed * move_speed_modifier))
 
-	if Input.is_action_just_pressed("move_down"):
-		ledge_grab_climb_target_pos = null
+	if move_input.y < -0.6:
+		reset_ledge_grab_vars()
 		ledge_grab_buffer_timer.start()
 		movement_state_transition_to( MovementStates.FALLING)
 
