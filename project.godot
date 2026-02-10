@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Volcano-a-go-go"
-run/main_scene="uid://cv16h7b6url1c"
+run/main_scene="uid://43330p8bmmr2"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GeneralUtils="*res://utils/general_utils.gd"
+NetManager="*res://autoload/NetManager.gd"
 
 [display]
 
