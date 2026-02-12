@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Volcano-a-go-go"
-run/main_scene="uid://43330p8bmmr2"
+run/main_scene="uid://ql7hqyibqr6h"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
