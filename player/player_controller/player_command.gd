@@ -1,13 +1,15 @@
 extends RefCounted
 class_name PlayerCommand
 
+
 var move_input: Vector2 = Vector2.ZERO
 var jump_pressed := false
 var jump_released := false
 var aiming_input: Vector2 = Vector2.ZERO
 var using_controller := false
 var carrying_item := false
-var sequence_id := 0
+var tick := 0
+
 
 func serialize() -> PackedByteArray:
 	# -- 16 bytes
@@ -27,27 +29,28 @@ func serialize() -> PackedByteArray:
 	spb.put_u8(flags)
 
 	# -- 1 byte
-	spb.put_u32(sequence_id)
-	return spb.data_array
+	spb.put_u32(tick)
 	
-	# --> 21 bytes total
+	# -- 21 bytes total
+	return spb.data_array
 
-static func deserialize(bytes: PackedByteArray) -> PlayerCommand:
+
+static func deserialize(byte_arr: PackedByteArray) -> PlayerCommand:
 	var cmd = PlayerCommand.new()
 	var spb = StreamPeerBuffer.new()
-	spb.data_array = bytes
+	spb.data_array = byte_arr
 
 	cmd.move_input.x = spb.get_float()
 	cmd.move_input.y = spb.get_float()
 	cmd.aiming_input.x = spb.get_float()
 	cmd.aiming_input.y = spb.get_float()
 
-	# Unpack the booleans using bitwise AND
+	# -- Unpack the booleans using bitwise AND
 	var flags = spb.get_u8()
 	cmd.jump_pressed    = bool(flags & (1 << 0))
 	cmd.jump_released   = bool(flags & (1 << 1))
 	cmd.using_controller = bool(flags & (1 << 2))
 	cmd.carrying_item   = bool(flags & (1 << 3))
 
-	cmd.sequence_id = spb.get_u32()
+	cmd.tick = spb.get_u32()
 	return cmd

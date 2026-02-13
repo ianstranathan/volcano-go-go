@@ -50,7 +50,7 @@ func _on_start_pressed() -> void:
 	if multiplayer.is_server():
 		_load_game.rpc()
 
-func _on_player_info_updated(peer_id: int, player_name: String) -> void:
+func _on_player_info_updated(peer_id: int, player_name: String, _spawn_index: int) -> void:
 	if peer_id in player_slots:
 		var slot = player_slots[peer_id]
 		var label = slot.get_child(0).get_child(0) as Label
@@ -105,7 +105,10 @@ func _create_slot(peer_id: int) -> PanelContainer:
 	slot.add_child(hbox)
 	
 	var name_label = Label.new()
-	var player_name = NetManager.player_names.get(peer_id, "Player %d" % peer_id)
+	var p_data = NetManager.player_data.get(peer_id)
+	var player_name = "Player %d" % peer_id # -- Default fallback
+	if p_data:
+		player_name = p_data.get(NetManager.KEY_NAME, player_name)
 	name_label.text = player_name
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_child(name_label)

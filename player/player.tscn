@@ -17,7 +17,7 @@ shader = ExtResource("2_g1dw6")
 shader_parameter/dummy_burn_timer = 5.0
 shader_parameter/radius = 0.0
 shader_parameter/height = 0.355
-shader_parameter/src_col = Color(0.98786384, 0.96506363, 0.992632, 1)
+shader_parameter/src_col = Color(0.73333335, 0.68235296, 0, 1)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ugqs2"]
 radius = 20.0

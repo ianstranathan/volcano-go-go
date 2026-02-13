@@ -6,10 +6,6 @@ signal aim_input_detected
  
 var pending_command := PlayerCommand.new()
 
-#TODO
-# buffer inputs
-# timestamp inputs
-# send RPCs
 
 enum InputSourceType{
 	CONTROLLER,
@@ -26,18 +22,6 @@ func update_command(player_command_ref: PlayerCommand, _delta):
 	player_command_ref.jump_released = just_released_action("jump")
 	player_command_ref.aiming_input = aiming_vector()
 	player_command_ref.using_controller = is_using_controller()
-	#_send_command(player_command_ref)
-
-#@onready var player_controller := get_parent()
-#func _send_command(cmd: PlayerCommand) -> void:
-	## Sends a rpc() to a specific peer identified by peer_id (see MultiplayerPeer.set_target_peer()).
-	## -- peer_id: int, method: StringName, ...args: Array
-	#player_controller.rpc_id(player_controller.player_owner_peer_id,
-							#"receive_command",
-							#cmd.move_input,
-							#cmd.jump_pressed,
-							#cmd.jump_released,
-							#cmd.sequence_id)
 
 
 func _input(event: InputEvent) -> void:

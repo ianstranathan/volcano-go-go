@@ -16,7 +16,7 @@ uniform float dummy_burn_timer: hint_range(0.0, 5.0, 0.1);
 uniform float radius;
 uniform float height;
 
-uniform vec4 src_col: source_color = vec4(1.);
+uniform vec4 src_col: source_color;
 
 void fragment() {
 	vec2 uv = 2. * UV - 1.;

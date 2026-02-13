@@ -2,7 +2,6 @@ extends CharacterBody2D
 
 class_name Player
 
-@export var DEBUG_IS_LOCAL = true
 
 @export_group("Kinematics")
 @export var baseline_speed: float = 250.0
@@ -94,7 +93,7 @@ enum MovementStates
 @export var items_container: Node2D
 
 #---------------------------------------------------------- sprite vars
-@export var color: Color = Color(1., 1., 1., 1.);
+var color: Color = Color(1., 1., 1., 1.);
 
 func _ready() -> void:
 	$Sprite2D.material.set_shader_parameter("src_col", color)

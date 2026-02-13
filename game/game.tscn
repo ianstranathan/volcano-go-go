@@ -1,42 +1,26 @@
-[gd_scene load_steps=6 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=5 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
-[ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="1_l1rk1"]
+[ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="2_4fuuu"]
 [ext_resource type="PackedScene" uid="uid://boqw66q2xy4sh" path="res://camera/camera.tscn" id="2_vasa2"]
-[ext_resource type="PackedScene" uid="uid://bk2g0qdrck6uw" path="res://testing/pseudo_network_interface.tscn" id="5_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://4d5kvc0vxnc1" path="res://placeholders/palceholder_platform/placeholder_platform.tscn" id="7_u5opy"]
 
-[node name="Game" type="Node2D" node_paths=PackedStringArray("player")]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("players_container", "spawn_points")]
 script = ExtResource("1_dxrkv")
-player = NodePath("Players/Player")
+player_scene = ExtResource("2_4fuuu")
+players_container = NodePath("PlayersContainer")
+spawn_points = NodePath("SpawnPoints")
 
-[node name="Players" type="Node2D" parent="."]
+[node name="PlayersContainer" type="Node2D" parent="."]
 
-[node name="Player" parent="Players" instance=ExtResource("1_l1rk1")]
-
-[node name="Player2" parent="Players" instance=ExtResource("1_l1rk1")]
-position = Vector2(-258, 0)
-DEBUG_IS_LOCAL = false
-color = Color(0, 1, 1, 1)
-
-[node name="Player3" parent="Players" instance=ExtResource("1_l1rk1")]
-position = Vector2(-426, 0)
-DEBUG_IS_LOCAL = false
-color = Color(1, 0, 0, 1)
-
-[node name="Player4" parent="Players" instance=ExtResource("1_l1rk1")]
-position = Vector2(296, 0)
-DEBUG_IS_LOCAL = false
-
-[node name="Camera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_vasa2")]
+[node name="Camera" parent="." instance=ExtResource("2_vasa2")]
 zoom = Vector2(0.7, 0.7)
-target = NodePath("../Players/Player")
 
 [node name="WorldGeometry" type="Node2D" parent="."]
 
 [node name="PlaceholderPlatform" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
-position = Vector2(-1328, 75)
-coll_extents = Vector2(4000, 50)
+position = Vector2(0, 70)
+coll_extents = Vector2(6000, 50)
 
 [node name="PlaceholderPlatform2" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
 position = Vector2(-125, -125)
@@ -49,6 +33,14 @@ coll_extents = Vector2(150, 50)
 [node name="PlaceholderPlatform4" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
 position = Vector2(435, 0)
 coll_extents = Vector2(200, 50)
+
+[node name="RH_Boundary" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
+position = Vector2(1753, -405)
+coll_extents = Vector2(200, 2000)
+
+[node name="LH_Boundary" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
+position = Vector2(-2868, -405)
+coll_extents = Vector2(200, 2000)
 
 [node name="LH_WALL" parent="WorldGeometry" instance=ExtResource("7_u5opy")]
 position = Vector2(-372, -236)
@@ -74,5 +66,15 @@ coll_extents = Vector2(300, 50)
 position = Vector2(-336, -968)
 coll_extents = Vector2(200, 50)
 
-[node name="PseudoNetworkInterface" parent="." node_paths=PackedStringArray("players_container") instance=ExtResource("5_dxrkv")]
-players_container = NodePath("../Players")
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
+
+[node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(-128, -195)
+
+[node name="Marker2D3" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(176, -195)
+
+[node name="Marker2D4" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(-286, 0)

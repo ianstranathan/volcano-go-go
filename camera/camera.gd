@@ -15,7 +15,7 @@ Goals for camera movement:
 var lerp_x_t:= 0.0
 ## coefficient on physics tick delta accumulation
 @export var interpolation_speed = 0.25
-@export var target: CharacterBody2D
+var target: CharacterBody2D
 @export var target_height_offset: float
 var target_x_dir := 1.0
 
@@ -32,11 +32,12 @@ var lerping_to_turned_dir := false
 
 
 func _ready():
-	assert(target)
 	set_vertical_movement_thresholds()
-	# -- TODO
 	get_tree().get_root().size_changed.connect(set_vertical_movement_thresholds)
-	
+
+
+func target_initialize( player: CharacterBody2D) -> void:
+	target = player
 	global_position = Vector2(target.global_position.x + (x_offset), 
 							  target.global_position.y - 100.0)
 
