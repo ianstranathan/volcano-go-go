@@ -1,0 +1,69 @@
+[gd_scene load_steps=10 format=3 uid="uid://dx1btggq2vhn2"]
+
+[ext_resource type="Texture2D" uid="uid://cvjo11s72lfk8" path="res://assets/Sprites/Wall jump.png" id="1_eimxg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bymim"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0elfj"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vna6j"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2m3o4"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cvnkr"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fej6k"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_57oev"]
+atlas = ExtResource("1_eimxg")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gpehw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bymim")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0elfj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vna6j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2m3o4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cvnkr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fej6k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_57oev")
+}],
+"loop": true,
+"name": &"default",
+"speed": 24.0
+}]
+
+[node name="WallJumpSprite" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_gpehw")
+autoplay = "default"
+frame = 6
+frame_progress = 1.0

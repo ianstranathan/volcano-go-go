@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ojr7fheqa0xi"
-path="res://.godot/imported/Test.png-26ee81626f965e4e70a4f24e7e22dea8.ctex"
+uid="uid://d1cxm5rglfqkn"
+path="res://.godot/imported/direction change 1.png-33bc91d71101ea9a6e8c6c3528dbf579.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Test.png"
-dest_files=["res://.godot/imported/Test.png-26ee81626f965e4e70a4f24e7e22dea8.ctex"]
+source_file="res://assets/Sprites/direction change 1.png"
+dest_files=["res://.godot/imported/direction change 1.png-33bc91d71101ea9a6e8c6c3528dbf579.ctex"]
 
 [params]
 
