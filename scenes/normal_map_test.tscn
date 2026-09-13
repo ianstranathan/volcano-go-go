@@ -17,7 +17,7 @@ texture = SubResource("CanvasTexture_k585c")
 [node name="LightOccluder2D" type="LightOccluder2D" parent="."]
 
 [node name="PointLight2D" type="PointLight2D" parent="LightOccluder2D"]
-position = Vector2(1, -4)
-energy = 4.86
+position = Vector2(-23, 7)
+energy = 6.56
 texture = ExtResource("3_k585c")
 texture_scale = 3.2
