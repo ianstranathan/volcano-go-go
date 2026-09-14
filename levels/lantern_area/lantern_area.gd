@@ -23,6 +23,7 @@ func on_area_entered( area: Area2D) -> void:
 	if player:
 		var obj = player.return_grabbed_object()
 		if (obj and 
+			obj is DynamicObject and
 			obj.dynamic_object_profile.type == DynamicObjectsDb.DynamicObjectType.LANTERN):
 			lantern_ref = obj
 	#var p = area.get_parent() as DynamicObject

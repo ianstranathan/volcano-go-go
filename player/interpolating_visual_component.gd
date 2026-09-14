@@ -18,8 +18,9 @@ var is_reconciling: bool = false
 @export var transform_offset: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	p.set_as_top_level(true)
+	p.set_as_top_level(true) # -- decouples transform
 	player_ref.reconciled.connect(_on_player_reconciled)
+
 
 func _on_player_reconciled(offset: Vector2):
 	is_reconciling = true
@@ -33,13 +34,11 @@ func _process(delta: float) -> void:
 	var pos_b = player_ref.pos_current
 	var interpolated_pos = pos_a.lerp(pos_b, NetManager.fract_tick)
 	
-	# 2. Bleed the reconciliation offset toward zero
 	if is_reconciling:
 		reconciliation_offset = reconciliation_offset.lerp(Vector2.ZERO, delta * smooth_speed)
 		if reconciliation_offset.length() < 0.1:
 			is_reconciling = false
 			reconciliation_offset = Vector2.ZERO
-		
-		# 3. Final visual position is Interpolation + Smoothing Offset
+
 	p.global_position = transform_offset + interpolated_pos + reconciliation_offset
-	
+	p.global_rotation = player_ref.global_rotation

@@ -198,6 +198,7 @@ swing_sword={
 2d_physics/layer_5="GrabLayer"
 2d_physics/layer_6="Climb"
 2d_physics/layer_8="enemies"
+2d_physics/layer_9="one_way_platforms"
 
 [rendering]
 

@@ -155,11 +155,14 @@ func on_tick_generated(tick: int, delta: float):
 #var shortage_frames: int = 0
 
 # -- maybe this is called "Entity Interpolation" in the literature
-func _process(delta):
+func _process(delta: float):
 	# -- no interpolating on a client controlled player
 	if is_multiplayer_authority(): 
 		return
 	
+	if !player.is_interpolatable:
+		player.state_fn_from_state( delta )
+		return
 	# -- NetManager.current_tick + NetManager.fract_tick is the actual current
 	# -- time on this local client's machine.
 	# -- We shift this time backward (by at least NetManager.tick_lead) to have
@@ -287,7 +290,7 @@ func _process(delta):
 	#player.pos_current = player.global_position
 
 # -- where should we put these consts?
-const BASE_POS_TOLERANCE: float = 3.0 # in pixels
+const BASE_POS_TOLERANCE: float = 5.0 # in pixels
 #const ROT_TOLERANCE: float = 0.06 # in radians (i.e. about 3.5 degrees)
 
 
@@ -295,6 +298,7 @@ func reconcile(host_state: PlayerState, _time_in_transit: float):
 	# -- we don't care about reconciling to an uninitialized state
 	if host_state.tick <= 0:
 		return
+	
 	
 	# -- maybe we dropped some frames and accidentally indexed into a past
 	# -- state from our circular buffer
@@ -309,12 +313,23 @@ func reconcile(host_state: PlayerState, _time_in_transit: float):
 	if stored_state.tick != host_state.tick:
 		return
 	
+	
 	# -- this is velocity adjusted, how much could we have diverged while
 	# -- message was being sent, not perfect but seems to fix the hookshot
 	var pos_tolerance = BASE_POS_TOLERANCE + player.velocity.length() * _time_in_transit
 	#pos_tolerance = min() # what's a good min?
-	var is_pos_error = (stored_state.pos.distance_squared_to(host_state.pos) >
-						pos_tolerance * pos_tolerance)
+	
+	var is_grabbed = (stored_state.movement_state == Player.MovementStates.GRABBED
+		and host_state.movement_state == Player.MovementStates.GRABBED
+	)
+	
+	var is_pos_error = false
+	if !is_grabbed:
+		is_pos_error = (stored_state.pos.distance_squared_to(
+			host_state.pos) > pos_tolerance * pos_tolerance)
+
+	#var is_pos_error = (stored_state.pos.distance_squared_to(host_state.pos) >
+						#pos_tolerance * pos_tolerance)
 	#var rot_error = abs(angle_difference(stored_state.rot, host_state.rot))
 	var needs_reconciled = (
 		is_pos_error or
@@ -325,6 +340,8 @@ func reconcile(host_state: PlayerState, _time_in_transit: float):
 	# -- snap to the correct position in the past
 	# -- and replay all the commands saved between this tick and the current tick
 	if needs_reconciled:
+		#print("ahhh")
+		#print(stored_state.movement_state != host_state.movement_state)
 		# -- this is the vector from the old/non-reconciled position
 		# --  to the new/ reconciled position
 		player.reconciled.emit( host_state.pos - player.global_position )

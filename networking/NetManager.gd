@@ -1,9 +1,67 @@
 extends Node
 
 """
-We're striving towards:
-A nondeterministic simulation that is corrected using authoritative snapshots
+NetManager
+==========
+
+Authoritative host + client-prediction networking manager.
+
+HIGH-LEVEL MODEL
+----------------
+
+The host is authoritative.
+
+Clients:
+    1. Run their local simulation predictively.
+    2. Generate tick-stamped PlayerCommands.
+    3. Send recent commands to the host.
+    4. Intentionally simulate some number of ticks ahead of the host.
+    5. Receive authoritative snapshots from the host.
+    6. Reconcile their local predicted state against those snapshots.
+
+The host:
+
+    1. Runs the authoritative simulation.
+    2. Receives future PlayerCommands from clients.
+    3. Stores them in per-client circular buffers.
+    4. When host tick N arrives, consumes command N.
+    5. Sends authoritative snapshots.
+    6. Monitors how much future input each client has supplied.
+    7. Slowly adjusts the client's desired tick lead.
+
+ Current simulation tick.
+ Host:
+     authoritative simulation tick
+ Client:
+     host tick + tick_lead
+	
+- tick_lead
+    Controls how far ahead the client tries to generate input.
+	The number of simulation ticks the client intentionally attempts to remain
+	ahead of the host.
+
+	Example:
+
+	    HOST:
+	        current_tick = 100
+
+	    CLIENT:
+	        current_tick = 108
+
+	    tick_lead = 8
+
+	The client is therefore generating command 108 while the host is currently
+	processing command 100.	
+	The host will eventually need those future commands.
+	
+- tick_multiplier()
+    Makes the client's local clock very slightly faster/slower to
+    compensate for long-term clock drift.
+
+Because the network has latency and reliable RPCs can be queued, those
+commands could arrive after the situation had already changed.
 """
+
 
 # ------------------------------------------------------------ signals for lobby
 signal peer_connected(id: int)
@@ -13,7 +71,7 @@ signal player_info_updated(id: int, player_name: String, spawn_index: int)
 # -----------------------------------------------------------------
 var player_instances_by_player_id  := {}
 var player_data := {} 
-const INPUT_BUFFER_SIZE = 240
+const INPUT_BUFFER_SIZE = 240  # -- at 60hz, this is 4 seconds of input
 var remote_input_buffers := {} # -- future command buffers per client
 
 # ---------------------------------------------------------- other stuff to tick
@@ -27,10 +85,106 @@ var fract_tick: float = 0.0   # -- decimal remainder of the tick
 var update_remote_modulo : int = 2 # -- e.g. 60hz -> 30hz
 var clock_synced := false
 var tick_lead: int = 10 # -- from initial ping, then dynamically updated
+const MIN_TICK_LEAD := 4
+const TARGET_TICK_LEAD := 8
+const MAX_TICK_LEAD := 20
+
+var remote_tick_leads: Dictionary = {}
+"""
+Highest command tick received from each client.
+This is useful for diagnostics.
+
+IMPORTANT:
+    newest_input_tick - current_tick
+
+does NOT tell us how many usable commands are actually available.
+
+For example:
+
+    current_tick = 100
+
+    received:
+        100
+        101
+        102
+        104
+        105
+
+Newest = 105
+
+But command 103 is missing, so the host can only safely continue through
+102 before starvation.
+
+Therefore we also calculate consecutive input availability.
+"""
+var remote_latest_input_tick: Dictionary = {}
+# -------------------------------------------------------------------------
+# Number of consecutive commands available beginning at current_tick.
+# -------------------------------------------------------------------------
+var remote_consecutive_input_ticks: Dictionary = {} # -- 
+"""
+host = 100
+
+received:
+[100 101 102 103 104 105]
+=> consecutive = 6
+
+As opposed to:
+received:
+100 101 102 [104 105 106]
+
+consecutive = 3
+"""
+
+"""
+Do not evaluate/change lead every simulation tick.
+
+At 60 Hz:
+    15 ticks = 250 ms
+Therefore this controller runs roughly 4 times per second.
+"""
+const LEAD_EVALUATION_INTERVAL_TICKS := 15
+var lead_evaluation_counter: int = 0
+
+"""
+STARVATION
+----------
+
+If fewer than this many consecutive commands are available, the client is
+dangerously close to starving.
+
+HEALTHY BUFFER
+--------------
+
+If more than this many consecutive commands are available, the client has
+substantial spare input buffered.
+
+The controller intentionally has hysteresis:
+
+    increase lead quickly-ish
+    decrease lead slowly
+
+This prevents:
+    +1
+    -1
+    +1
+    -1
+
+oscillation under ordinary jitter.
+"""
+const STARVATION_EVALUATIONS_REQUIRED := 2
+const HEALTHY_EVALUATIONS_REQUIRED := 4
+
+# -------------------------------------------------------------------------
+# Per-client hysteresis counters.
+# -------------------------------------------------------------------------
+var remote_starvation_counts: Dictionary = {}
+var remote_healthy_counts: Dictionary = {}
+
 #var last_host_tick: int = 0
 var average_offset: float = 0
-const OFFSET_LERP_WEIGHT := 0.03#0.02
-const MAX_CLOCK_ADJUST := 0.005 # 0.5% max speed change
+const OFFSET_LERP_WEIGHT := 0.01 # 0.03
+const MAX_CLOCK_ADJUST := 0.001  # 0.005
 # ------------------------------------------------------------------------------
 var tick_scheduler := TickScheduler.new()
 
@@ -109,6 +263,24 @@ func _physics_process(delta: float) -> void:
 					sync_player_state.rpc(current_tick,
 										  id,
 										  _state.serialize())
+										
+		if multiplayer.is_server():
+			lead_evaluation_counter += 1
+			if ( lead_evaluation_counter >= LEAD_EVALUATION_INTERVAL_TICKS):
+				lead_evaluation_counter = 0
+		
+				#evaluate_remote_input_buffers()
+		if (ticks_processed == max_ticks_per_frame and _timer >= TICK_RATE):
+			pass
+			# for diagnosing frame stalls.
+			#
+			#print(
+			#	"WARNING: max_ticks_per_frame reached. ",
+			#	"Remaining accumulator: ",
+			#	_timer
+			#)
+
+		
 	# -- this is used for smoothly moving remote copies
 	fract_tick = _timer / TICK_RATE
 
@@ -138,7 +310,11 @@ func setup_remote_buffer(id: int):
 	for i in range(INPUT_BUFFER_SIZE):
 		buffer[i] = PlayerCommand.new()
 	remote_input_buffers[id] = buffer
-
+	
+	remote_latest_input_tick[id] = 0
+	remote_consecutive_input_ticks[id] = 0
+	remote_starvation_counts[id] = 0
+	remote_healthy_counts[id] = 0
 
 func network_handshake(new_player_id):
 	if NetworkGateway.using_steam():
@@ -321,22 +497,43 @@ func update_average_offset(host_tick: int):
 
 
 func tick_error() -> float:
-	return average_offset - tick_lead
+	"""
+	Desired state: average_offset ~= tick_lead
+	Example:
+	    average_offset = 8
+	    tick_lead      = 8
+	    error = 0
+	Let's say:
+	    average_offset = 5
+	    tick_lead      = 8
+	    error = -3
+	=> Client is not far enough ahead.
+	On the other hand, let's say:
+	    average_offset = 11
+	    tick_lead      = 8
+	    error = +3
+	=> Client is too far ahead.
+	"""
+	return (average_offset - tick_lead)
 
 
 var overlay_tick_multiplier = 1.0 # -- for debugging ui / overlay
+
 func tick_multiplier() -> float:
+	# -- Host clock is authoritative => 1.0
+	# -- Don't adjust an unsynchronized client
 	if multiplayer.is_server() or !clock_synced:
 		return 1.0
 	var _tick_error = tick_error()
 	if abs(_tick_error) <= 2.0:
 		return 1.0
+	
 	# We want to fix the drift over the course of seconds, not frames.
 	# 0.001 means for every 1 tick of error, we adjust speed by 0.1%
-	var adjustment = _tick_error * 0.005 
+	var adjustment = _tick_error * 0.001 
 	
-	# -- tick_error < 0 => that we're less than ideal tick lead and need to speed up
-	# -- tick_error > 0 => that we're greater than ideal tick lead and need to slow down
+	# -- Negative, tick_error < 0 => that we're less than ideal tick lead and need to speed up
+	# -- Positive, tick_error > 0 => that we're greater than ideal tick lead and need to slow down
 	# -- remote client's ticking can't run faster than 1 + MAX_CLOCK_ADJUST 
 	# -- or slower than 1 - MAX_CLOCK_ADJUST.
 	# -- this is to prevent the giant oscillations I was seeing .80 - 1.20
@@ -345,45 +542,118 @@ func tick_multiplier() -> float:
 	return 1.0 - adjustment
 
 
+# -- the client has to live in the "future" because of RTT & jitter
+# -- the host needs a way of getting data and then calling
+# --  them at the approritate tick
+#func host_process_remote_client(id: int, _player: Player):
+	## -- remote buffers are initialized when steam handshake completes
+	#var buffer = remote_input_buffers.get(id)
+	#if buffer == null:
+		#return
+#
+	#var cmd: PlayerCommand = buffer[current_tick % INPUT_BUFFER_SIZE]
+	#
+	#var _controller =  _player.player_controller
+	#var last_command_executed = _controller.last_command_executed
+#
+	## How far from the current tick is the command in the current-tick slot?
+	#var buffer_fullness = cmd.tick - current_tick
+	#if buffer_fullness > 15:
+		#request_smaller_lead.rpc_id(id)
+	#
+	#if cmd.tick == current_tick:
+		#_player.execute_tick(TICK_RATE, cmd)
+		#_controller.last_command_executed = cmd
+		##if cmd.collided_id > 0:
+			##var other_player = player_instances_by_player_id.get(cmd.collided_id)
+			##if other_player:
+				##other_player.apply_external_impulse( -cmd.impulse )
+	#else:
+		## -- if it's an initialized player command
+		#if cmd.tick > 0:
+			##print("ewww")
+			#_player.execute_tick(TICK_RATE, _controller.last_command_executed)
+			## -- we're starving for input now
+			## -- we need to dynamically increase this client's tick_lead
+			#client_increase_tick_lead.rpc_id( id )
+	## -- regardless we need to update the reconcilliation_state_buffer after doing
+	#var _idx = _controller.get_circular_index(current_tick)
+	#_controller.reconciliation_state_buffer[_idx].set_state(_player, current_tick)
 
 
 # -- the client has to live in the "future" because of RTT & jitter
 # -- the host needs a way of getting data and then calling
-# --  them at the approritate tick
-func host_process_remote_client(id: int, _player: Player):
-	# -- remote buffers are initialized when steam handshake completes
+# -- them at the approritate tick
+# -- simulation function should just do simulation....
+# -- does the host have input for this tick? execute it : use fallback
+func host_process_remote_client(id: int, player: Player) -> void:
 	var buffer = remote_input_buffers.get(id)
 	if buffer == null:
 		return
 
-	var cmd = buffer[current_tick % INPUT_BUFFER_SIZE] as PlayerCommand
-	
-	var _controller =  _player.player_controller
-	var last_command_executed = _controller.last_command_executed
+	var controller = player.player_controller
+	var cmd: PlayerCommand = buffer[current_tick % INPUT_BUFFER_SIZE]
 
-	var buffer_fullness = cmd.tick - current_tick
-	if buffer_fullness > 15:
-		request_smaller_lead.rpc_id(id)
-	
 	if cmd.tick == current_tick:
-		_player.execute_tick(TICK_RATE, cmd)
-		_controller.last_command_executed = cmd
-		#if cmd.collided_id > 0:
-			#var other_player = player_instances_by_player_id.get(cmd.collided_id)
-			#if other_player:
-				#other_player.apply_external_impulse( -cmd.impulse )
+		player.execute_tick(TICK_RATE, cmd)
+		controller.last_command_executed = cmd
 	else:
-		# -- if it's an initialized player command
-		if cmd.tick > 0:
-			#print("ewww")
-			_player.execute_tick(TICK_RATE, _controller.last_command_executed)
-			# -- we're starving for input now
-			# -- we need to dynamically increase this client's tick_lead
-			client_increase_tick_lead.rpc_id( id )
-	# -- regardless we need to update the reconcilliation_state_buffer after doing
-	var _idx = _controller.get_circular_index(current_tick)
-	_controller.reconciliation_state_buffer[_idx].set_state(_player, current_tick)
+		# Hold last known input/state.
+		player.execute_tick(
+			TICK_RATE,
+			controller.last_command_executed
+		)
 
+	var idx = controller.get_circular_index(current_tick)
+	controller.reconciliation_state_buffer[idx].set_state(
+		player,
+		current_tick
+	)
+
+
+# -- calculate contiguous availability
+# -- how many contiguous commands do we have left to execute
+func get_remote_consecutive_input_ticks(id: int) -> int:
+	var buffer = remote_input_buffers.get(id)
+	if buffer == null:
+		return 0
+
+	var available := 0
+
+	for i in range(INPUT_BUFFER_SIZE):
+		var tick := current_tick + i
+		var cmd: PlayerCommand = buffer[tick % INPUT_BUFFER_SIZE]
+
+		if cmd == null or cmd.tick != tick:
+			break
+
+		available += 1
+
+	return available
+
+# -- periodically, we're going to check the contiguous availability
+#func evaluate_remote_input_buffers() -> void:
+	#for id in remote_input_buffers:
+		#var consecutive = get_remote_consecutive_input_ticks(id)
+#
+		#remote_consecutive_input_ticks[id] = consecutive
+#
+		#var latest: PlayerCommand = null
+#
+		## Find newest command we actually have.
+		#for i in range(INPUT_BUFFER_SIZE):
+			#var tick = current_tick + i
+			#var cmd: PlayerCommand = remote_input_buffers[id][tick % INPUT_BUFFER_SIZE]
+#
+			#if cmd == null or cmd.tick != tick:
+				#break
+#
+			#latest = cmd
+#
+		#if latest:
+			#remote_latest_input_tick[id] = latest.tick
+#
+		#_update_remote_lead(id, consecutive)
 
 #@rpc("authority", "reliable")
 #func request_smaller_lead():
@@ -392,8 +662,7 @@ func host_process_remote_client(id: int, _player: Player):
 #@rpc("authority", "reliable")
 #func client_increase_tick_lead():
 	#tick_lead += 1
-const MIN_TICK_LEAD := 2
-const MAX_TICK_LEAD := 30
+
 @rpc("authority", "reliable")
 func client_increase_tick_lead():
 	var old = tick_lead
@@ -414,14 +683,21 @@ func send_input_to_host(byte_arr: PackedByteArray) -> void:
 	var sender_id = multiplayer.get_remote_sender_id()
 	var incoming_cmds = PlayerCommand.deserialize_list_of_commands(byte_arr) 
 
-	if remote_input_buffers.has(sender_id):
-		var buffer = remote_input_buffers[sender_id]
-		for cmd in incoming_cmds:
-			var idx = cmd.tick % INPUT_BUFFER_SIZE
-			# -- overwrite if the data is actually newer than what is 
-			# -- currently in that buffer slot.
-			if buffer[idx].tick < cmd.tick:
-				buffer[idx] = cmd
+	if not remote_input_buffers.has(sender_id):
+		return
+	
+	#if remote_input_buffers.has(sender_id):
+	var buffer = remote_input_buffers[sender_id]
+	for cmd in incoming_cmds:
+		var idx = cmd.tick % INPUT_BUFFER_SIZE
+		#remote_latest_input_tick[sender_id] = max(
+				#remote_latest_input_tick.get(sender_id, 0),
+				#cmd.tick
+			#)
+		# -- overwrite if the data is actually newer than what is 
+		# -- currently in that buffer slot.
+		if buffer[idx].tick < cmd.tick:
+			buffer[idx] = cmd
 
 # -- TODO
 # -- it should actually be client predicted / driven
@@ -469,7 +745,11 @@ func client_receive_pong(original_send_time: int):
 		_send_ping()
 	else:
 		# -- get RTT
-		tick_lead = _calculate_final_offset()
+		tick_lead = clamp( _calculate_final_offset(),
+							MIN_TICK_LEAD,
+							MAX_TICK_LEAD)
+		
+		#tick_lead = _calculate_final_offset()
 		# -- then start simulating on this client
 		request_host_start.rpc_id(1)
 

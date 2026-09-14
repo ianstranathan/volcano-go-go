@@ -103,10 +103,10 @@ initial_world_lava_level = 0
 position = Vector2(-4712, 4578)
 
 [node name="Marker2D2" type="Marker2D" parent="World/InitialSpawnPoints"]
-position = Vector2(-4826, 5077)
+position = Vector2(-5149, 4648)
 
 [node name="Marker2D3" type="Marker2D" parent="World/InitialSpawnPoints"]
-position = Vector2(-5119, 4661)
+position = Vector2(-5367, 4252)
 
 [node name="Marker2D4" type="Marker2D" parent="World/InitialSpawnPoints"]
 position = Vector2(-4886, 5071)

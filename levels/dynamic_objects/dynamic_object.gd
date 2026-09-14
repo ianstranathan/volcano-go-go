@@ -133,9 +133,3 @@ func get_thrown(throw_vel: Vector2) -> void :
 	# -- collision test to get outside of player?
 	velocity = throw_vel / dynamic_object_profile.mass
 	#print( velocity )
-
-
-#func toss( _v ):
-	##emit_signal( "got_tossed", Vector2(v * throw_dir_coeff(), 0.0))
-	#grabbing_player_area = null
-	#set_state( DynamicObjectState.ACTIVE )

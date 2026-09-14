@@ -1,4 +1,4 @@
-[gd_scene load_steps=1859 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1860 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -25,6 +25,7 @@
 [ext_resource type="Script" uid="uid://x7uxn7nwb2x8" path="res://levels/dynamic_objects/dynamic_object_placeholder.gd" id="23_m8ier"]
 [ext_resource type="PackedScene" uid="uid://dc8lgy70k2yf8" path="res://levels/lantern_area/lantern_area.tscn" id="24_m8ier"]
 [ext_resource type="PackedScene" uid="uid://c37go2qp0t4v2" path="res://levels/level_components/bouncy/bouncy.tscn" id="26_cie1a"]
+[ext_resource type="PackedScene" uid="uid://bj3e2svr1xvwf" path="res://levels/level_components/elevator/elevator.tscn" id="26_dukmt"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -14094,3 +14095,6 @@ position = Vector2(-499, 0)
 
 [node name="Bouncy" parent="TickableGeometry" instance=ExtResource("26_cie1a")]
 position = Vector2(1265, 5)
+
+[node name="Elevator" parent="TickableGeometry" instance=ExtResource("26_dukmt")]
+position = Vector2(3267, -422)

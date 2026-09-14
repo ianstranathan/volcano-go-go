@@ -8,6 +8,8 @@ radius = 26.172504
 [sub_resource type="CircleShape2D" id="CircleShape2D_s81xa"]
 
 [node name="DynamicObject" type="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 3
 script = ExtResource("1_62qyn")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

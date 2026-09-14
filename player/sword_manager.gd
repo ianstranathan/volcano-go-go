@@ -16,5 +16,6 @@ func _physics_process(delta: float) -> void:
 
 
 func swing_sword():
-	$CollisionShape2D.set_deferred( "disabled", false)
-	timer.start()
+	pass
+	#$CollisionShape2D.set_deferred( "disabled", false)
+	#timer.start()

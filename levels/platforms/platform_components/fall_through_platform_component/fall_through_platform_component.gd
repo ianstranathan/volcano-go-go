@@ -19,11 +19,16 @@ const FALL_THROUGH_MAT := preload(
 
 func _ready():
 	if !Engine.is_editor_hint():
+		
 		assert(p)
-		var coll_shape = p.get_node("CollisionShape2D") as CollisionShape2D
-		assert( coll_shape )
-		coll_shape.one_way_collision = true
-		coll_shape.one_way_collision_margin = 20.
+		# -- one way platform ===> toggles a collision layer
+		p.set_collision_layer_value(1, false)
+		p.set_collision_layer_value(9, true)
+		
+		#var coll_shape = p.get_node("CollisionShape2D") as CollisionShape2D
+		#assert( coll_shape )
+		#coll_shape.one_way_collision = true
+		#coll_shape.one_way_collision_margin = 5.
 		p.add_to_group("one_way_platforms")
 		apply_mat()
 
