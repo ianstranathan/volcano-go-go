@@ -2,6 +2,12 @@ extends Node
 
 class_name MyMathUtils
 
+static func smoothstep_easing(t: float) -> float:
+	return 3.0 * t * t - 2.0 * t * t * t
+
+static func ease_in_out_quart( x: float):
+	return (8 * x * x * x * x if x < 0.5 else 1 - pow(-2 * x + 2, 4) / 2)
+	
 ## -- if you're curious, this is the slab method
 # -- Slab Method, Kay and Kajiya
 # -- https://ianstranathan.github.io/html/Demos/ray-box-intersection/

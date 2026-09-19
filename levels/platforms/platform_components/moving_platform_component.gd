@@ -22,6 +22,7 @@ enum MoveType{
 var network_id = -1
 var _time = 0.0
 var last_pos: Vector2
+var progress_ratio: float
 var displacement: Vector2 = Vector2.ZERO
 var path_length: float# = _path_follower_component.get_curve().get_baked_length()
 
@@ -42,40 +43,26 @@ func _ready() -> void:
 	target_to_move.add_to_group("moving_platforms")
 
 #var stop := false
-@export var moving := true
+@export var moving := false
 
 func execute_tick(delta: float):
 	if (not target_to_move or 
 		not _path_follower_component or 
-		!moving):
+		not moving):
+		#displacement = Vector2.ZERO
 		return
 
-
-	if movement_type == MoveType.ONE_SHOT:
-		
-		if time_direction >= 0.0 and _time >= 1.0:
-			displacement = Vector2.ZERO
-			return
-		elif time_direction < 0.0 and _time <= 0.0:
-			displacement = Vector2.ZERO
-			return
-
-	if path_length:
-		_time += delta * time_direction * (speed / path_length)
-		#print( _time )
-	#else:
-		#print("len: ", _path_follower_component.curve.get_baked_length())
-		#print("pts: ", _path_follower_component.curve.get_baked_points())
-	# -- one shot here
-	#elif not stop:
-		##print(directed_delta * delta * speed)
-		##print(delta * speed)
-		#_time += directed_delta * speed
+	#if path_length:
+		#_time += delta * time_direction * (speed / path_length)
+	var progress_delta := (speed / path_length) * delta * time_direction
+	_time += progress_delta
+	
 	# -- handle timeline wrapping based on movement type before tweening
 	var tween_time = _time
 	
 	match movement_type:
 		MoveType.OSCILLATE:
+			_path_follower_component.set_loop(false)
 			tween_time = pingpong(_time, 1.0)
 		MoveType.LOOP:
 			_time = wrapf(_time, 0.0, 1.0)
@@ -86,17 +73,15 @@ func execute_tick(delta: float):
 			_time = wrapf(_time, 0.0, 1.0)
 			tween_time = _time
 		MoveType.ONE_SHOT:
-			#print(_time)
-			_time = clamp(_time, 0.0, 1.0)
+			if time_direction >= 0.0 and _time >= 1.0:
+				_time = 1.0
+				_finish_movement()
+				return
+			elif time_direction < 0.0 and _time <= 0.0:
+				_time = 0.0
+				_finish_movement()
+				return
 			tween_time = _time
-			# -- we can only start moving (moving is true iff) we have a target_time
-			if ((time_direction > 0 and _time >= target_time) or
-				time_direction < 0 and _time <= target_time and 
-				moving):
-				#print(_time)
-				movement_finished.emit()
-				_time = target_time
-				moving = false
 
 	# -- if looping, force linear so it doesn't warp or change speed at the wrap point
 	var current_trans = transition_type
@@ -106,30 +91,30 @@ func execute_tick(delta: float):
 		current_trans = Tween.TRANS_LINEAR
 		current_ease = Tween.EASE_IN_OUT
 	
-	var ratio = Tween.interpolate_value(0.0, 1.0, tween_time, 1.0, current_trans, current_ease)
+	progress_ratio  = Tween.interpolate_value(0.0, 1.0, tween_time, 1.0, current_trans, current_ease)
 	
-	_path_follower_component.set_progress_ratio( ratio )
+	_path_follower_component.set_progress_ratio( progress_ratio )
 	#print(target_to_move.global_position)
 	target_to_move.global_position = _path_follower_component.get_path_global_position()
 
 	displacement = target_to_move.global_position - last_pos
 	last_pos = target_to_move.global_position
+	if _root.name == "Switch":
+		print(displacement)
+
+func _finish_movement() -> void:
+	displacement = Vector2.ZERO
+	moving = false
+	movement_finished.emit()
 
 
 func set_path( p: PathFollowPlatformComponent) -> void:
 	_path_follower_component = p
 
 
-var target_time: float
 func set_target_time(target: float):
-	var t = clampf(target, 0.0, 1.0)
-	
-	if t > _time:
-		time_direction = 1.0
-	elif t < _time:
-		time_direction = -1.0
+	time_direction = target
 	moving = true
-	target_time = t
 
 
 func calc_path_length():

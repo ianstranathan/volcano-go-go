@@ -177,6 +177,7 @@ hang_time_curve = SubResource("Curve_rgyib")
 metadata/_edit_group_ = true
 
 [node name="CharacterVisuals" type="Node2D" parent="."]
+visible = false
 
 [node name="Body" type="AnimatedSprite2D" parent="CharacterVisuals"]
 texture_filter = 1
@@ -349,20 +350,24 @@ script = ExtResource("14_kb6p2")
 [node name="StepOverContainer" type="Node2D" parent="."]
 
 [node name="BottomRight" type="RayCast2D" parent="StepOverContainer"]
-position = Vector2(0, 40)
+position = Vector2(0, 34)
 target_position = Vector2(25, 0)
+collision_mask = 5
 
 [node name="BottomLeft" type="RayCast2D" parent="StepOverContainer"]
-position = Vector2(0, 40)
+position = Vector2(0, 34)
 target_position = Vector2(-25, 0)
+collision_mask = 5
 
 [node name="TopRight" type="RayCast2D" parent="StepOverContainer"]
-position = Vector2(0, -17)
+position = Vector2(0, -26)
 target_position = Vector2(25, 0)
+collision_mask = 5
 
 [node name="TopLeft" type="RayCast2D" parent="StepOverContainer"]
-position = Vector2(0, -17)
+position = Vector2(0, -26)
 target_position = Vector2(-25, 0)
+collision_mask = 5
 
 [node name="TEMP_SWORD" type="Area2D" parent="."]
 position = Vector2(65, 0)

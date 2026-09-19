@@ -10,8 +10,9 @@ mat2 rotate(float _angle){
 }
 
 uniform sampler2D chain_tex: repeat_enable, filter_nearest;
+uniform float scroll_speed = 5.0;
 void fragment() {
-	COLOR = texture(chain_tex, rotate(PI/2.) * UV);
+	COLOR = texture(chain_tex, rotate(PI/2.) * UV - vec2(0., scroll_speed * TIME));
 }
 
 

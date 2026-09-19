@@ -1,4 +1,4 @@
-[gd_scene load_steps=1860 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1861 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -26,6 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://dc8lgy70k2yf8" path="res://levels/lantern_area/lantern_area.tscn" id="24_m8ier"]
 [ext_resource type="PackedScene" uid="uid://c37go2qp0t4v2" path="res://levels/level_components/bouncy/bouncy.tscn" id="26_cie1a"]
 [ext_resource type="PackedScene" uid="uid://bj3e2svr1xvwf" path="res://levels/level_components/elevator/elevator.tscn" id="26_dukmt"]
+[ext_resource type="PackedScene" uid="uid://csg4yx0oqcs6p" path="res://levels/level_components/switch/switch.tscn" id="27_dukmt"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -33,7 +34,7 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(1666, -38), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(2532, -38), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
 "position": Vector2(-927, 76)
@@ -12231,7 +12232,7 @@ position = Vector2(-1352, -9648)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(1666, -38)
+position = Vector2(2532, -38)
 
 [node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(-163, -143)
@@ -12512,7 +12513,8 @@ metadata/_custom_type_script = "uid://dhdc4b8yddyej"
 polygon = PackedVector2Array(3136, -3248, 3040, -3216, 2704, -3288, 2208, -3400, 1616, -3256, 1264, -3024, 1176, -2768, 1024, -2720, 696, -2760, 272, -2944, 24, -3216, -728, -3352, -1520, -3424, -2368, -3448, -3352, -3456, -4816, -3520, -5216, -3632, -5048, -3776, -1776, -3792, -1744, -3992, -1736, -4472, -2064, -4736, -2064, -4856, -1656, -4856, -1296, -4760, -1048, -4632, -856, -4520, -632, -4472, -464, -4456, -464, -4200, -336, -4136, -144, -4144, -64, -4264, 336, -4144, 752, -4000, 1240, -3936, 2198.1182, -3801.968, 3136, -3776)
 
 [node name="CollisionPolygon2D23" type="CollisionPolygon2D" parent="Platforms/Rest"]
-polygon = PackedVector2Array(2872, -736, 3408, -736, 3339, -600, 3200, -616, 3115, -512, 2984, -592, 2896, -648)
+position = Vector2(0, 593)
+polygon = PackedVector2Array(2872, -1326, 3408, -1326, 3339, -1190, 3200, -1206, 3115, -1102, 2984, -1182, 2896, -1238)
 
 [node name="SS2D_Shape21" type="Node2D" parent="Platforms/Rest"]
 position = Vector2(2168, 0)
@@ -14096,5 +14098,30 @@ position = Vector2(-499, 0)
 [node name="Bouncy" parent="TickableGeometry" instance=ExtResource("26_cie1a")]
 position = Vector2(1265, 5)
 
-[node name="Elevator" parent="TickableGeometry" instance=ExtResource("26_dukmt")]
+[node name="Elevator" parent="TickableGeometry" node_paths=PackedStringArray("call_down_switch", "call_up_switch", "top_anchor", "bottom_anchor") instance=ExtResource("26_dukmt")]
 position = Vector2(3267, -422)
+call_down_switch = NodePath("../CallDown")
+call_up_switch = NodePath("../CallUp")
+speed = 500.0
+top_anchor = NodePath("Top")
+bottom_anchor = NodePath("Bottom")
+
+[node name="Top" type="Marker2D" parent="TickableGeometry/Elevator"]
+position = Vector2(0, -409)
+
+[node name="Bottom" type="Marker2D" parent="TickableGeometry/Elevator"]
+position = Vector2(0, 428)
+
+[node name="CallDown" parent="TickableGeometry" instance=ExtResource("27_dukmt")]
+position = Vector2(3474, 20)
+transition_type = 3
+easing_type = 2
+speed = 500.0
+switch_type = 0
+
+[node name="CallUp" parent="TickableGeometry" instance=ExtResource("27_dukmt")]
+position = Vector2(3576, -735)
+transition_type = 3
+easing_type = 2
+speed = 500.0
+switch_type = 0

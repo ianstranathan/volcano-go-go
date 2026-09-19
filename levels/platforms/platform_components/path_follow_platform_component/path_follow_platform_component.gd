@@ -17,3 +17,6 @@ func set_loop(b: bool) -> void:
 
 func get_path_global_position() -> Vector2:
 	return $PathFollow2D.global_position
+	
+func get_progress_ratio() -> float:
+	return $PathFollow2D.progress_ratio

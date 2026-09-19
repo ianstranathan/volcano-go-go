@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bj3e2svr1xvwf"]
+[gd_scene load_steps=17 format=3 uid="uid://bj3e2svr1xvwf"]
 
 [ext_resource type="PackedScene" uid="uid://5x7tnpyvft8y" path="res://levels/platforms/base_platform/base_platform.tscn" id="1_mfekx"]
 [ext_resource type="Script" uid="uid://dxmf407du8a7b" path="res://levels/level_components/elevator/elevator.gd" id="1_mt1ra"]
@@ -8,6 +8,9 @@
 [ext_resource type="Shader" uid="uid://ql0cc80f0w4u" path="res://levels/level_components/elevator/chain_sides.gdshader" id="3_numfo"]
 [ext_resource type="PackedScene" uid="uid://d35o6xeqnfe5h" path="res://levels/platforms/platform_components/path_follow_platform_component/path_follow_platform_component.tscn" id="4_17se0"]
 [ext_resource type="Texture2D" uid="uid://vc4wmewwfixw" path="res://assets/particle_masks/floaty_64.png" id="6_oywdn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ntn6h"]
+size = Vector2(150, 25)
 
 [sub_resource type="Curve2D" id="Curve2D_e3qdo"]
 resource_local_to_scene = true
@@ -19,10 +22,12 @@ point_count = 2
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mivi7"]
 shader = ExtResource("3_numfo")
 shader_parameter/chain_tex = ExtResource("2_1su21")
+shader_parameter/scroll_speed = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_numfo"]
 shader = ExtResource("2_mivi7")
 shader_parameter/chain_tex = ExtResource("2_1su21")
+shader_parameter/ratio_and_dir = Vector2(0, 0)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ntn6h"]
 blend_mode = 1
@@ -48,18 +53,27 @@ scale_min = 1.6999999
 scale_max = 5.0
 scale_curve = SubResource("CurveTexture_oywdn")
 
-[node name="Elevator" type="Node2D" node_paths=PackedStringArray("top_anchor", "bottom_anchor")]
+[node name="Elevator" type="Node2D"]
 script = ExtResource("1_mt1ra")
-top_anchor = NodePath("TopMarker")
-bottom_anchor = NodePath("BottomMarker")
 
 [node name="BasePlatform" parent="." instance=ExtResource("1_mfekx")]
 coll_extents = Vector2(150, 25)
 
-[node name="MovingPlatformComponent" type="Node2D" parent="BasePlatform" node_paths=PackedStringArray("_path_follower_component")]
+[node name="MovingPlatformComponent" type="Node2D" parent="BasePlatform" node_paths=PackedStringArray("_root", "_path_follower_component")]
 script = ExtResource("3_ntn6h")
+transition_type = 3
+easing_type = 2
+movement_type = 3
+_root = NodePath("../..")
 _path_follower_component = NodePath("../../PathFollowPlatformComponent")
 metadata/_custom_type_script = "uid://b1quk135kfj1v"
+
+[node name="Area2D2" type="Area2D" parent="BasePlatform"]
+position = Vector2(0, -25)
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BasePlatform/Area2D2"]
+shape = SubResource("RectangleShape2D_ntn6h")
 
 [node name="PathFollowPlatformComponent" parent="." instance=ExtResource("4_17se0")]
 curve = SubResource("Curve2D_e3qdo")
@@ -89,13 +103,8 @@ texture_mode = 1
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 material = SubResource("CanvasItemMaterial_ntn6h")
+amount = 3
 texture = ExtResource("6_oywdn")
 lifetime = 0.3
 randomness = 1.0
 process_material = SubResource("ParticleProcessMaterial_17se0")
-
-[node name="TopMarker" type="Marker2D" parent="."]
-position = Vector2(0, -586)
-
-[node name="BottomMarker" type="Marker2D" parent="."]
-position = Vector2(0, 465)

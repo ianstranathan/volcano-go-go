@@ -1,12 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://csg4yx0oqcs6p"]
+[gd_scene load_steps=5 format=3 uid="uid://csg4yx0oqcs6p"]
 
 [ext_resource type="Script" uid="uid://ctsnrrsvpresc" path="res://levels/level_components/switch/switch.gd" id="1_m7yxj"]
 [ext_resource type="PackedScene" uid="uid://5x7tnpyvft8y" path="res://levels/platforms/base_platform/base_platform.tscn" id="2_m7yxj"]
 [ext_resource type="Script" uid="uid://b1quk135kfj1v" path="res://levels/platforms/platform_components/moving_platform_component.gd" id="3_mxvgb"]
 [ext_resource type="PackedScene" uid="uid://d35o6xeqnfe5h" path="res://levels/platforms/platform_components/path_follow_platform_component/path_follow_platform_component.tscn" id="4_mxvgb"]
-
-[sub_resource type="Curve2D" id="Curve2D_mxvgb"]
-resource_local_to_scene = true
 
 [node name="Switch" type="Node2D" node_paths=PackedStringArray("base_platform")]
 script = ExtResource("1_m7yxj")
@@ -18,13 +15,12 @@ coll_extents = Vector2(100, 50)
 collision_layer = 4
 coll_extents = Vector2(100, 50)
 
-[node name="MovingPlatformComponent" type="Node2D" parent="BasePlatform" node_paths=PackedStringArray("_path_follower_component")]
+[node name="MovingPlatformComponent" type="Node2D" parent="BasePlatform" node_paths=PackedStringArray("_root", "_path_follower_component")]
 script = ExtResource("3_mxvgb")
 easing_type = 2
 movement_type = 3
+_root = NodePath("../..")
 _path_follower_component = NodePath("../../PathFollowPlatformComponent")
-moving = false
 metadata/_custom_type_script = "uid://b1quk135kfj1v"
 
 [node name="PathFollowPlatformComponent" parent="." instance=ExtResource("4_mxvgb")]
-curve = SubResource("Curve2D_mxvgb")
