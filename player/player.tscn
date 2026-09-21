@@ -177,7 +177,6 @@ hang_time_curve = SubResource("Curve_rgyib")
 metadata/_edit_group_ = true
 
 [node name="CharacterVisuals" type="Node2D" parent="."]
-visible = false
 
 [node name="Body" type="AnimatedSprite2D" parent="CharacterVisuals"]
 texture_filter = 1
@@ -232,7 +231,6 @@ offset_bottom = -47.0
 text = "HELLO"
 
 [node name="WallCheckContainer" type="Node2D" parent="."]
-visible = false
 script = ExtResource("6_wodsf")
 
 [node name="RHS1" type="RayCast2D" parent="WallCheckContainer"]
@@ -245,7 +243,7 @@ target_position = Vector2(25, 0)
 collision_mask = 5
 
 [node name="RHS3" type="RayCast2D" parent="WallCheckContainer"]
-position = Vector2(0, 40)
+position = Vector2(0, 17)
 target_position = Vector2(25, 0)
 collision_mask = 5
 
@@ -259,7 +257,7 @@ target_position = Vector2(-25, 0)
 collision_mask = 5
 
 [node name="LHS3" type="RayCast2D" parent="WallCheckContainer"]
-position = Vector2(0, 40)
+position = Vector2(0, 17)
 target_position = Vector2(-25, 0)
 collision_mask = 5
 

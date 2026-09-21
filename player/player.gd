@@ -101,8 +101,7 @@ enum MovementStates
 	SLIDING,
 	METABALL,
 	LOG_ROLL,
-	GRABBED
-	# SLIDING
+	GRABBED,
 	# GENIE_HAND
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
@@ -265,12 +264,6 @@ func do_jump(jump_type, velocity_override=null):
 			var y_dir = 1. if is_zero_approx(v.y) else v.y
 			velocity =  Vector2(v.x *  kd.jump_speed / 2., 
 								y_dir * kd.jump_speed)
-			#print(velocity)
-			#if velocity_override:
-				#velocity = velocity_override
-			#else:
-				# -- get information from the metaball manager
-				
 	velocity.y *= jump_speed_modifier
 
 	movement_state_transition_to(MovementStates.JUMPING)
@@ -290,18 +283,16 @@ func coyote_time_resolution() -> void:
 			movement_state_transition_to(MovementStates.FALLING)
 		MovementStates.WALKING:
 			movement_state_transition_to(MovementStates.FALLING)
+		MovementStates.RUNNING:
+			movement_state_transition_to(MovementStates.FALLING)
+		MovementStates.SLIDING:
+			movement_state_transition_to(MovementStates.FALLING)
 		MovementStates.ITEM_MOVING:
 			if is_falling():
 				movement_state_transition_to(MovementStates.FALLING)
 			else:
 				movement_state_transition_to(MovementStates.IDLE)
 	is_on_ground = false
-
-# ------------------------------------------------------------------------------
-var pending_impulses: Array[Vector2] = []
-
-func apply_external_impulse(impulse: Vector2):
-	pending_impulses.append( impulse )
 
 # ------------------------------------------------------------------------------
 
@@ -313,23 +304,18 @@ func frame_disp() -> Vector2:
 	return (pos_current - pos_previous)
 
 
-var last_collision_impulse := Vector2.ZERO
-var last_collision_id: int = -1
-
 # -- small optimization, no need to make a new array that's ghoing to repeate
 # -- itself / never change
 @onready var movement_states_keys = MovementStates.keys()
 
+# -- if the moving platform loops ( modulo ) we don't want to be stuck to it
 var disp_threshold_squared = 25000 # -- i.e. 50 px
-func execute_tick(delta: float, cmd: PlayerCommand):
 
-	#if !is_replaying:
-		#for impulse in pending_impulses:
-			#velocity +=  kd.inv_mass * impulse
-		#pending_impulses.clear()
-	#if cmd.impulse != Vector2.ZERO:
-		#velocity += kd.inv_mass * cmd.impulse
-	#
+# -- for incline logic
+const MIN_GROUND_COS = 0.3
+const SLIDE_COS_THRESHOLD = 0.95 #  -- lt 30 deg
+
+func execute_tick(delta: float, cmd: PlayerCommand):
 	pos_previous = global_position
 	# -- we guarenteed that we ticked through all the world geometry that can move
 	if current_platform_displacement_ref:
@@ -362,100 +348,99 @@ func execute_tick(delta: float, cmd: PlayerCommand):
 	# -- call the movement state function matching the movement_state variable
 	call(movement_states_keys[movement_state].to_lower() + "_state_fn", delta)
 
-	# -- virtual collision check for player on player collisions
-	#if !is_replaying and cmd.impulse == Vector2.ZERO:
-		#var coll = move_and_collide(velocity * delta, true)
-		#if coll:
-			#var _collider := coll.get_collider()
-			#if _collider and _collider is Player and !is_replaying:
-				## -- locally predict collision for responsiveness
-				#var impulse      = MyPhysicsUtils.resolve_collision(self, _collider, coll)
-				#cmd.impulse      = impulse
-				## -- cliuent A:
-				## -- locally precict our impulse change
-				#velocity += kd.inv_mass * impulse
-				## -- client B:
-				## -- locally predict remote interpolated client
-				## -- by injecting into their interpolation buffer
-				#_collider.player_controller.inject_predicted_state(
-					#-_collider.kd.inv_mass * impulse
-				#)
-				## -- so we update our command for host processing client B
-				## -- on hosts machine
-				#var _id          = _collider.name.to_int() 
-				#cmd.collided_id  = _id
-				#
-				## -- rpc the client we collided with to tell them to updat their impulse
-				#predict_impact_notification.rpc_id(_collider.name.to_int(), impulse)
 	# ---------------------------------------------------------------------------
-	
 	if integrate_motion:
 		var motion = (velocity * delta) + Vector2(0., (0.5 * delta * delta * get_g()))
 		var virtual_collision = move_and_collide(motion, true)
 		if virtual_collision:
 			var virtual_collider = virtual_collision.get_collider()
-			 #-- player on player collision
-			 #-- don't double count / apply
-			
 			# -- TODO
-			# -- simulation is unstable
 			if virtual_collider is Player:
 				MyPhysicsUtils.resolve_collision(self, virtual_collider, virtual_collision)
 				motion = (velocity * delta) + Vector2(0., (0.5 * delta * delta * get_g()))
 				
 		global_position += motion #(velocity * delta) + Vector2(0., (0.5 * delta * delta * get_g()))
 	
+		# -- NOTE
+		if last_move_input.length_squared() > 0:
+			last_non_zero_move_input = last_move_input
+		last_move_input = move_input
+		pos_current = global_position
+	
+		# -- NOTE
 		if velocity.y < kd.TERMINAL_FALL_SPEED:
 			velocity.y += get_g() * delta
-			
+		
+		# -- NOTE
 		var collision = move_and_collide(Vector2.ZERO)
 		if collision:
 			var normal = collision.get_normal()
-			is_on_ground = normal.dot(Vector2.UP) > 0.1 # TODO expose this
-			if is_on_ground:
-				
-				# -- get platform reference
-				current_platform_displacement_ref_check(collision)
-				
-				# --  max floor angle (e.g. 45 degrees ~ cos(45°) ≈ 0.707)
-				# -- dot product = |a||b|cos(theta) = a dot b
-				# -- normal and Vector2.UP are length 1 => this is cos(45 deg) approx
-				if normal.dot(Vector2.UP) > 0.7: 
-					var tangent = Vector2(normal.y, -normal.x).normalized()
-					# -- nsure velocity aligns correctly with the player's intended dir
-					# -- flip tangent dir if they dont agree
-					#if move_input.x != 0.0 and tangent.x * move_input.x < 0.0:
-						#tangent = -tangent
-					scale_vel_along_tangent(tangent)
-					#var speed = velocity.length()
-					#if abs(tangent.x) > 0.1:
-						#var scale_factor = clamp(velocity.x / tangent.x, -speed * 10, speed * 10)
-						#velocity = tangent * scale_factor
-				else:
-					# Treat steep contacts as walls, not ground
-					is_on_ground = false
-					velocity = velocity.slide(normal)
+			
+			# -- are we colliding with something vertically?
+			# -- at least partially?
+			# -- if the collision is the direction of UP or DOWN?
+			var cos_angle = normal.dot(Vector2.UP)
+			if cos_angle > 0.:
+				# -- are we colliding with something that we stand on
+				# -- i.e. is the angle between the normal and straight up 
+				# -- v dot a if = |v||a|cos(theta) => this is just the cos of an angle
+				# -- cos(pi/2.5) ~= 0.3; pi/2.5 = 72 degrees
+				is_on_ground = cos_angle >= MIN_GROUND_COS
+				if is_on_ground:
+					# -- sliding check
+					var is_steep_enough_to_slide = cos_angle < SLIDE_COS_THRESHOLD
+					if is_steep_enough_to_slide and going_downhill(normal):
+						movement_state_transition_to(MovementStates.SLIDING)
+						return
+					# -- clear gravity accumulation
+					velocity.y = 0.0
+					var slope_tangent = normal.orthogonal()
+					if slope_tangent.x * sign(normal.y) > 0:
+						slope_tangent = -slope_tangent
+					var steepness_factor = inverse_lerp(MIN_GROUND_COS, 1.0, cos_angle)
+					
+					var t = (1. - (steepness_factor * steepness_factor) 
+							if movement_state == MovementStates.SLIDING else steepness_factor)
+					#var thr = 0.7 if movement_state == MovementStates.SLIDING else 0.3
+					var adjusted_speed =  abs(velocity.x) * lerp(0.7, 1.0, t)
+
+					velocity = slope_tangent * adjusted_speed * sign(velocity.x)
+					#if is_equal_approx(cos_angle, 1.):
+						#print("on flat ground")
+						#velocity.y = 0.
+					#else:
+						#var vel_along_hill = velocity.slide(normal)
+						##p#rint(cos_angle)
+						#if going_downhill(normal):
+							#velocity = vel_along_hill
+							#print("going downhill")
+						#else:
+							#var min_mov = move_input.slide( normal ) * kd.baseline_speed *0.6
+							#velocity = (vel_along_hill if ( min_mov.length_squared() < vel_along_hill.length_squared() )
+										#else min_mov)
+							#print("going uphill")
+					
+					current_platform_displacement_ref_check(collision)
 			else:
-				var is_hitting_ceiling = normal.dot(Vector2.DOWN) > 0.1
-				if is_hitting_ceiling:
-					if velocity.y < 0:
-						velocity.y = 0.1 * velocity.y
-					velocity = velocity.slide(normal)
+				# -- we're hitting out head
+				if velocity.y < 0:
+					velocity.y = 0.1 * velocity.y
+				velocity = velocity.slide(normal)
+
+	# -- moving this so we don't miss it while returning early from a state transition
 	
-	if last_move_input.length_squared() > 0:
-		last_non_zero_move_input = last_move_input
-	last_move_input = move_input
-	pos_current = global_position
+	#if last_move_input.length_squared() > 0:
+		#last_non_zero_move_input = last_move_input
+	#last_move_input = move_input
+	#pos_current = global_position
 
 
 func receive_shove(position_offset: Vector2, instigator_velocity: Vector2) -> void:
-	# 1. Immediately resolve the overlap by nudging our position
+	# -- 
 	global_position += position_offset
-	# 2. Absorb a fraction of the other player's velocity 
-	# (This makes heavy or fast-moving players feel like they actually knocked into you)
+	# -- heuristic for decay
 	velocity += instigator_velocity * 0.25
-	
-	# Optional: Clamp velocity so pushes don't rocket players to infinity
+	# no inf
 	velocity = velocity.limit_length(kd.MAX_PUSH_SPEED if "MAX_PUSH_SPEED" in kd else 1200.0)
 
 
@@ -783,6 +768,17 @@ func running_state_fn( _delta) -> void:
 		movement_state_transition_to( MovementStates.IDLE)
 		return
 
+func sliding_state_fn( _delta) -> void:
+	assert( integrate_motion == true)
+	check_for_jump()
+	if check_for_falling():
+		coyote_timer.start()
+	if abs(velocity.x) < kd.baseline_speed:
+		movement_state_transition_to( MovementStates.WALKING)
+		return
+	if is_zero_approx(velocity.x):
+		movement_state_transition_to( MovementStates.IDLE)
+
 
 # -- case: where we want a wall jump as fast as possible
 func wall_jump_fast_utility():
@@ -814,7 +810,9 @@ func non_grounded_horizontal_movement( _delta):
 		move_input.x != 0
 		and velocity.x * move_input.x < 0
 	)
-	var is_overspeed = abs(velocity.x) > state_target_x_speed * 1.05
+	#var is_overspeed = abs(velocity.x) > state_target_x_speed# * 1.05
+	var is_overspeed = velocity.length_squared() > state_target_x_speed * state_target_x_speed
+	#print(is_overspeed)
 	if is_overspeed:
 		if reversing:
 			velocity.x = lerp(velocity.x, 
@@ -847,8 +845,7 @@ var climb_move_override: Callable = (func():
 
 func climbing_state_fn(_delta):
 	$ItemManager.stop_using_item()
-	check_for_jump() # -- will change to jump state
-	#move( climb_move_override )
+	check_for_jump()
 	if !can_climb:
 		g = kd.fall_gravity
 		movement_state_transition_to(MovementStates.FALLING)
@@ -1219,13 +1216,14 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				integrate_motion = true
 			MovementStates.LEDGE_GRABBING:
 				$CollisionShape2D.set_deferred("disabled", false)
+		
 		match new_movement_state:
 			MovementStates.JUMPING:
 				toggle_one_way_platform_collisions(false)
 			MovementStates.FALLING:
 				toggle_one_way_platform_collisions(true)
-		# ----------------- things we do for all state transitions
-		# ----------------- maybe separate and call it such
+			MovementStates.SLIDING:
+				velocity.y += 50.
 		state_target_x_speed = get_horizontal_target_speed_from_state( new_movement_state )
 		# -----------------------------------------
 		# ----------------------------------
@@ -1519,6 +1517,17 @@ func update_visual_facing(horizontal_direction: float) -> void:
 	if absf(horizontal_direction) < 0.01:
 		return
 	animation_controller.set_facing_direction(horizontal_direction)
+
+# ------------------------------------------------------------------------------
+# -- assumes this is only called in like walking or running (grounded state)
+func going_uphill(_normal : Vector2) -> bool:
+	# -- if we're going uphill, the x component of the normal vector
+	# -- is pointing in the opposite dir as vel
+	return not( going_downhill )
+	
+
+func going_downhill(_normal : Vector2) -> bool:
+	return velocity.x * _normal.x > 0
 
 # ------------------------------------------------------------------------------
 

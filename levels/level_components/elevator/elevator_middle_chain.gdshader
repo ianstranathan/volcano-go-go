@@ -10,7 +10,7 @@ mat2 rotate(float _angle){
 }
 
 uniform sampler2D chain_tex: repeat_enable, filter_nearest;
-uniform vec2 ratio_and_dir = vec2(0., 0.);
+uniform vec3 ratio_and_dir = vec3(0., 0., 1.);
 
 // just an upside down parabola for testing
 float easing_fn(float x){
@@ -20,7 +20,10 @@ float easing_fn(float x){
 void fragment() {
 	vec2 uv = UV;
 	uv.x -= TIME * ratio_and_dir.y;
-	uv.y += (0.1 * easing_fn(ratio_and_dir.x)) * sin(1. * uv.x - 30. * TIME);
+	float down_shake_ampl = smoothstep(0., 1., ratio_and_dir.x) * (1. - step(0., ratio_and_dir.y));
+	float up_shake_ampl = (-1. * smoothstep(0., 1., ratio_and_dir.x) + 1.) * step(0., ratio_and_dir.y);
+	float t = down_shake_ampl + up_shake_ampl;
+	uv.y += (0.25 * t) * sin(1. * uv.x - 30. * TIME) * ratio_and_dir.z;
 	COLOR = texture(chain_tex, rotate(PI/2.) * uv);
 }
 

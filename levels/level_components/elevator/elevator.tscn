@@ -27,7 +27,7 @@ shader_parameter/scroll_speed = 0.0
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_numfo"]
 shader = ExtResource("2_mivi7")
 shader_parameter/chain_tex = ExtResource("2_1su21")
-shader_parameter/ratio_and_dir = Vector2(0, 0)
+shader_parameter/ratio_and_dir = Vector3(0, 1, 1)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ntn6h"]
 blend_mode = 1
@@ -103,7 +103,7 @@ texture_mode = 1
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 material = SubResource("CanvasItemMaterial_ntn6h")
-amount = 3
+amount = 10
 texture = ExtResource("6_oywdn")
 lifetime = 0.3
 randomness = 1.0

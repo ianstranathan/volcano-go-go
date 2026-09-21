@@ -8,7 +8,7 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(2532, -38), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(-881, -1612), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
 "position": Vector2(-927, 76)

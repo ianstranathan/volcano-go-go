@@ -1,6 +1,13 @@
 @tool
 extends Node2D
 
+
+"""
+NOTE
+the vec3 shader param is: interpolant [0., 1], direction ( -1, or 1 ) and on/off (0. or 1.)
+"""
+
+
 enum Positions {BOTTOM, TOP}
 @export var location = Positions.BOTTOM
 
@@ -127,9 +134,13 @@ func _process(_delta: float) -> void:
 	if !Engine.is_editor_hint():
 		$GPUParticles2D.global_position = $BasePlatform.global_position
 		if state == State.MOVING_UP:
-			$Line2D.material.set_shader_parameter("ratio_and_dir", Vector2(mov_comp.progress_ratio, 1.0))
+			var t = mov_comp.progress_ratio
+			$GPUParticles2D.amount = max( 1., 10. * (-1. * (3.*t*t - 2.*t*t*t) + 1))
+			$Line2D.material.set_shader_parameter("ratio_and_dir", Vector3(t, 1.0, 1.0))
 		elif state == State.MOVING_DOWN:
-			$Line2D.material.set_shader_parameter("ratio_and_dir", Vector2(mov_comp.progress_ratio, -1.0))
+			var t = mov_comp.progress_ratio
+			$GPUParticles2D.amount = max(1., 10. * (3.*t*t - 2.*t*t*t))
+			$Line2D.material.set_shader_parameter("ratio_and_dir", Vector3(t, -1.0, 1.0))
 			#$Node2D.material.set_shader_paremeter("sroll_speed", mov_comp.progress_ratio ) 
 
 
@@ -176,11 +187,17 @@ func state_transition_fn( _new_state: State):
 	if state != _new_state:
 		match _new_state:
 			State.IDLE:
+				$Line2D.material.set_shader_parameter("ratio_and_dir", Vector3.ZERO)
+				$GPUParticles2D.emitting = false
 				_ticking = false
 			State.MOVING_UP:
+				$GPUParticles2D.emitting = true
+				$GPUParticles2D.rotation = PI
 				_ticking = true
 				mov_comp.set_target_time( 1.0 )
 			State.MOVING_DOWN:
+				$GPUParticles2D.rotation = 0.
+				$GPUParticles2D.emitting = true
 				_ticking = true
 				mov_comp.set_target_time( -1.0 )
 		

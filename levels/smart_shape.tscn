@@ -34,7 +34,7 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(2532, -38), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(-881, -1612), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
 "position": Vector2(-927, 76)
@@ -3850,7 +3850,7 @@ _point_order = PackedInt32Array(20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8
 _constraints = {
 Vector2i(0, 20): 15
 }
-_next_key = 41
+_next_key = 42
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_fkhe8"]
 _surfaces = [{
@@ -12232,7 +12232,7 @@ position = Vector2(-1352, -9648)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(2532, -38)
+position = Vector2(-881, -1612)
 
 [node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(-163, -143)
@@ -12514,7 +12514,7 @@ polygon = PackedVector2Array(3136, -3248, 3040, -3216, 2704, -3288, 2208, -3400,
 
 [node name="CollisionPolygon2D23" type="CollisionPolygon2D" parent="Platforms/Rest"]
 position = Vector2(0, 593)
-polygon = PackedVector2Array(2872, -1326, 3408, -1326, 3339, -1190, 3200, -1206, 3115, -1102, 2984, -1182, 2896, -1238)
+polygon = PackedVector2Array(2872, -1329, 3408, -1329, 3339, -1193, 3200, -1209, 3115, -1105, 2984, -1185, 2896, -1241)
 
 [node name="SS2D_Shape21" type="Node2D" parent="Platforms/Rest"]
 position = Vector2(2168, 0)
@@ -13632,6 +13632,7 @@ offset_bottom = -2246.0
 text = "push button to make platforms appear"
 
 [node name="LanternArea" parent="." instance=ExtResource("24_m8ier")]
+visible = false
 z_index = 10
 position = Vector2(-3490.5, -839.50006)
 
