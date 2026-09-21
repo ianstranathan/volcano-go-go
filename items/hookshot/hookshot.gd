@@ -16,7 +16,7 @@ Multiplayer authority is decided by item manager at spawn
 
 var target_pos
 var player_ref: Player
-
+var cool_down
 
 func _ready() -> void:
 	#----------------------------------- item interface / dependency injection

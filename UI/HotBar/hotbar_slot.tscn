@@ -1,13 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://dx8mheb8rjmfv"]
+[gd_scene load_steps=8 format=3 uid="uid://dx8mheb8rjmfv"]
 
 [ext_resource type="Script" uid="uid://dqglqq82qyf4r" path="res://UI/HotBar/hotbar_slot.gd" id="1_eh5w8"]
+[ext_resource type="Shader" uid="uid://cl760jd4h5qin" path="res://UI/HotBar/hotbar_slot_bg.gdshader" id="2_bl7db"]
+[ext_resource type="Shader" uid="uid://cyumbob7q5tbq" path="res://UI/HotBar/hotbar_slot_icon.gdshader" id="2_htlpn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_htlpn"]
+resource_local_to_scene = true
+shader = ExtResource("2_bl7db")
+shader_parameter/progress = 1.0
+shader_parameter/thickness = 0.10000000475000001
+shader_parameter/selected = 0.0
+shader_parameter/recharging = 0.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eh5w8"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
 border_color = Color(0.34407574, 0.3440758, 0.34407547, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_htlpn"]
@@ -17,6 +22,10 @@ border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bl7db"]
+shader = ExtResource("2_htlpn")
+shader_parameter/available = 1.0
+
 [node name="HotbarSlot" type="Control"]
 clip_contents = true
 custom_minimum_size = Vector2(64, 64)
@@ -25,6 +34,7 @@ anchors_preset = 0
 script = ExtResource("1_eh5w8")
 
 [node name="Backing" type="Panel" parent="."]
+material = SubResource("ShaderMaterial_htlpn")
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
 offset_right = 40.0
@@ -32,6 +42,7 @@ offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_eh5w8")
 
 [node name="SelectedOutline" type="Panel" parent="."]
+visible = false
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
 offset_right = 40.0
@@ -43,12 +54,13 @@ custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_constants/margin_left = 2
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 2
-theme_override_constants/margin_bottom = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
 [node name="Icon" type="TextureRect" parent="MarginContainer"]
+material = SubResource("ShaderMaterial_bl7db")
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5

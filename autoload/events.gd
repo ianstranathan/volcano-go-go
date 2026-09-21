@@ -21,10 +21,14 @@ signal item_picked_up( world_id: int)
 #signal world_effect( player_id: int, effect_type: Effects.EffectNames, pos: Vector2, flip:bool)
 signal world_effect(player_id: int, params: EffectParameters)
 
-# -- HotBar connects to this in its _ready
+# -- emitted in item_manager; HotBar connects to this in its _ready
 signal inventory_changed(item_db_enums: Array,
-						selected_index: int, 
-						special_item)
+						 mirror_array_of_cooldown_floats: Array,
+						 selected_index: int, 
+						 special_item)
+# -- emitted in item_manager; hotbar connects to this
+signal item_used( last_used_index: int )
+
 # -- Block Player Input
 signal input_blocked(blocked: bool)
 

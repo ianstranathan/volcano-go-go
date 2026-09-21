@@ -9,6 +9,7 @@ extends Node2D
 @export var accl_curve: Curve
 #var input_manager: LocalPlayerController
 var player_ref: Player
+var cool_down
 
 enum ParachuteTypes {
 	NONE,

@@ -4,6 +4,7 @@ extends Node2D
 @export var item_interface: ItemInterface
 @export var accl_curve: Curve
 var player_ref: Player
+var cool_down
 var g
 var accl_cut_off_speed: float
 

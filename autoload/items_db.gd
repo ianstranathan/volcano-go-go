@@ -23,6 +23,13 @@ var items = {
 	#ItemNames.ROPE_LADDER:    preload("res://items/rope_ladder/rope_ladder.tscn")
 }
 
+var item_base_cooldowns = {
+	ItemNames.GRAPPLING_HOOK: 1.5,
+	ItemNames.HOOKSHOT: 3.0,
+	ItemNames.JETPACK: 0.0,
+	ItemNames.PARACHUTE: 5.0,
+	ItemNames.SWAP_GUN: 3.0
+}
 
 var item_pickup_textures = {
 	ItemNames.GRAPPLING_HOOK: preload("res://assets/grappling_hook.svg"),

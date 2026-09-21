@@ -6,6 +6,7 @@ Multiplayer authority is decided by item manager at spawn
 
 @export var item_interface: ItemInterface
 var player_ref: Player
+var cool_down: float
 var projectiles_container_ref
 @onready var projectile_component = $ProjectileItemComponent
 @onready var swap_projectile_scene: PackedScene = preload("res://items/swap_gun/swap_projectile.tscn")

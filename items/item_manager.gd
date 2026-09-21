@@ -7,8 +7,9 @@ var active_movement_override: MovementOverrideComponent
 
 #----------------------------------------------------------- Inventory Variables
 const INV_SIZE := 5;
-@onready var inventory_item_handles: Array[int] = []
-@onready var inventory_items: Array = []
+@onready var inventory_item_handles: Array[int] = [] # -- the enums
+@onready var inventory_item_cooldowns: Array[float] = [] # -- the associated cool downs
+@onready var inventory_items: Array = [] # -- the actual items
 var last_selected_slot: int = -1
 var special_item = null
 
@@ -38,11 +39,12 @@ enum AimingTypes{
 func _ready():
 	inventory_item_handles.resize(INV_SIZE)
 	inventory_items.resize(INV_SIZE)
-	
+	inventory_item_cooldowns.resize( INV_SIZE )
 	# -- initialize items and item handles
 	# -- choosing -1 to represent free slot
 	for i in range(INV_SIZE):
 		inventory_item_handles[i] = -1
+		inventory_item_cooldowns[i] = 0.
 		inventory_items[i] = null
 
 # -- called from player
@@ -50,7 +52,11 @@ func _ready():
 # -- networking tick rate ( delta time )
 func process_item_tick(delta: float, command: PlayerCommand):
 	if is_instance_valid(item_interface):
+		# -- pass logic to the item to do stuff
 		item_interface.tick_update(delta, command)
+		# -- emit signal for ui
+		if command.item_use_pressed or command.item_use_held and last_selected_slot != -1:
+			Events.emit_signal("item_used", last_selected_slot)
 
 # -- this is called by everyone locally
 # -- however we don't need to keep track of all of this
@@ -63,7 +69,8 @@ func pick_up(spawn_id:int,  item_lookup: ItemsDb.ItemNames) -> void:
 		return
 	# -- update inventory_item_handles with this item db enum to pass to inventory UI
 	inventory_item_handles[free_index] = item_lookup
-	
+	var cool_down_amt = ItemsDb.item_base_cooldowns.get(item_lookup)
+	inventory_item_cooldowns[ free_index ] = cool_down_amt
 	# -- actually allocate memory / make object
 	var item = ItemsDb.get_item_from_lookup(item_lookup).instantiate()
 	item.name = str( ItemsDb.ItemNames.keys()[item_lookup] ) + "-" + str(spawn_id)
@@ -75,6 +82,7 @@ func pick_up(spawn_id:int,  item_lookup: ItemsDb.ItemNames) -> void:
 	item.set_multiplayer_authority( multiplayer.get_unique_id() )
 	if item.has_method("set_player_ref"):
 		item.set_player_ref(player_ref)
+	item.cool_down = cool_down_amt
 	if item.has_method("set_projectiles_container_ref"):
 		item.set_projectiles_container_ref(projectiles_container_ref)
 		
@@ -97,7 +105,7 @@ func pick_up(spawn_id:int,  item_lookup: ItemsDb.ItemNames) -> void:
 							global_position,0,1,
 							{}
 							)
-		emit_inventory_changed()
+		emit_inventory_changed( )
 	
 	call_deferred("add_child", item)
 
@@ -156,6 +164,7 @@ func equip_inventory_slot_local_stuff(slot_index: int):
 func emit_inventory_changed() -> void:
 	if player_ref.is_multiplayer_authority():
 		Events.inventory_changed.emit(inventory_item_handles,
+									  inventory_item_cooldowns,
 									  last_selected_slot,
 									  special_item)
 
@@ -169,6 +178,7 @@ func drop_item( slot=null, delete_item_now=false ) -> void:
 		return
 	
 	inventory_item_handles[ slot_to_drop ] = -1
+	inventory_item_cooldowns[ slot_to_drop ] = 0
 	
 	if multiplayer.is_server() or is_multiplayer_authority():
 		var next_slot = _calculate_fallback_slot(slot_to_drop)
@@ -275,6 +285,7 @@ var pending_deletion_slot: int = -1
 func update_pending_deletion(slot: int):
 	# -- immediately update uio
 	inventory_item_handles[ slot ]= -1
+	inventory_item_cooldowns [ slot ] = 0
 	# -- and mark the slot for deletion
 	pending_deletion_slot = slot
 

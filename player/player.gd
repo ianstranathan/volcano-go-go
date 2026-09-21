@@ -1222,8 +1222,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				toggle_one_way_platform_collisions(false)
 			MovementStates.FALLING:
 				toggle_one_way_platform_collisions(true)
-			MovementStates.SLIDING:
-				velocity.y += 50.
+			#MovementStates.SLIDING:
+				#velocity.y += 50.
 		state_target_x_speed = get_horizontal_target_speed_from_state( new_movement_state )
 		# -----------------------------------------
 		# ----------------------------------

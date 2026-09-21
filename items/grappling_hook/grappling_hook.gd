@@ -12,8 +12,9 @@ var rest_length
 @onready var ray_component = $RaycastItemComponent
 @onready var rope := $Line2D
 
+# -- set by item manager
 var player_ref: Player
-
+var cool_down
 
 func _ready() -> void:
 	#----------------------------------- item interface / dependency injection
