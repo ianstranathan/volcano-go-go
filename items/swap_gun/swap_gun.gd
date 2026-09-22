@@ -14,6 +14,8 @@ var projectiles_container_ref
 func _ready() -> void:
 	assert( item_interface )
 	#----------------------------------- item interface / dependency injection
+	assert(cool_down != null)
+	item_interface.timer.wait_time = cool_down
 	item_interface.tick_update_fn = tick_update
 	#item_interface.stopped.connect(on_item_stopped)
 	item_interface.destroyed.connect( func():
@@ -32,8 +34,9 @@ func shoot_on_interpolated_players(_dir):
 
 func tick_update(_delta: float, cmd: PlayerCommand):
 	projectile_component.tick_update(cmd)
-	if cmd.item_use_pressed and cmd.aiming_input.length_squared() > 0.05:
+	if cmd.item_use_pressed and cmd.aiming_input.length_squared() > 0.05 and item_interface.not_on_cool_down():
 		var _dir = (cmd.aiming_input - player_ref.global_position).normalized()
+		item_interface.on_used()
 		shoot_swap_projectile( _dir )
 		shoot_on_interpolated_players.rpc( _dir )
 

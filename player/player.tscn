@@ -322,7 +322,6 @@ transform_offset = Vector2(0, -80)
 metadata/_custom_type_script = "uid://crnrkpiidg5es"
 
 [node name="Cloud" type="Sprite2D" parent="."]
-visible = false
 z_index = 50
 material = SubResource("ShaderMaterial_ebec5")
 position = Vector2(0.99999994, 7.000002)

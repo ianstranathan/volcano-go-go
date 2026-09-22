@@ -18,6 +18,7 @@ signal destroyed
 
 var tick_update_fn: Callable
 var finished_using_item: bool = false # did the thing being interfaced with stop?
+var timer = TickTimer.new(1.0)
 
 # -- we're asserting that every item has a tick_update
 # -- (i.e. deterministic _physics_process) but what that looks like
@@ -25,6 +26,14 @@ var finished_using_item: bool = false # did the thing being interfaced with stop
 func tick_update(delta_tick: float, command: PlayerCommand) -> void:
 	if tick_update_fn.is_valid():
 		tick_update_fn.call(delta_tick, command)
+
+
+func on_used():
+	timer.start()
+
+
+func not_on_cool_down() -> bool:
+	return timer.is_stopped()
 
 
 func stop():

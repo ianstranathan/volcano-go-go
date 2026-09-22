@@ -1,9 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://c27ja5hgwi5vm"]
+[gd_scene load_steps=9 format=3 uid="uid://c27ja5hgwi5vm"]
 
 [ext_resource type="Shader" uid="uid://cta5jgcojiu0a" path="res://levels/level_components/portal/portal.gdshader" id="1_neawh"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="1_v41h3"]
 [ext_resource type="Texture2D" uid="uid://dqh3gfimhcbfj" path="res://assets/adamsaltsman.png" id="2_qybxk"]
-[ext_resource type="Texture2D" uid="uid://blfgm3idfq4a3" path="res://assets/volcano_icon_4.png" id="3_rxy02"]
+[ext_resource type="Texture2D" uid="uid://0ctfwf6f58ae" path="res://assets/vecteezy_flat-black-silhouette-of-active-volcano_52724973.jpg" id="3_rxy02"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_neawh"]
 frequency = 0.1049
@@ -12,6 +12,7 @@ frequency = 0.1049
 noise = SubResource("FastNoiseLite_neawh")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qybxk"]
+resource_local_to_scene = true
 shader = ExtResource("1_neawh")
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_qybxk")
 shader_parameter/oasis_tex = ExtResource("2_qybxk")
@@ -21,8 +22,19 @@ shader_parameter/wave_speed = 1.5
 shader_parameter/wave_frequency = 2.0
 shader_parameter/is_volcano = 1.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rxy02"]
+radius = 75.0
+height = 200.0
+
 [node name="Portal" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_qybxk")
+scale = Vector2(3, 3)
 texture = ExtResource("1_v41h3")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CapsuleShape2D_rxy02")

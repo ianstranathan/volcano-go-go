@@ -18,6 +18,8 @@ var cool_down
 
 func _ready() -> void:
 	#----------------------------------- item interface / dependency injection
+	assert(cool_down != null)
+	item_interface.timer.wait_time = cool_down
 	item_interface.tick_update_fn = tick_update
 	item_interface.stopped.connect(on_item_stopped)
 	item_interface.destroyed.connect( func():
@@ -45,7 +47,7 @@ func tick_update(delta: float, cmd: PlayerCommand):
 	# --dir of the aiming ray
 	ray_component.tick_update(cmd)
 	
-	if cmd.item_use_pressed:
+	if cmd.item_use_pressed and item_interface.not_on_cool_down():
 		if !target_pos:
 			intersection_data = ray_component.get_intersection_data()
 			if intersection_data:
@@ -57,6 +59,7 @@ func tick_update(delta: float, cmd: PlayerCommand):
 				# -- send to everyone but yourself and the host
 				set_target_on_interpolated.rpc( target_pos )
 				$MovementOverrideComponent.start()
+				item_interface.on_used()
 				if is_multiplayer_authority() and not player_ref.is_replaying:
 					Events.emit_signal("play_world_sound",
 										AudioDb.WorldSoundId.HOOKSHOT_FIRE,

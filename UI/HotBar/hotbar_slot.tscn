@@ -8,7 +8,7 @@
 resource_local_to_scene = true
 shader = ExtResource("2_bl7db")
 shader_parameter/progress = 1.0
-shader_parameter/thickness = 0.10000000475000001
+shader_parameter/thickness = 0.10000000475
 shader_parameter/selected = 0.0
 shader_parameter/recharging = 0.0
 

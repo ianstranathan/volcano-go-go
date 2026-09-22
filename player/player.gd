@@ -397,14 +397,15 @@ func execute_tick(delta: float, cmd: PlayerCommand):
 					var slope_tangent = normal.orthogonal()
 					if slope_tangent.x * sign(normal.y) > 0:
 						slope_tangent = -slope_tangent
-					var steepness_factor = inverse_lerp(MIN_GROUND_COS, 1.0, cos_angle)
-					
-					var t = (1. - (steepness_factor * steepness_factor) 
-							if movement_state == MovementStates.SLIDING else steepness_factor)
+					#var steepness_factor = inverse_lerp(MIN_GROUND_COS, 1.0, cos_angle)
+					#
+					#var t = (1. - (steepness_factor * steepness_factor) 
+							#if movement_state == MovementStates.SLIDING else steepness_factor)
 					#var thr = 0.7 if movement_state == MovementStates.SLIDING else 0.3
-					var adjusted_speed =  abs(velocity.x) * lerp(0.7, 1.0, t)
+					#print(lerp(MIN_GROUND_COS, 1.0, t))
+					#var adjusted_speed =  abs(velocity.x) * lerp(MIN_GROUND_COS, 1.0, t)
 
-					velocity = slope_tangent * adjusted_speed * sign(velocity.x)
+					velocity = slope_tangent * abs(velocity.x) * sign(velocity.x)
 					#if is_equal_approx(cos_angle, 1.):
 						#print("on flat ground")
 						#velocity.y = 0.
@@ -768,7 +769,11 @@ func running_state_fn( _delta) -> void:
 		movement_state_transition_to( MovementStates.IDLE)
 		return
 
+var time_sliding = 0.0
+var exp_coeff = 0.3
 func sliding_state_fn( _delta) -> void:
+	time_sliding += _delta
+	#print(time_sliding)
 	assert( integrate_motion == true)
 	check_for_jump()
 	if check_for_falling():
@@ -778,6 +783,8 @@ func sliding_state_fn( _delta) -> void:
 		return
 	if is_zero_approx(velocity.x):
 		movement_state_transition_to( MovementStates.IDLE)
+	
+	velocity = velocity * exp(-time_sliding * exp_coeff)
 
 
 # -- case: where we want a wall jump as fast as possible
@@ -1222,8 +1229,9 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				toggle_one_way_platform_collisions(false)
 			MovementStates.FALLING:
 				toggle_one_way_platform_collisions(true)
-			#MovementStates.SLIDING:
-				#velocity.y += 50.
+			MovementStates.SLIDING:
+				#velocity *= 2.0
+				time_sliding = 0.
 		state_target_x_speed = get_horizontal_target_speed_from_state( new_movement_state )
 		# -----------------------------------------
 		# ----------------------------------
@@ -1524,10 +1532,11 @@ func going_uphill(_normal : Vector2) -> bool:
 	# -- if we're going uphill, the x component of the normal vector
 	# -- is pointing in the opposite dir as vel
 	return not( going_downhill )
-	
+
 
 func going_downhill(_normal : Vector2) -> bool:
-	return velocity.x * _normal.x > 0
+	return (velocity.x * _normal.x > 0) and (last_move_input.x * _normal.x > 0)
+
 
 # ------------------------------------------------------------------------------
 

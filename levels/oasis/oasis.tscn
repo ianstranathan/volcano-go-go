@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://bg5gcggjlxqdx"]
+[gd_scene load_steps=14 format=3 uid="uid://bg5gcggjlxqdx"]
 
 [ext_resource type="Texture2D" uid="uid://dqh3gfimhcbfj" path="res://assets/adamsaltsman.png" id="1_eypol"]
 [ext_resource type="Shader" uid="uid://c7ctopwcsc2n3" path="res://levels/oasis/oasis.gdshader" id="1_oed3a"]
 [ext_resource type="Script" uid="uid://dso72jwgq4una" path="res://levels/oasis/oasis.gd" id="1_vrkva"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_pgp5g"]
-[ext_resource type="Shader" uid="uid://b32e4k6df1joa" path="res://levels/oasis/voclano_portal.gdshader" id="5_5ovu8"]
-[ext_resource type="Texture2D" uid="uid://blfgm3idfq4a3" path="res://assets/volcano_icon_4.png" id="5_sko6r"]
+[ext_resource type="PackedScene" uid="uid://c27ja5hgwi5vm" path="res://levels/level_components/portal/portal.tscn" id="7_vv1hg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pgp5g"]
 shader = ExtResource("1_oed3a")
@@ -32,18 +31,9 @@ size = Vector2(300, 20)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q6erl"]
 size = Vector2(20, 17.999985)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_vv1hg"]
-shader = ExtResource("5_5ovu8")
-shader_parameter/noise_texture = ExtResource("2_pgp5g")
-shader_parameter/distortion_strength = 0.03
-shader_parameter/wave_speed = 1.5
-shader_parameter/wave_frequency = 2.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_5ovu8"]
-radius = 120.0
-
-[node name="Oasis" type="Node2D"]
+[node name="Oasis" type="Node2D" node_paths=PackedStringArray("portal")]
 script = ExtResource("1_vrkva")
+portal = NodePath("Portal")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_pgp5g")
@@ -120,14 +110,5 @@ position = Vector2(1118, -144)
 scale = Vector2(16.519999, 1)
 shape = SubResource("RectangleShape2D_q6erl")
 
-[node name="PortalArea2D" type="Area2D" parent="."]
-position = Vector2(49, -515)
-collision_mask = 2
-
-[node name="Sprite2D2" type="Sprite2D" parent="PortalArea2D"]
-material = SubResource("ShaderMaterial_vv1hg")
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("5_sko6r")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PortalArea2D"]
-shape = SubResource("CircleShape2D_5ovu8")
+[node name="Portal" parent="." instance=ExtResource("7_vv1hg")]
+position = Vector2(59, -509)

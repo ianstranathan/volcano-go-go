@@ -101,5 +101,5 @@ void fragment()
 	vec4 magma_tex_sample = texture(magma_tex, 0.5 * p);
 	vec3 color = magma_tex_sample.xyz + glow_color + (1. - rock_mask) * texture(magma_tex, p).xyz;
 
-	COLOR = vec4(color, alpha);
+	COLOR = vec4((1. - length(p)) * color, alpha);
 }

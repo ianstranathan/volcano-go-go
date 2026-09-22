@@ -38,6 +38,8 @@ func _ready() -> void:
 	
 	#------------------------------------- item interface / dependency injection
 	#item_interface.can_use_fn = func(): return true # you can always try this
+	assert(cool_down != null)
+	item_interface.timer.wait_time = cool_down
 	item_interface.tick_update_fn = tick_update
 	item_interface.stopped.connect( stop )
 	#item_interface.destroyed.connect( _sync_destruction)
@@ -142,8 +144,9 @@ func tick_update(delta: float, cmd: PlayerCommand):
 
 func try_parachute():
 	# if player is falling, change to parachuting
-	if player_ref.can_parachute():
+	if player_ref.can_parachute() and item_interface.not_on_cool_down():
 		start( ParachuteTypes.PARACHUTING )
+		item_interface.on_used()
 	else:
 		turn_off_coll_and_sprite( false, true ) # -- allow area2d to change state
 		try_timer.start() # if the area2d doesn't change state after X time

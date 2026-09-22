@@ -109,8 +109,11 @@ void fragment()
     distortion.x += sin(UV.y * 10.0 + TIME * wave_speed) * distortion_strength * 0.3;
     distortion.y += cos(UV.x * 10.0 + TIME * wave_speed) * distortion_strength * 0.3;
 
-   vec4 inner_tex_sample = texture(oasis_tex, (2. * (UV - vec2(0.5)) + vec2(0.5)) + distortion) *  step(0.1, is_volcano) +
-						   texture(volcano_tex, (2. * (UV - vec2(0.5)) + vec2(0.5)) + distortion) *  (1. - step(0.1, is_volcano));
+	vec4 oasis_tex_sample   = texture(oasis_tex,   (2. *  (UV - vec2(0.5)) + vec2(0.5)) + distortion) *  (1. - step(0.1, is_volcano));
+	vec4 volcano_tex_sample = texture(volcano_tex, (1. * (UV - vec2(0.5)) + vec2(0.5)) + distortion - vec2(0., 0.05)) *  step(0.1, is_volcano);
+	vec4 inner_tex_sample = oasis_tex_sample + volcano_tex_sample;
+   //vec4 inner_tex_sample = texture(oasis_tex, (2. * (UV - vec2(0.5)) + vec2(0.5)) + distortion) *  (1. - step(0.1, is_volcano) +
+
 
 	vec2 p = UV - 0.5;
 	p*=5.;
@@ -125,7 +128,7 @@ void fragment()
     rz *= abs((-circ(vec2(p.x / 4.2, p.y / 7.0))));
 	
 	//final color
-	vec3 base_col = step(0.1, is_volcano) * vec3(.1,0.1,0.4)  + (1. -  step(0.1, is_volcano)) * vec3(0.4, 0.1, 0.1);
+	vec3 base_col =  (1. -  step(0.1, is_volcano))* vec3(.1,0.1,0.4)  + step(0.1, is_volcano) * vec3(0.4, 0.1, 0.1);
 	vec3 col = base_col/rz;
 	col=pow(abs(col),vec3(.99));
 	COLOR = vec4(col, 1. - (rz * rz));
@@ -135,5 +138,6 @@ void fragment()
 	
 	
 	//vec3 _out = inner_mask * clamp((rz * rz), 0., 1) * inner_tex_sample.xyz + col * (1. - inner_mask) * (1. -  clamp((rz * rz), 0., 1));
-	COLOR = vec4(mix(col, inner_tex_sample.xyz * inner_mask, pow(abs(d), 0.1) ), col.r + inner_mask);
+	COLOR = vec4(mix(col, inner_tex_sample.xyz * inner_mask, pow(abs(d), 0.1) ),
+				 pow(col.r + inner_mask, 4.));
 }
