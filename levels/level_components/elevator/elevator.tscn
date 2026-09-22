@@ -103,6 +103,7 @@ texture_mode = 1
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 material = SubResource("CanvasItemMaterial_ntn6h")
+emitting = false
 amount = 10
 texture = ExtResource("6_oywdn")
 lifetime = 0.3

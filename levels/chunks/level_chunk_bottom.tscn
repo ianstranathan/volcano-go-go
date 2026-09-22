@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dfndtocpf6lff" path="res://levels/pickup_editor_placeholder.gd" id="7_obtet"]
 [ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="8_rhh5g"]
 [ext_resource type="PackedScene" uid="uid://dxvt8fbol7y6b" path="res://fire_column/fire_column.tscn" id="9_a1uxq"]
-[ext_resource type="Resource" uid="uid://d1duxkgjr66nm" path="res://levels/level_data_rscs/level_chunk_bottom_data.tres" id="10_o7bos"]
+[ext_resource type="Resource" path="res://levels/level_data_rscs/level_chunk_bottom_data.tres" id="10_o7bos"]
 [ext_resource type="PackedScene" uid="uid://5x7tnpyvft8y" path="res://levels/platforms/base_platform/base_platform.tscn" id="10_wndrb"]
 
 [sub_resource type="Resource" id="Resource_a1uxq"]
