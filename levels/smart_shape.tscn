@@ -1,4 +1,4 @@
-[gd_scene load_steps=1878 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1883 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -7,9 +7,10 @@
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="5_lv54x"]
 [ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="6_rywxm"]
 [ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="7_m8ier"]
+[ext_resource type="Texture2D" uid="uid://boabknsfjulq5" path="res://assets/Textures/Rune Bg Dark.png" id="8_cie1a"]
 [ext_resource type="Texture2D" uid="uid://c5v2fxwbly37t" path="res://assets/Textures/volcano fill blank.png" id="8_hy7c0"]
 [ext_resource type="Texture2D" uid="uid://cv5c56jsunlnc" path="res://assets/Textures/volcanoground corner.png" id="9_cie1a"]
-[ext_resource type="Texture2D" uid="uid://c4ffcjpxex4x1" path="res://assets/Textures/Rune ground 2.png" id="9_hy7c0"]
+[ext_resource type="Texture2D" uid="uid://4kougx8ybeo5" path="res://assets/Textures/Rune ground 4.1.png" id="9_dukmt"]
 [ext_resource type="Texture2D" uid="uid://ovorp82bf8yr" path="res://assets/Textures/volcano ground v3.png" id="10_dukmt"]
 [ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="11_15kkk"]
 [ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="12_pcc7t"]
@@ -25,6 +26,10 @@
 [ext_resource type="Texture2D" uid="uid://8scq0aw4k0ff" path="res://assets/Textures/Obsidian Corner.png" id="20_hy7c0"]
 [ext_resource type="Texture2D" uid="uid://do8x0jadgokja" path="res://assets/Textures/Obsidian.png" id="21_cie1a"]
 [ext_resource type="Script" uid="uid://caucxban4octc" path="res://utils/debugging/marker_reflector.gd" id="21_k2k0m"]
+[ext_resource type="Texture2D" uid="uid://b6thuq2mh0j1k" path="res://assets/Textures/Rune_pillar 3.png" id="24_1tms3"]
+[ext_resource type="Texture2D" uid="uid://c7ujxen3lsq4y" path="res://assets/Textures/Rune_pillar 1.png" id="25_iakei"]
+[ext_resource type="Texture2D" uid="uid://iq0lvs7hseiq" path="res://assets/Textures/Rune_pillar 2.png" id="26_5o15g"]
+[ext_resource type="Texture2D" uid="uid://dfdtmlgy806sx" path="res://assets/Textures/Rune_pillar 4.png" id="27_jv26l"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -109,7 +114,7 @@ _next_key = 9
 [sub_resource type="ArrayMesh" id="ArrayMesh_7hxsd"]
 _surfaces = [{
 "aabb": AABB(-7376.0356, -17.026123, 0, 14568.035, 944.0105, 1e-05),
-"attribute_data": PackedByteArray("/////6Ye1MEQpnI/ph7UwRCmcj//////AMCqwQAAAAAAwKrBAAAAAP////8AgIbBAAAAAACAhsEAAAAA/////wCA4EEAAAAAAIDgQQAAAAD/////AMDgQQAA/D8AwOBBAAD8P/////+9VZbBAL9nQL1VlsEAv2dA/////0mA5sEgvGQ/SYDmwSC8ZD//////2+ndwYA1iL3b6d3BgDWIvQ=="),
+"attribute_data": PackedByteArray("/////46OpcFPkz4/jo6lwU+TPj//////r0SFwQAAAACvRIXBAAAAAP////+E81HBAAAAAITzUcEAAAAA/////zI4r0EAAAAAMjivQQAAAAD/////JmqvQYDrxT8maq9BgOvFP/////9Nq2rBOAM2QE2rasE4AzZA/////0Dns8HHpTM/QOezwcelMz//////ZzOtwcX0Vb1nM63BxfRVvQ=="),
 "format": 34359742527,
 "index_count": 21,
 "index_data": PackedByteArray("AAABAAIAAgADAAQAAAACAAQAAAAEAAUABQAGAAYABgAHAAAAAAAFAAYA"),
@@ -121,7 +126,7 @@ _surfaces = [{
 
 [sub_resource type="Resource" id="Resource_1lqyb"]
 script = ExtResource("7_m8ier")
-texture = ExtResource("8_hy7c0")
+texture = ExtResource("8_cie1a")
 mesh = SubResource("ArrayMesh_7hxsd")
 z_index = -10
 
@@ -140,7 +145,7 @@ _surfaces = [{
 
 [sub_resource type="Resource" id="Resource_wmxir"]
 script = ExtResource("7_m8ier")
-texture = ExtResource("9_hy7c0")
+texture = ExtResource("9_dukmt")
 mesh = SubResource("ArrayMesh_8eetp")
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_rb7e7"]
@@ -158,7 +163,7 @@ _surfaces = [{
 
 [sub_resource type="Resource" id="Resource_8f2ow"]
 script = ExtResource("7_m8ier")
-texture = ExtResource("9_hy7c0")
+texture = ExtResource("9_dukmt")
 mesh = SubResource("ArrayMesh_rb7e7")
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_2lk8o"]
@@ -176,10 +181,10 @@ _surfaces = [{
 
 [sub_resource type="Resource" id="Resource_kxgtb"]
 script = ExtResource("7_m8ier")
-texture = ExtResource("9_hy7c0")
+texture = ExtResource("9_dukmt")
 mesh = SubResource("ArrayMesh_2lk8o")
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_wm6l0"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_pcc7t"]
 _surfaces = [{
 "aabb": AABB(-7395.284, 218.56909, 0, 14529.821, 715.0602, 1e-05),
 "attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8lsDpDAACAPyWwOkMAAIA//////yWwOkMAAAAAJbA6QwAAAAD/////AABkQwAAgD8AAGRDAACAP/////8AAGRDAAAAAAAAZEMAAAAA"),
@@ -194,12 +199,12 @@ _surfaces = [{
 
 [sub_resource type="Resource" id="Resource_oyop6"]
 script = ExtResource("7_m8ier")
-texture = ExtResource("9_hy7c0")
-mesh = SubResource("ArrayMesh_wm6l0")
+texture = ExtResource("9_dukmt")
+mesh = SubResource("ArrayMesh_pcc7t")
 
 [sub_resource type="Resource" id="Resource_8wbed"]
 script = ExtResource("12_pcc7t")
-textures = Array[Texture2D]([ExtResource("9_hy7c0")])
+textures = Array[Texture2D]([ExtResource("9_dukmt")])
 metadata/_custom_type_script = "uid://d0xjijisx1woh"
 
 [sub_resource type="Resource" id="Resource_boeap"]
@@ -216,7 +221,8 @@ metadata/_custom_type_script = "uid://0lhxan4cqrc1"
 [sub_resource type="Resource" id="Resource_33pxp"]
 script = ExtResource("14_iakei")
 _edge_meta_materials = Array[ExtResource("11_15kkk")]([SubResource("Resource_i36ur")])
-fill_textures = Array[Texture2D]([ExtResource("8_hy7c0")])
+fill_textures = Array[Texture2D]([ExtResource("8_cie1a")])
+fill_texture_scale = 2.05
 
 [sub_resource type="Resource" id="Resource_jsv45"]
 script = ExtResource("5_lv54x")
@@ -13672,6 +13678,29 @@ metadata/_custom_type_script = "uid://dhdc4b8yddyej"
 
 [node name="CollisionPolygon2D108" type="CollisionPolygon2D" parent="Platforms/Rest"]
 polygon = PackedVector2Array(-1800, -8624, -2312, -8584, -2136, -9072, -2000, -9528, -1864, -10072, -1552, -10352, -1288, -10720, -920, -11272, -680, -11288, -678.7535, -11211.766, -808, -10880, -880, -10400, -805.52563, -10299.031, 1536, -10304, 1536, -10048, -968, -10048, -1264, -10064, -1608, -9896, -1768, -9608, -1856, -9256, -1848, -8872)
+
+[node name="Design" type="Node2D" parent="Platforms"]
+z_index = -1
+
+[node name="RunePillar3" type="Sprite2D" parent="Platforms/Design"]
+position = Vector2(1222.5, -131.25636)
+scale = Vector2(2.397435, 2.3974352)
+texture = ExtResource("24_1tms3")
+
+[node name="RunePillar1" type="Sprite2D" parent="Platforms/Design"]
+position = Vector2(629, -230)
+scale = Vector2(2.7077923, 2.7077923)
+texture = ExtResource("25_iakei")
+
+[node name="RunePillar2" type="Sprite2D" parent="Platforms/Design"]
+position = Vector2(817.75, -121.92689)
+scale = Vector2(1.9817082, 1.9817082)
+texture = ExtResource("26_5o15g")
+
+[node name="RunePillar4" type="Sprite2D" parent="Platforms/Design"]
+position = Vector2(1016.5, -173.39368)
+scale = Vector2(2.2124996, 2.212499)
+texture = ExtResource("27_jv26l")
 
 [node name="FireColumn" parent="." node_paths=PackedStringArray("root") instance=ExtResource("19_go1yl")]
 visible = false
