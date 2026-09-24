@@ -127,6 +127,13 @@ var default_land_shake_data = ShakeData.new(Vector2.UP)
 var dynamic_objects_manager_ref
 
 func _ready() -> void:
+	if !$CharacterVisuals.visible:
+		var my_seed = name.hash()
+		seed(my_seed)
+		$DebugCharacterVisual.visible = true
+		$DebugCharacterVisual.material.set_shader_parameter("src_col", Vector4(randf(), randf(), randf(), 1.))
+	else:
+		$DebugCharacterVisual.visible = false
 	#if is_multiplayer_authority():
 		#is_interpolatable = false
 	

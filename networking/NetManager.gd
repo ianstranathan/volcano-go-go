@@ -599,10 +599,12 @@ func host_process_remote_client(id: int, player: Player) -> void:
 		controller.last_command_executed = cmd
 	else:
 		# Hold last known input/state.
-		player.execute_tick(
-			TICK_RATE,
-			controller.last_command_executed
-		)
+		if cmd.tick > 0:
+			print("no cmds with matching ticks to execute")
+			player.execute_tick(
+				TICK_RATE,
+				controller.last_command_executed
+			)
 
 	var idx = controller.get_circular_index(current_tick)
 	controller.reconciliation_state_buffer[idx].set_state(

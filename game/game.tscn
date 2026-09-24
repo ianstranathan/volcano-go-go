@@ -30,6 +30,15 @@
 [ext_resource type="Script" uid="uid://buaw6vowb1vpp" path="res://VFX/parallax/background/follow_cam_component.gd" id="24_8bboj"]
 [ext_resource type="PackedScene" uid="uid://cmw4mc183vist" path="res://game/genie/the_genie.tscn" id="25_8bboj"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4cobl"]
+shader = ExtResource("10_hb504")
+shader_parameter/coll_extents = Vector2(0, 0)
+shader_parameter/player_rel_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/circ_scale_increase = 2.0
+
+[sub_resource type="Curve2D" id="Curve2D_4cobl"]
+resource_local_to_scene = true
+
 [sub_resource type="QuadMesh" id="QuadMesh_mhvfb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_leid8"]
@@ -40,15 +49,6 @@ shader_parameter/blur_radius = 2.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_mhvfb"]
 viewport_path = NodePath("World/BackgroundManager/Layer1/SubViewportLayer0")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4cobl"]
-shader = ExtResource("10_hb504")
-shader_parameter/coll_extents = Vector2(0, 0)
-shader_parameter/player_rel_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/circ_scale_increase = 2.0
-
-[sub_resource type="Curve2D" id="Curve2D_4cobl"]
-resource_local_to_scene = true
 
 [node name="Game" type="Node2D" node_paths=PackedStringArray("players_container", "spawn_points", "ui", "wager_window", "post_processing_quad", "world_pickup_items_manager", "world_dynamic_objects_manager", "world_level_manager", "oasis", "wager_manager", "camera", "world_effects_container")]
 visibility_layer = 3
@@ -67,6 +67,44 @@ wager_manager = NodePath("WagerManager")
 camera = NodePath("World/Camera")
 world_effects_container = NodePath("World/WorldEffects")
 metadata/_edit_group_ = true
+
+[node name="TheGenie" parent="." instance=ExtResource("25_8bboj")]
+position = Vector2(-5321, 5494)
+
+[node name="WagerManager" type="Node2D" parent="."]
+script = ExtResource("21_58yx1")
+
+[node name="Oasis" parent="." instance=ExtResource("10_j8tme")]
+position = Vector2(-5000, 5000)
+
+[node name="BasePlatform" parent="Oasis" instance=ExtResource("9_vsp63")]
+material = SubResource("ShaderMaterial_4cobl")
+position = Vector2(-478, -329)
+coll_extents = Vector2(300, 300)
+sprite_2_coll_factor = 2.0
+
+[node name="MovingPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("_path_follower_component")]
+script = ExtResource("12_4cobl")
+transition_type = 1
+movement_type = 0
+_path_follower_component = NodePath("../../PathFollowPlatformComponent")
+metadata/_custom_type_script = "uid://b1quk135kfj1v"
+
+[node name="MetaballPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("sprite_ref")]
+script = ExtResource("11_ee6o4")
+sprite_ref = NodePath("../Sprite2D")
+apply = true
+metadata/_custom_type_script = "uid://dcocnrr1wxj00"
+
+[node name="PathFollowPlatformComponent" parent="Oasis" instance=ExtResource("13_ln7ps")]
+curve = SubResource("Curve2D_4cobl")
+
+[node name="DeathTVPosition" type="Marker2D" parent="Oasis"]
+z_index = 100
+position = Vector2(-690, 490)
+
+[node name="GeniePosition" type="Marker2D" parent="Oasis"]
+position = Vector2(-342, 575)
 
 [node name="World" type="Node2D" parent="."]
 visibility_layer = 3
@@ -165,44 +203,7 @@ script = ExtResource("18_q52ks")
 [node name="WorldDynamicObjectsManager" type="Node2D" parent="World"]
 script = ExtResource("19_jucfl")
 
-[node name="WagerManager" type="Node2D" parent="."]
-script = ExtResource("21_58yx1")
-
 [node name="DeathTv" parent="." node_paths=PackedStringArray("starting_position_marker") instance=ExtResource("12_qf6n1")]
-z_index = 100
+z_as_relative = false
+position = Vector2(-5716, 5463)
 starting_position_marker = NodePath("../Oasis/DeathTVPosition")
-
-[node name="Oasis" parent="." instance=ExtResource("10_j8tme")]
-position = Vector2(-5000, 5000)
-
-[node name="BasePlatform" parent="Oasis" instance=ExtResource("9_vsp63")]
-material = SubResource("ShaderMaterial_4cobl")
-position = Vector2(-478, -329)
-coll_extents = Vector2(300, 300)
-sprite_2_coll_factor = 2.0
-
-[node name="MovingPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("_path_follower_component")]
-script = ExtResource("12_4cobl")
-transition_type = 1
-movement_type = 0
-_path_follower_component = NodePath("../../PathFollowPlatformComponent")
-metadata/_custom_type_script = "uid://b1quk135kfj1v"
-
-[node name="MetaballPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("sprite_ref")]
-script = ExtResource("11_ee6o4")
-sprite_ref = NodePath("../Sprite2D")
-apply = true
-metadata/_custom_type_script = "uid://dcocnrr1wxj00"
-
-[node name="PathFollowPlatformComponent" parent="Oasis" instance=ExtResource("13_ln7ps")]
-curve = SubResource("Curve2D_4cobl")
-
-[node name="DeathTVPosition" type="Marker2D" parent="Oasis"]
-z_index = 100
-position = Vector2(-690, 490)
-
-[node name="GeniePosition" type="Marker2D" parent="Oasis"]
-position = Vector2(-342, 575)
-
-[node name="TheGenie" parent="." instance=ExtResource("25_8bboj")]
-position = Vector2(-5321, 5494)

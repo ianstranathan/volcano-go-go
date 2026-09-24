@@ -19,6 +19,5 @@ size = Vector2i(256, 256)
 [node name="Camera2D" type="Camera2D" parent="SubViewport"]
 
 [node name="TV_target" type="Sprite2D" parent="."]
-visibility_layer = 2
 material = SubResource("ShaderMaterial_8u0vo")
 texture = SubResource("ViewportTexture_lbqhg")

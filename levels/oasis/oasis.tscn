@@ -32,6 +32,7 @@ size = Vector2(300, 20)
 size = Vector2(20, 17.999985)
 
 [node name="Oasis" type="Node2D" node_paths=PackedStringArray("portal")]
+z_index = -100
 script = ExtResource("1_vrkva")
 portal = NodePath("Portal")
 

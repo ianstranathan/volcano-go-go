@@ -1,14 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://yijgeawsp6ru"]
+[gd_scene load_steps=8 format=3 uid="uid://yijgeawsp6ru"]
 
 [ext_resource type="Script" uid="uid://de6x1337jqavu" path="res://treasure_manager/treasure_manager.gd" id="1_plqtx"]
 [ext_resource type="Texture2D" uid="uid://ba6sq7afku8gm" path="res://assets/Treasure/treasure_atlas.png" id="2_gkhon"]
 [ext_resource type="Shader" uid="uid://cu8b0rsu3b5mw" path="res://treasure_manager/treasure_manager.gdshader" id="2_tshja"]
+[ext_resource type="Script" uid="uid://dx1hhg2msdngt" path="res://treasure_manager/number_pool.gd" id="4_yehac"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yehac"]
 shader = ExtResource("2_tshja")
 shader_parameter/atlas_cols = 4.0
 shader_parameter/atlas_rows = 2.0
-shader_parameter/player_global_position = Vector2(0, 0)
+shader_parameter/player_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/current_time = 0.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_tshja"]
@@ -25,3 +26,6 @@ z_index = 1000
 material = SubResource("ShaderMaterial_yehac")
 multimesh = SubResource("MultiMesh_tshja")
 texture = ExtResource("2_gkhon")
+
+[node name="NumberPool" type="Node2D" parent="."]
+script = ExtResource("4_yehac")

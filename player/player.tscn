@@ -1,8 +1,10 @@
-[gd_scene load_steps=39 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=42 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Resource" uid="uid://dhmx6u1dpspmo" path="res://player/kinematic_data_rscs/default_player_kinematic_data.tres" id="2_yllr7"]
 [ext_resource type="Texture2D" uid="uid://1ue2wrhhbei4" path="res://assets/Sprites/Character/ArabianKnightJumpnFall.png" id="3_e7oew"]
+[ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/testing/capsule_player.gdshader" id="3_x7c3f"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_bjvpn"]
 [ext_resource type="Texture2D" uid="uid://be8lnln1tivo5" path="res://assets/Sprites/Character/ArabianKnightRunning.png" id="4_c35mf"]
 [ext_resource type="Texture2D" uid="uid://bx2ul6v6aw2my" path="res://assets/Sprites/Character/ArabianKnighLedgeGrab.png" id="4_e7oew"]
 [ext_resource type="Texture2D" uid="uid://bk70nllrhw4sm" path="res://assets/Sprites/Character/ArabianKnighWallSlide.png" id="5_tqiix"]
@@ -23,6 +25,13 @@
 [sub_resource type="Curve" id="Curve_rgyib"]
 _data = [Vector2(0.2511628, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6966293), 0.0, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s7qer"]
+resource_local_to_scene = true
+shader = ExtResource("3_x7c3f")
+shader_parameter/height = 0.48
+shader_parameter/radius = 0.3
+shader_parameter/src_col = Color(0.17168882, 0.40397066, 1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tqiix"]
 atlas = ExtResource("3_e7oew")
@@ -176,7 +185,12 @@ kd = ExtResource("2_yllr7")
 hang_time_curve = SubResource("Curve_rgyib")
 metadata/_edit_group_ = true
 
+[node name="DebugCharacterVisual" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_s7qer")
+texture = ExtResource("4_bjvpn")
+
 [node name="CharacterVisuals" type="Node2D" parent="."]
+visible = false
 
 [node name="Body" type="AnimatedSprite2D" parent="CharacterVisuals"]
 texture_filter = 1

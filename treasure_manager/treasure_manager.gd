@@ -29,7 +29,7 @@ var coin_types: Array[int] = [] # Tracks which type of gem (0 to 7) each index i
 @export var base_spacing: float = 80.0 # Average distance between each coin
 @export var spacing_variance: float = 20.0 # Max random offset (+ or -) added to base spacing
 
-# Gem configuration (e.g., 8 different types for a sprite atlas)
+
 @export var total_gem_types: int = 8
 
 var rng = RandomNumberGenerator.new()
@@ -38,20 +38,36 @@ func _ready() -> void:
 	visible = true
 	assert(not treasure_paths.is_empty(), "At least one Path2D must be assigned as a child of the treasure manager")
 	rng.randomize()
-	generate_coins_along_paths()
+	generate_treasure_along_paths()
 
-
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var mat := multimesh_instance.material as ShaderMaterial
 	if not mat:
 		return
 		
-	# Pass time forward for the idle floating animation
 	mat.set_shader_parameter("current_time", Time.get_ticks_msec() / 1000.0)
 	
-	# Pass the target player's position so the GPU knows where to vacuum gems
-	if players and not players.is_empty() and players[0]:
-		mat.set_shader_parameter("player_global_position", players[0].global_position)
+	# Gather all player global positions into an array for the shader uniform
+	var pos_array: Array[Vector2] = []
+	if players:
+		for p in players:
+			if p:
+				pos_array.append(p.global_position)
+			else:
+				pos_array.append(Vector2.ZERO)
+				
+	mat.set_shader_parameter("player_positions", pos_array)
+#func _process(delta: float) -> void:
+	#var mat := multimesh_instance.material as ShaderMaterial
+	#if not mat:
+		#return
+		#
+	## Pass time forward for the idle floating animation
+	#mat.set_shader_parameter("current_time", Time.get_ticks_msec() / 1000.0)
+	#
+	## Pass the target player's position so the GPU knows where to vacuum gems
+	#if players and not players.is_empty() and players[0]:
+		#mat.set_shader_parameter("player_global_position", players[0].global_position)
 		
 
 func register_coin_to_grid(index: int, pos: Vector2, g_type: int):
@@ -116,40 +132,65 @@ func execute_tick(_delta: float) -> void:
 func on_player_walked_over_coin(index: int, collector_id: int) -> void:
 	# You can access coin_types[index] here to know exactly which gem was picked up!
 	# Example: MetaProgressionManager.award_gem(collector_id, coin_types[index])
-	collect_coin(index, collector_id)
+	collect_treasure(index, collector_id)
 
 
 @onready var zero_transform = Transform2D(0.0, Vector2.ZERO, 0.0, Vector2.ZERO)
-#func collect_coin(index: int, collector_id: int):
+#func collect_treasure(index: int, collector_id: int):
 	#if not coins_active[index]:
 		#return
 	#coins_active[index] = false
 	#multimesh_instance.multimesh.set_instance_transform_2d(index, zero_transform)
-func collect_coin(index: int, collector_id: int):
+
+#func collect_treasure(index: int, collector_id: int):
+	#if not coins_active[index]:
+		#return
+	#coins_active[index] = false
+	#
+	#var mm = multimesh_instance.multimesh
+	#var current_custom = mm.get_instance_custom_data(index)
+	#
+	## Set the blue channel to the current engine time (in seconds)
+	## This acts as the "ignition switch" for the vertex shader's flight math
+	#current_custom.b = Time.get_ticks_msec() / 1000.0
+	#mm.set_instance_custom_data(index, current_custom)
+	#
+	## Optional: Schedule full removal/cleanup from the grid dictionary 
+	## after the 0.4s animation finishes, without burning per-frame CPU cycles.
+	#get_tree().create_timer(0.45).timeout.connect(func():
+		#mm.set_instance_transform_2d(index, zero_transform)
+		## Award inventory/score here
+	#)
+func collect_treasure(index: int, collector_id: int):
 	if not coins_active[index]:
 		return
 	coins_active[index] = false
 	
+	# Find index of the player in our `players` array
+	var player_array_index = 0
+	for i in range(players.size()):
+		if players[i] and players[i].name.to_int() == collector_id:
+			player_array_index = i
+			break
+			
 	var mm = multimesh_instance.multimesh
 	var current_custom = mm.get_instance_custom_data(index)
 	
-	# Set the blue channel to the current engine time (in seconds)
-	# This acts as the "ignition switch" for the vertex shader's flight math
 	current_custom.b = Time.get_ticks_msec() / 1000.0
-	mm.set_instance_custom_data(index, current_custom)
+	# Normalize player array index to 0.0 - 1.0 range for the alpha channel
+	current_custom.a = float(player_array_index) / 3.0 
 	
-	# Optional: Schedule full removal/cleanup from the grid dictionary 
-	# after the 0.4s animation finishes, without burning per-frame CPU cycles.
+	mm.set_instance_custom_data(index, current_custom)
+
 	get_tree().create_timer(0.45).timeout.connect(func():
+		$NumberPool.spawn_number(coin_types[index], players[player_array_index].global_position)
 		mm.set_instance_transform_2d(index, zero_transform)
-		# Award inventory/score here
 	)
 # ------------------------------------------------------------------------------
+var total_treasure_data: Array = [] # Stores dictionaries of {pos: Vector2, type: int}
 
-func generate_coins_along_paths() -> void:
-	# Step 1: Accumulate total data across all assigned paths first
-	var temp_coin_data: Array = [] # Stores dictionaries of {pos: Vector2, type: int}
-	
+func generate_treasure_along_paths() -> void:
+	# -- path data
 	for path in treasure_paths:
 		if not path or not path.curve:
 			continue
@@ -170,25 +211,25 @@ func generate_coins_along_paths() -> void:
 			var assigned_type: int = rng.randi() % total_gem_types
 			
 			
-			temp_coin_data.append({
+			total_treasure_data.append({
 				"pos": coin_position,
 				"type": assigned_type
 			})
 	
-	var total_coins: int = temp_coin_data.size()
+	var total_coins: int = total_treasure_data.size()
 	if total_coins == 0:
 		return
 	print(total_coins)
-	# Step 2: Initialize the MultiMesh capacity globally
+	# -- initialize the MultiMesh capacity globally
 	var mm: MultiMesh = multimesh_instance.multimesh
 	mm.instance_count = 0
 	mm.use_custom_data = true
 	mm.instance_count = total_coins
 	mm.visible_instance_count = total_coins
 	
-	# Step 3: Populate transforms, custom shader data, and register to the spatial grid
+	# -- populate transforms, custom shader data, and register to the spatial grid
 	for i in range(total_coins):
-		var data = temp_coin_data[i]
+		var data = total_treasure_data[i]
 		var coin_position: Vector2 = data["pos"]
 		var gem_type: int = data["type"]
 		

@@ -1,4 +1,4 @@
-[gd_scene load_steps=1864 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1869 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -27,7 +27,10 @@
 [ext_resource type="PackedScene" uid="uid://c37go2qp0t4v2" path="res://levels/level_components/bouncy/bouncy.tscn" id="26_cie1a"]
 [ext_resource type="PackedScene" uid="uid://bj3e2svr1xvwf" path="res://levels/level_components/elevator/elevator.tscn" id="26_dukmt"]
 [ext_resource type="PackedScene" uid="uid://csg4yx0oqcs6p" path="res://levels/level_components/switch/switch.tscn" id="27_dukmt"]
+[ext_resource type="Script" uid="uid://dpkkawt7f4diq" path="res://levels/level_components/platform_path/platform_path.gd" id="28_1tms3"]
 [ext_resource type="PackedScene" uid="uid://yijgeawsp6ru" path="res://treasure_manager/treasure_manager.tscn" id="28_15kkk"]
+[ext_resource type="Script" uid="uid://h6j3d21wf1kq" path="res://levels/level_components/tickable.gd" id="28_iakei"]
+[ext_resource type="PackedScene" uid="uid://dx2v0c6arxv4a" path="res://levels/platforms/platform_components/dissolving_platform_component/dissolving_platform_component.tscn" id="29_iakei"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -12198,6 +12201,18 @@ fill_textures = Array[Texture2D]([ExtResource("8_hy7c0")])
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_go1yl"]
 size = Vector2(10000, 532)
 
+[sub_resource type="Curve2D" id="Curve2D_5o15g"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1200, -754, 0, 0, 0, 0, 1914, -754)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_jv26l"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 2577, -754, 0, 0, 0, 0, 3063, -754)
+}
+point_count = 2
+
 [sub_resource type="Curve2D" id="Curve2D_15kkk"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 1497, -780, 0, 0, 0, 0, 2003, -778)
@@ -13622,22 +13637,6 @@ offset_bottom = 682.0
 theme_override_font_sizes/font_size = 124
 text = "AHHHHHHHHHH"
 
-[node name="Label2" type="Label" parent="Notes"]
-offset_left = 2151.0002
-offset_top = -771.0
-offset_right = 2308.0002
-offset_bottom = -748.0
-scale = Vector2(3.882506, 3.882506)
-text = "dissolving platforms"
-
-[node name="Label3" type="Label" parent="Notes"]
-offset_left = 754.0
-offset_top = -806.0001
-offset_right = 911.0
-offset_bottom = -783.0001
-scale = Vector2(3.882506, 3.882506)
-text = "dissolving platforms"
-
 [node name="Label4" type="Label" parent="Notes"]
 offset_left = -3866.0
 offset_top = -2269.0
@@ -14141,6 +14140,25 @@ easing_type = 2
 speed = 500.0
 switch_type = 0
 
+[node name="DissolvingPaths" type="Node2D" parent="TickableGeometry"]
+script = ExtResource("28_iakei")
+
+[node name="PlatformPath" type="Path2D" parent="TickableGeometry/DissolvingPaths"]
+curve = SubResource("Curve2D_5o15g")
+script = ExtResource("28_1tms3")
+platform_scene = ExtResource("19_lv54x")
+component_modifier = ExtResource("29_iakei")
+make_bridge = true
+metadata/_custom_type_script = "uid://dpkkawt7f4diq"
+
+[node name="PlatformPath2" type="Path2D" parent="TickableGeometry/DissolvingPaths"]
+curve = SubResource("Curve2D_jv26l")
+script = ExtResource("28_1tms3")
+platform_scene = ExtResource("19_lv54x")
+component_modifier = ExtResource("29_iakei")
+make_bridge = true
+metadata/_custom_type_script = "uid://dpkkawt7f4diq"
+
 [node name="TreasureManager" parent="." instance=ExtResource("28_15kkk")]
 
 [node name="Path2D" type="Path2D" parent="TreasureManager"]
@@ -14148,3 +14166,5 @@ curve = SubResource("Curve2D_15kkk")
 
 [node name="Path2D2" type="Path2D" parent="TreasureManager"]
 curve = SubResource("Curve2D_pcc7t")
+
+[node name="NonTickingGeometryContainer" type="Node2D" parent="."]

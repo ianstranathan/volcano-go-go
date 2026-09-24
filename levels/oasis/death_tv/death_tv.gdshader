@@ -37,8 +37,7 @@ void fragment( )
 	vec2 uv = UV.xy;
 	vec2 crtCoords = crt(uv, 3.2);
 
-	// shadertoy has tiling textures. wouldn't be needed
-	// if you set up your tex params properly
+	// FIX ME
 	if (crtCoords.x < 0.0 || crtCoords.x > 1.0 || crtCoords.y < 0.0 || crtCoords.y > 1.0)
 		discard;
 

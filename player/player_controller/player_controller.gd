@@ -340,7 +340,7 @@ func reconcile(host_state: PlayerState, _time_in_transit: float):
 	# -- snap to the correct position in the past
 	# -- and replay all the commands saved between this tick and the current tick
 	if needs_reconciled:
-		#print("ahhh")
+		print("ahhh")
 		#print(stored_state.movement_state != host_state.movement_state)
 		# -- this is the vector from the old/non-reconciled position
 		# --  to the new/ reconciled position

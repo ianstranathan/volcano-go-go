@@ -12,12 +12,11 @@ func _ready() -> void:
 	$TV_target.material.shader = noise_shader
 
 func set_subviewports_game_world(w: World2D):
-	pass
-	#$SubViewport/Camera2D.make_current()
-	## -- set viewport to use the game world's rendering data
-	#$SubViewport.world_2d = w
-	##$SubViewport.own_world_2d = false
-	#$SubViewport.transparent_bg = false
+	$SubViewport/Camera2D.make_current()
+	# -- set viewport to use the game world's rendering data
+	$SubViewport.world_2d = w
+	#$SubViewport.own_world_2d = false
+	$SubViewport.transparent_bg = false
 
 func _physics_process(_delta: float) -> void:
 	if target_player:
