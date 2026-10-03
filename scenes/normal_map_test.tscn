@@ -1,12 +1,12 @@
 [gd_scene load_steps=5 format=3 uid="uid://cxlqnj6vtb0cb"]
 
-[ext_resource type="Texture2D" uid="uid://bag7iosghqfkx" path="res://assets/Treasure/gold chunk2.png" id="1_756ek"]
-[ext_resource type="Texture2D" uid="uid://dcqkd0ni8v21i" path="res://assets/Treasure/Gold normalmp 3.png" id="2_hh7t0"]
+[ext_resource type="Texture2D" uid="uid://dsxmlbse0s0ge" path="res://assets/Treasure/gold chunk1.png" id="1_hh7t0"]
+[ext_resource type="Texture2D" uid="uid://dn2rr2d3xlefj" path="res://assets/Treasure/gold 4 normal.png" id="2_k585c"]
 [ext_resource type="Texture2D" uid="uid://bxswqdgqidc3l" path="res://assets/Treasure/light.png" id="3_k585c"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_k585c"]
-diffuse_texture = ExtResource("1_756ek")
-normal_texture = ExtResource("2_hh7t0")
+diffuse_texture = ExtResource("1_hh7t0")
+normal_texture = ExtResource("2_k585c")
 
 [node name="Node2D" type="Node2D"]
 
@@ -17,7 +17,7 @@ texture = SubResource("CanvasTexture_k585c")
 [node name="LightOccluder2D" type="LightOccluder2D" parent="."]
 
 [node name="PointLight2D" type="PointLight2D" parent="LightOccluder2D"]
-position = Vector2(-23, 7)
+position = Vector2(18, -29)
 energy = 6.56
 texture = ExtResource("3_k585c")
 texture_scale = 3.2
