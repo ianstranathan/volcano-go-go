@@ -1,9 +1,11 @@
-[gd_scene load_steps=42 format=3 uid="uid://dcojsyrohjd45"]
+[gd_scene load_steps=43 format=3 uid="uid://dcojsyrohjd45"]
 
 [ext_resource type="Texture2D" uid="uid://cwo84eqjhoyjd" path="res://assets/Sprites/death particles 2.png" id="1_42hxy"]
 [ext_resource type="Texture2D" uid="uid://ba6sq7afku8gm" path="res://assets/Treasure/treasure_atlas.png" id="2_g37nw"]
 [ext_resource type="Texture2D" uid="uid://bxswqdgqidc3l" path="res://assets/Treasure/light.png" id="3_dgsjt"]
 [ext_resource type="Texture2D" uid="uid://bragjl1f3g011" path="res://assets/Treasure/death skull.png" id="4_bw8jp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hjwx2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g37nw"]
 atlas = ExtResource("1_42hxy")
@@ -215,12 +217,13 @@ animations = [{
 }],
 "loop": true,
 "name": &"default",
-"speed": 20.0
+"speed": 14.0
 }]
 
 [node name="Node2D" type="Node2D"]
 
 [node name="Clouds" type="GPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_hjwx2")
 amount = 25
 texture = SubResource("AtlasTexture_g37nw")
 lifetime = 1.5
@@ -251,7 +254,7 @@ lifetime = 1.5
 process_material = SubResource("ParticleProcessMaterial_2wrpl")
 
 [node name="skull" type="AnimatedSprite2D" parent="."]
+visible = false
 sprite_frames = SubResource("SpriteFrames_g7wbm")
 autoplay = "default"
-frame = 5
-frame_progress = 0.61563903
+frame_progress = 0.2605879
