@@ -6,7 +6,8 @@ class_name LevelChunk
 signal moveable_platform_made( c: MovingPlatformComponent, fn: Callable )
 
 @onready var players_container_ref: Node2D
-@export var coin_manager: Node2D
+@export var treasure_path_manager: Node2D
+@export var treasure_src_manager: Node2D
 @export var tickable_geometry_container: Node2D
 @export var parallax_manager:Node2D
 var tickable_geometry: Array
@@ -25,9 +26,11 @@ func execute_tick( delta: float ):
 	if enemy_container and enemy_container_children.size() > 0:
 		for c in enemy_container_children:
 			c.execute_tick( delta )
-	if coin_manager:
-		coin_manager.execute_tick( delta )
-
+	if treasure_path_manager:
+		treasure_path_manager.execute_tick( delta )
+	if treasure_src_manager:
+		treasure_src_manager.execute_tick( delta )
+	
 	if parallax_manager:
 		parallax_manager.cam_ref = cam_ref
 
@@ -59,9 +62,10 @@ func _ready() -> void:
 					#print("Here's the component: ", c.moving_platform_component )
 					moveable_platform_made.emit( c.moving_platform_component )
 		#var cm =  get_node_or_null("CoinManager")
-		if coin_manager:
-			coin_manager.players_container_ref = players_container_ref
-			
+		if treasure_path_manager:
+			treasure_path_manager.players_container_ref = players_container_ref
+		if treasure_src_manager:
+			treasure_src_manager.players_container_ref = players_container_ref
 		# -- TODO
 		# -- MOVE THIS
 		var cloud_start_area = get_node_or_null("CloudStart")

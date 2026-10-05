@@ -4,7 +4,7 @@ signal transition_finished
 
 @export var cam: Camera2D
 @export var lava_ref: TheLava
-var lava_data: Dictionary
+#var lava_data: Dictionary
 
 var transition_to_black_timer = TickTimer.new(1)
 var transition_back_timer = TickTimer.new(1)

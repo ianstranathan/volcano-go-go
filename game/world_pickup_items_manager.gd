@@ -10,23 +10,7 @@ func _ready() -> void:
 	# -- we make the pool
 	for item_name in ItemsDb.ItemNames.values():
 		pickup_items_pool[ item_name ] = []
-	
-	#var s = get_children().size()
-	#active_pickups.resize( s )
-	#id_to_index.resize( s )
-	#id_to_index.fill(-1) # -- unassigned positions default to an invalid index (-1) instead of 0
-	#
-	## -- for all the pickup items that in scene, we need to tag them
-	#for i in range(s):
-		#var c = get_child( i )
-		#assert( c.spawn_id == -1, "incorrectly initialized pickup item" )
-		#c.spawn_id = next_id
-		## -- map from ids to indices in active_pickups
-		#id_to_index[next_id] = i
-		#next_id += 1
-		## --
-		#c.prediction_picked_up.connect( on_authority_player_walked_over_pickup )
-		#active_pickups[i] = c
+
 
 func load_pickup_items_from_level_chunks( all_pickup_item_definitions: Array[Dictionary] ):
 	var s = all_pickup_item_definitions.size()

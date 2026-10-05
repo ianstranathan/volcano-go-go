@@ -1,5 +1,7 @@
 extends Camera2D
 
+signal camera_centered_on_player()
+
 # -- shaking vars
 var noise = FastNoiseLite.new()
 var noise_time: float = 0.0
@@ -39,7 +41,24 @@ func _physics_process(delta: float) -> void:
 	if (target.pos_current.x - target.pos_previous.x) > 1000:
 		global_position = target.global_position
 		return
+	
+	# --- DEATH LOCK BEHAVIOR ---
+	# --- DEATH LOCK BEHAVIOR ---
+	if is_dead:
+		current_look_ahead_offset = move_toward(current_look_ahead_offset, 0.0, 500.0 * delta)
 		
+		global_position.x = move_toward(global_position.x, target.global_position.x, abs(global_position.x - target.global_position.x) * 10.0 * delta)
+		global_position.y = move_toward(global_position.y, target.global_position.y, abs(global_position.y - target.global_position.y) * 10.0 * delta)
+		
+		print( global_position )
+		# Check if we have arrived close enough to the player
+		if not has_centered:
+			if global_position.distance_squared_to(target.global_position) < 4.0:
+				global_position = target.global_position
+				has_centered = true
+				camera_centered_on_player.emit()
+				
+		return
 	# ----------------------------------------------------------------------------- Horizontal stuff
 
 	if not is_zero_approx(target.move_input.x):
@@ -150,4 +169,9 @@ func _draw() -> void:
 
 	draw_dashed_line(Vector2(0., -deadzone_height * 0.5), Vector2(0., deadzone_height * 0.5), Color(0.1, 0.1, 0.6), 5, 5)
 	
-	
+var is_dead: bool = false
+var has_centered: bool = false
+func on_player_died() -> void:
+	is_dead = true
+	shake_timer = 0.0
+	current_shake = null

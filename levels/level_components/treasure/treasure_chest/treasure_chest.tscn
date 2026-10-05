@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=3 uid="uid://bsgpimloa7djw"]
+
+[ext_resource type="Script" uid="uid://cbanqkrf11371" path="res://levels/level_components/treasure/treasure_source.gd" id="1_skopk"]
+[ext_resource type="Texture2D" uid="uid://b8rlqpkgkdm5j" path="res://assets/Treasure/chest piece.png" id="4_qfcvo"]
+[ext_resource type="Texture2D" uid="uid://b1l1jgdayhd8j" path="res://assets/Treasure/Treasure_Box.png" id="5_3fs1h"]
+
+[sub_resource type="Curve" id="Curve_fuwtl"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.6185841, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_cracp"]
+curve = SubResource("Curve_fuwtl")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_np2mu"]
+particle_flag_disable_z = true
+angle_min = -234.79999
+angle_max = 31.20001
+direction = Vector3(1, -0.5, 0)
+spread = 54.936
+initial_velocity_min = 221.89
+initial_velocity_max = 472.93
+angular_velocity_min = -578.26
+angular_velocity_max = -228.73001
+gravity = Vector3(0, 980, 0)
+alpha_curve = SubResource("CurveTexture_cracp")
+collision_mode = 1
+collision_friction = 0.24
+collision_bounce = 0.17
+collision_use_scale = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_skopk"]
+size = Vector2(93, 70)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_1gl4d"]
+polygon = PackedVector2Array(350, 35, 350, 50, -350, 50, -350, 35)
+
+[node name="TreasureChest" type="Area2D"]
+collision_layer = 512
+collision_mask = 512
+script = ExtResource("1_skopk")
+treasure_types = Array[int]([1, 2, 3, 4, 5, 6, 7, 8])
+
+[node name="chest_pieces_particles" type="GPUParticles2D" parent="."]
+texture_filter = 1
+emitting = false
+amount = 10
+texture = ExtResource("4_qfcvo")
+lifetime = 1.5
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_np2mu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -23)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_3fs1h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_skopk")
+
+[node name="RHS" type="RayCast2D" parent="."]
+position = Vector2(0, -34)
+target_position = Vector2(200, 100)
+
+[node name="LHS" type="RayCast2D" parent="."]
+position = Vector2(0, -34)
+target_position = Vector2(-200, 100)
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+occluder = SubResource("OccluderPolygon2D_1gl4d")

@@ -7,7 +7,9 @@ float hash(float n) {
 }
 
 uniform sampler2D atlas;
-void fragment() {
+
+void fragment() 
+{
     float sum = COLOR.r + COLOR.g + COLOR.b;
 
     float particle_id = COLOR.r / max(sum, 0.0001);

@@ -31,6 +31,10 @@ func execute_tick( _delta: float ):
 			game_ref.player_data_dict)
 
 
+func _ready() -> void:
+	$PlayerVisualsManager.position = size / 2.0
+
+
 func _physics_process(_delta: float) -> void:
 	if player_ref:
 		minimap_cam.global_position = player_ref.global_position
@@ -41,16 +45,22 @@ func set_minimap_world2d( w: World2D):
 	
 	minimap_viewport.set_canvas_cull_mask_bit(0, false)
 	minimap_viewport.set_canvas_cull_mask_bit(1, true)
-
-	
 	#debug_check_layer_hierarchy( minimap_viewport, 1)
 
-#func ordered_players_by_height() -> Array:
-	#var ret = $PlayersContainer.get_children()
-	## -- sort_custom sorts in place
-	#ret.sort_custom( func(a: Player, b: Player):
-		#if abs(a.global_position.y - b.global_position.y) < 1:
-			## -- using id as a tie-breaker to prevent jitter
-			#return int(a.name) < int(b.name) 
-		#return (a.global_position.y < b.global_position.y))
-	#return ret
+
+const starting_state_texts: Array[String] = ["GET READY", "GO!"]
+const died_state_text: String = "YOU DIED"
+
+func on_start_race_signal( count: int):
+	$StateTextContainer/MarginContainer/VBoxContainer/Label.text = starting_state_texts[ count ]
+	$StateTextContainer.visible = true
+	if count == 1:
+		# -- await is fine here because it's purely visual the race has already started
+		await get_tree().create_timer(1.0).timeout
+		$StateTextContainer.visible = false
+
+
+func show_dead_player(_type: Player.DeathTypes):
+	$HudMargin.visible = false
+	$PlayerVisualsManager.set_visual_from_death_type(_type, false)
+	$PlayerVisualsManager.visible = true

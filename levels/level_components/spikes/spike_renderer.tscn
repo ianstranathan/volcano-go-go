@@ -1,0 +1,32 @@
+[gd_scene load_steps=8 format=3 uid="uid://c38uqagi7jgxs"]
+
+[ext_resource type="Script" uid="uid://dtgjdxanfotqo" path="res://levels/level_components/spikes/spike_renderer.gd" id="1_n6e8u"]
+[ext_resource type="Texture2D" uid="uid://m3tlwxd4yux7" path="res://assets/spikes_obsidian_repeat.png" id="2_pqxh4"]
+[ext_resource type="Shader" uid="uid://bn5qgssoibfhm" path="res://levels/level_components/spikes/spike_renderer.gdshader" id="3_lbtse"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_qiyyu"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ode8e"]
+shader = ExtResource("3_lbtse")
+shader_parameter/spike_tex = ExtResource("2_pqxh4")
+
+[sub_resource type="QuadMesh" id="QuadMesh_lbtse"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_qiyyu"]
+use_colors = true
+use_custom_data = true
+instance_count = 4
+visible_instance_count = 4
+mesh = SubResource("QuadMesh_lbtse")
+buffer = PackedFloat32Array(-4.406108e-05, 128, 0, -1964, -1008, -5.5950577e-06, 0, -7685, 1, 0, 0.7, 1, 7.875, 1, 0, 0, -14.000061, 127.991264, 0, -1032, -1198.001, -1.4957296, 0, -7614, 1, 0, 0.7, 1, 9.360022, 1, 0, 0, -5.000007, -127.99843, 0, -1686.5, 1010.00287, -0.6336547, 0, -7680, 1, 0, 0.7, 1, 7.890744, 1, 0, 0, 667.9999, -1.915953, 0, -1403, 9.999999, 127.98566, 0, -6756, 1, 0, 0.7, 1, 5.219334, 1, 0, 0)
+
+[node name="SpikeRenderer" type="Node2D"]
+script = ExtResource("1_n6e8u")
+texture = ExtResource("2_pqxh4")
+metadata/_custom_type_script = "uid://dtgjdxanfotqo"
+
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
+z_index = -100
+z_as_relative = false
+material = SubResource("ShaderMaterial_ode8e")
+multimesh = SubResource("MultiMesh_qiyyu")
+texture = ExtResource("4_qiyyu")

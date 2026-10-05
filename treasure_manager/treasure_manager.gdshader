@@ -6,6 +6,8 @@ uniform float atlas_rows = 2.0;
 // Support up to 4 players simultaneously
 uniform vec2 player_positions[4]; 
 uniform float current_time;
+uniform float is_path = 1.0;
+uniform sampler2D normal_map;
 
 varying flat float v_gem_type;
 varying float v_collect_time;
@@ -23,7 +25,7 @@ void vertex() {
     if (v_collect_time == 0.0) {
         // 1. IDLE STATE: Gentle floating/bobbing bounce on the ground
         float float_anim = sin(current_time * 4.0 + v_idle_offset) * 4.0;
-        VERTEX.y += float_anim;
+        VERTEX.y += float_anim * is_path;
     } 
     else {
         // 2. ABSORPTION STATE: Arced Bézier path towards the specific player
@@ -65,6 +67,11 @@ void vertex() {
     }
 }
 
+const vec3 light_direction = vec3(-0.4, -0.5, 1.0);
+uniform vec4 specular_color : source_color = vec4(1.0);
+uniform float shininess : hint_range(1.0, 256.0) = 64.0;
+uniform float specular_strength : hint_range(0.0, 2.0) = 1.0;
+
 void fragment() {
     vec2 sub_uv = UV / vec2(atlas_cols, atlas_rows);
     float col = mod(v_gem_type, atlas_cols);
@@ -77,86 +84,25 @@ void fragment() {
     if (tex_color.a < 0.1) {
         discard;
     }
-    COLOR = tex_color;
+	
+
+    vec3 normal = texture(normal_map, final_uv).rgb * 2.0 - 1.0;
+    normal = normalize(normal);
+
+    vec3 light_dir = normalize(light_direction);
+    vec3 view_dir = vec3(0.0, 0.0, 1.0);
+
+    // Blinn-Phong half vector.
+    vec3 half_dir = normalize(light_dir + view_dir);
+
+    float specular = pow(
+        max(dot(normal, half_dir), 0.0),
+        shininess
+    );
+
+    vec3 highlight = specular_color.rgb *
+                     specular *
+                     specular_strength;
+
+    COLOR = vec4(tex_color.rgb + highlight, tex_color.a);
 }
-//shader_type canvas_item;
-//
-//uniform float atlas_cols = 4.0;
-//uniform float atlas_rows = 2.0;
-//
-//uniform vec2 player_global_position; 
-//uniform float current_time;
-//
-//varying flat float v_gem_type;
-//varying float v_collect_time;
-//varying float v_idle_offset;
-//
-//void vertex() {
-    //v_gem_type = round(INSTANCE_CUSTOM.r * 7.0);
-    //v_idle_offset = INSTANCE_CUSTOM.g * 6.28318; // 0 to 2PI phase offset
-    //v_collect_time = INSTANCE_CUSTOM.b;          // 0 = resting, >0 = collected timestamp
-//
-    //vec2 local_vertex = VERTEX;
-//
-    //if (v_collect_time == 0.0) {
-        //// 1. IDLE STATE: Gentle floating/bobbing bounce on the ground
-        //float float_anim = sin(current_time * 4.0 + v_idle_offset) * 4.0;
-        //VERTEX.y += float_anim;
-    //} 
-    //else {
-        //// 2. ABSORPTION STATE: Arced Bézier path towards the player
-        //float elapsed = current_time - v_collect_time;
-        //float duration = 0.45; // Total flight duration in seconds
-        //float t = clamp(elapsed / duration, 0.0, 1.0);
-        //
-        //if (t >= 1.0) {
-            //// Collapse scale to zero once arrived
-            //VERTEX = vec2(0.0);
-        //} else {
-            //// Apply custom easing: starts slow/bursts out, then hyper-accelerates into the player
-            //// Using a modified cubic/parabolic curve for the progress factor 'u'
-            //float u = smoothstep(0., 1., t);//t * t * (3.0 - 2.0 * t); // Smoothstep or custom curve
-            //
-            //// Get local model space origins
-			//// -- NOTE: I'm just superpositioning the position and the selection
-            //vec2 local_player_pos = (inverse(MODEL_MATRIX) * vec4(player_global_position, 0.0, 1.0)).xy;
-            //// Define Bézier Points in Local Space:
-            //// P0: Original spawn/rest position (0,0 in local space of this vertex relative to its instance origin)
-            //vec2 p0 = vec2(0.0);
-            //
-            //// P2: The target player position
-            //vec2 p2 = local_player_pos;
-            //
-            //// P1: The Control Point (creates the arc/pop-away effect)
-            //// We calculate a vector from player to gem, and push the control point *outward* 
-            //// combined with a randomized directional flare based on v_idle_offset
-            //vec2 dir_to_gem = normalize(p0 - p2 + vec2(0.001)); // prevent zero vector division
-            //float flare_angle = v_idle_offset; // unique per gem
-            //vec2 flare_dir = clamp(v_idle_offset, 1., 10.) * vec2(cos(flare_angle), sin(flare_angle));
-            //
-            //// Control point sits midway, but offset outward away from the player plus a random flare
-            //vec2 p1 = mix(p0, p2, 0.3) + (dir_to_gem * 60.0) + (flare_dir * 40.0);
-            //
-            //// Quadratic Bézier Curve formula: B(u) = (1-u)^2 * P0 + 2(1-u)u * P1 + u^2 * P2
-            //vec2 bezier_pos = pow(1.0 - u, 2.0) * p0 + 2.0 * (1.0 - u) * u * p1 + pow(u, 2.0) * p2;
-            //
-            //// Apply vertex position shift plus local vertex geometry layout
-            //VERTEX = bezier_pos + (local_vertex * mix(1.0, 0.2, t));
-        //}
-    //}
-//}
-//
-//void fragment() {
-    //vec2 sub_uv = UV / vec2(atlas_cols, atlas_rows);
-    //float col = mod(v_gem_type, atlas_cols);
-    //float row = floor(v_gem_type / atlas_cols);
-    //
-    //vec2 atlas_offset = vec2(col / atlas_cols, row / atlas_rows);
-    //vec2 final_uv = sub_uv + atlas_offset;
-    //
-    //vec4 tex_color = texture(TEXTURE, final_uv);
-    //if (tex_color.a < 0.1) {
-        //discard;
-    //}
-    //COLOR = tex_color;
-//}

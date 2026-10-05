@@ -1,13 +1,8 @@
-[gd_scene load_steps=42 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=21 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Resource" uid="uid://dhmx6u1dpspmo" path="res://player/kinematic_data_rscs/default_player_kinematic_data.tres" id="2_yllr7"]
-[ext_resource type="Texture2D" uid="uid://1ue2wrhhbei4" path="res://assets/Sprites/Character/ArabianKnightJumpnFall.png" id="3_e7oew"]
-[ext_resource type="Shader" uid="uid://bx8fp0q38t35n" path="res://player/testing/capsule_player.gdshader" id="3_x7c3f"]
-[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_bjvpn"]
-[ext_resource type="Texture2D" uid="uid://be8lnln1tivo5" path="res://assets/Sprites/Character/ArabianKnightRunning.png" id="4_c35mf"]
-[ext_resource type="Texture2D" uid="uid://bx2ul6v6aw2my" path="res://assets/Sprites/Character/ArabianKnighLedgeGrab.png" id="4_e7oew"]
-[ext_resource type="Texture2D" uid="uid://bk70nllrhw4sm" path="res://assets/Sprites/Character/ArabianKnighWallSlide.png" id="5_tqiix"]
+[ext_resource type="PackedScene" uid="uid://dj4ikjlvtcgys" path="res://player/player_visuals/player_visuals.tscn" id="5_e7oew"]
 [ext_resource type="Script" uid="uid://oeopyki4a6l7" path="res://player/raycast_container.gd" id="6_wodsf"]
 [ext_resource type="Script" uid="uid://c0bg2g4soysfi" path="res://player/grab_manager.gd" id="7_boad6"]
 [ext_resource type="Script" uid="uid://bkmykxgvovkdg" path="res://items/item_manager.gd" id="7_hg6s5"]
@@ -19,148 +14,11 @@
 [ext_resource type="Texture2D" uid="uid://df0njwv75h0io" path="res://assets/Cloud_1.png" id="10_8t03j"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="11_ebec5"]
 [ext_resource type="Script" uid="uid://wot2cetc4r57" path="res://player/metaball_manager.gd" id="14_kb6p2"]
-[ext_resource type="Script" uid="uid://dd5gau6j7y8dy" path="res://player/animation_controller.gd" id="16_32hag"]
 [ext_resource type="Script" uid="uid://dyke5n1qqus1c" path="res://player/sword_manager.gd" id="19_c35mf"]
 
 [sub_resource type="Curve" id="Curve_rgyib"]
 _data = [Vector2(0.2511628, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6966293), 0.0, 0.0, 0, 0]
 point_count = 2
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_s7qer"]
-resource_local_to_scene = true
-shader = ExtResource("3_x7c3f")
-shader_parameter/height = 0.48
-shader_parameter/radius = 0.3
-shader_parameter/src_col = Color(0.17168882, 0.40397066, 1, 1)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tqiix"]
-atlas = ExtResource("3_e7oew")
-region = Rect2(384, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_e7oew"]
-atlas = ExtResource("3_e7oew")
-region = Rect2(512, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_65viv"]
-atlas = ExtResource("3_e7oew")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_x7c3f"]
-atlas = ExtResource("3_e7oew")
-region = Rect2(128, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_bjvpn"]
-atlas = ExtResource("3_e7oew")
-region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r7pn3"]
-atlas = ExtResource("4_e7oew")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s7qer"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g4c7l"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(384, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_knn7v"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(512, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7pqkx"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(640, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_uw77l"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(768, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rptt4"]
-atlas = ExtResource("4_c35mf")
-region = Rect2(896, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_c35mf"]
-atlas = ExtResource("5_tqiix")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_r7pn3"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tqiix")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_e7oew")
-}],
-"loop": true,
-"name": &"falling",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_65viv")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 0.5,
-"texture": SubResource("AtlasTexture_x7c3f")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bjvpn")
-}],
-"loop": false,
-"name": &"jump",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"landing",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_r7pn3")
-}],
-"loop": true,
-"name": &"ledge_grabbing",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 3.0,
-"texture": SubResource("AtlasTexture_s7qer")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g4c7l")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_knn7v")
-}, {
-"duration": 3.0,
-"texture": SubResource("AtlasTexture_7pqkx")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_uw77l")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rptt4")
-}],
-"loop": true,
-"name": &"run",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_c35mf")
-}],
-"loop": true,
-"name": &"wall_sliding",
-"speed": 5.0
-}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ugqs2"]
 radius = 20.0
@@ -185,26 +43,7 @@ kd = ExtResource("2_yllr7")
 hang_time_curve = SubResource("Curve_rgyib")
 metadata/_edit_group_ = true
 
-[node name="DebugCharacterVisual" type="Sprite2D" parent="."]
-material = SubResource("ShaderMaterial_s7qer")
-texture = ExtResource("4_bjvpn")
-
-[node name="CharacterVisuals" type="Node2D" parent="."]
-visible = false
-
-[node name="Body" type="AnimatedSprite2D" parent="CharacterVisuals"]
-texture_filter = 1
-sprite_frames = SubResource("SpriteFrames_r7pn3")
-animation = &"ledge_grabbing"
-
-[node name="PlayerVisualInterpolator" type="Node2D" parent="CharacterVisuals" node_paths=PackedStringArray("player_ref")]
-script = ExtResource("9_hg6s5")
-player_ref = NodePath("../..")
-metadata/_custom_type_script = "uid://crnrkpiidg5es"
-
-[node name="PlayerAnimationController" type="Node2D" parent="." node_paths=PackedStringArray("body")]
-script = ExtResource("16_32hag")
-body = NodePath("../CharacterVisuals/Body")
+[node name="PlayerVisualsManager" parent="." instance=ExtResource("5_e7oew")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_ugqs2")
@@ -383,9 +222,19 @@ collision_mask = 5
 
 [node name="TEMP_SWORD" type="Area2D" parent="."]
 position = Vector2(65, 0)
+collision_layer = 512
+collision_mask = 512
 script = ExtResource("19_c35mf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TEMP_SWORD"]
 scale = Vector2(3.1165614, 5.2394624)
 shape = SubResource("RectangleShape2D_e7oew")
 disabled = true
+
+[node name="StuffKillsYouManager" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 1024
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StuffKillsYouManager"]
+shape = SubResource("CapsuleShape2D_ugqs2")
+debug_color = Color(0.90204775, 0.08549591, 0.724159, 0.41960785)

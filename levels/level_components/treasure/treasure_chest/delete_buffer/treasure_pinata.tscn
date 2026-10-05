@@ -1,0 +1,66 @@
+[gd_scene load_steps=11 format=3 uid="uid://dwm2q4p45ilr7"]
+
+[ext_resource type="Shader" uid="uid://b30pi5lqpm144" path="res://levels/level_components/treasure/treasure_chest/treasure_pinata.gdshader" id="1_sgp8u"]
+[ext_resource type="Texture2D" uid="uid://ba6sq7afku8gm" path="res://assets/Treasure/treasure_atlas.png" id="2_abpmc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ba2ll"]
+shader = ExtResource("1_sgp8u")
+shader_parameter/atlas = ExtResource("2_abpmc")
+
+[sub_resource type="Curve" id="Curve_m0dlu"]
+_data = [Vector2(0, 1), 0.0, 0.024990356, 0, 0, Vector2(0.49242428, 0.618859), -2.3898582, -2.3898582, 0, 0, Vector2(0.6439394, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), -0.0020636187, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_k8bc0"]
+curve = SubResource("Curve_m0dlu")
+
+[sub_resource type="Curve" id="Curve_qrext"]
+_limits = [-360.0, 360.0, 0.0, 1.0]
+_data = [Vector2(0, 108.65912), 0.0, 0.0, 0, 0, Vector2(0.40442476, -0.6904907), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_wjb8x"]
+curve = SubResource("Curve_qrext")
+
+[sub_resource type="Curve" id="Curve_d6iyg"]
+_limits = [0.99, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_1c75p"]
+curve = SubResource("Curve_d6iyg")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmlf0"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(20, 30, 1)
+direction = Vector3(0, -1, 0)
+spread = 22.403
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+angular_velocity_min = -384.77002
+angular_velocity_max = 435.03998
+angular_velocity_curve = SubResource("CurveTexture_wjb8x")
+gravity = Vector3(0, 400, 0)
+scale_min = 3.0
+scale_max = 10.0
+alpha_curve = SubResource("CurveTexture_k8bc0")
+hue_variation_min = -1.0
+hue_variation_max = 0.99999994
+hue_variation_curve = SubResource("CurveTexture_1c75p")
+collision_mode = 1
+collision_friction = 1.0
+collision_bounce = 0.3
+collision_use_scale = true
+
+[node name="treasure_pinata" type="Node2D"]
+
+[node name="GPUParticles2D5" type="GPUParticles2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_ba2ll")
+position = Vector2(0, -21)
+amount = 20
+lifetime = 3.25
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_xmlf0")

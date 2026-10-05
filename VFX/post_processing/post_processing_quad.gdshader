@@ -61,5 +61,5 @@ void fragment() {
 
 
     COLOR = (1. - transition_data.y) * scene_color + transition_data.y * transition_col;
-
+	//COLOR = vec4(vec3(0.), 1.);
 }

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="DynamicObjectProfile" load_steps=2 format=3 uid="uid://dg212cpvyux72"]
+
+[ext_resource type="Script" uid="uid://ihjaqti7awa5" path="res://levels/dynamic_objects/dynamic_object_profile.gd" id="1_2l5ao"]
+
+[resource]
+script = ExtResource("1_2l5ao")
+metadata/_custom_type_script = "uid://ihjaqti7awa5"

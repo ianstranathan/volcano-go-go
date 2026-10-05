@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=31 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="2_4fuuu"]
@@ -6,12 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://cjuitcyofgqc3" path="res://VFX/post_processing/post_processing_quad.tscn" id="4_ee6o4"]
 [ext_resource type="PackedScene" uid="uid://c1ftjetihovr7" path="res://UI/Wager/wager_window.tscn" id="8_q52ks"]
 [ext_resource type="Script" uid="uid://dae2c8i45te8f" path="res://game/world_effects.gd" id="8_y36n6"]
-[ext_resource type="PackedScene" uid="uid://5x7tnpyvft8y" path="res://levels/platforms/base_platform/base_platform.tscn" id="9_vsp63"]
-[ext_resource type="Shader" uid="uid://b4b1lrasl85eg" path="res://levels/platforms/platform_components/metaball_platform_component/metaball_platform.gdshader" id="10_hb504"]
 [ext_resource type="PackedScene" uid="uid://bg5gcggjlxqdx" path="res://levels/oasis/oasis.tscn" id="10_j8tme"]
 [ext_resource type="Script" uid="uid://c1o22ooao6lq" path="res://game/world_pickup_items_manager.gd" id="11_3vho3"]
-[ext_resource type="Script" uid="uid://dcocnrr1wxj00" path="res://levels/platforms/platform_components/metaball_platform_component/metaball_platform_component.gd" id="11_ee6o4"]
-[ext_resource type="Script" uid="uid://b1quk135kfj1v" path="res://levels/platforms/platform_components/moving_platform_component.gd" id="12_4cobl"]
 [ext_resource type="PackedScene" uid="uid://dx5h54g76yy6a" path="res://levels/oasis/death_tv/death_tv.tscn" id="12_qf6n1"]
 [ext_resource type="PackedScene" uid="uid://d35o6xeqnfe5h" path="res://levels/platforms/platform_components/path_follow_platform_component/path_follow_platform_component.tscn" id="13_ln7ps"]
 [ext_resource type="PackedScene" uid="uid://btg4x06vjsk5q" path="res://UI/UI.tscn" id="14_b686c"]
@@ -29,12 +25,6 @@
 [ext_resource type="Shader" uid="uid://ftymhn0l1uan" path="res://VFX/parallax/background/background_screen_quad.gdshader" id="22_5e03w"]
 [ext_resource type="Script" uid="uid://buaw6vowb1vpp" path="res://VFX/parallax/background/follow_cam_component.gd" id="24_8bboj"]
 [ext_resource type="PackedScene" uid="uid://cmw4mc183vist" path="res://game/genie/the_genie.tscn" id="25_8bboj"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4cobl"]
-shader = ExtResource("10_hb504")
-shader_parameter/coll_extents = Vector2(0, 0)
-shader_parameter/player_rel_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/circ_scale_increase = 2.0
 
 [sub_resource type="Curve2D" id="Curve2D_4cobl"]
 resource_local_to_scene = true
@@ -77,31 +67,12 @@ script = ExtResource("21_58yx1")
 [node name="Oasis" parent="." instance=ExtResource("10_j8tme")]
 position = Vector2(-5000, 5000)
 
-[node name="BasePlatform" parent="Oasis" instance=ExtResource("9_vsp63")]
-material = SubResource("ShaderMaterial_4cobl")
-position = Vector2(-478, -329)
-coll_extents = Vector2(300, 300)
-sprite_2_coll_factor = 2.0
-
-[node name="MovingPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("_path_follower_component")]
-script = ExtResource("12_4cobl")
-transition_type = 1
-movement_type = 0
-_path_follower_component = NodePath("../../PathFollowPlatformComponent")
-metadata/_custom_type_script = "uid://b1quk135kfj1v"
-
-[node name="MetaballPlatformComponent" type="Node2D" parent="Oasis/BasePlatform" node_paths=PackedStringArray("sprite_ref")]
-script = ExtResource("11_ee6o4")
-sprite_ref = NodePath("../Sprite2D")
-apply = true
-metadata/_custom_type_script = "uid://dcocnrr1wxj00"
-
 [node name="PathFollowPlatformComponent" parent="Oasis" instance=ExtResource("13_ln7ps")]
 curve = SubResource("Curve2D_4cobl")
 
 [node name="DeathTVPosition" type="Marker2D" parent="Oasis"]
 z_index = 100
-position = Vector2(-690, 490)
+position = Vector2(-947, 490)
 
 [node name="GeniePosition" type="Marker2D" parent="Oasis"]
 position = Vector2(-342, 575)
@@ -126,6 +97,7 @@ players_container = NodePath("../PlayersContainer")
 [node name="CanvasLayer" type="CanvasLayer" parent="World"]
 
 [node name="Ui" parent="World/CanvasLayer" instance=ExtResource("14_b686c")]
+DEBUG = null
 metadata/_edit_use_anchors_ = true
 
 [node name="OptionsWindow" parent="World/CanvasLayer" instance=ExtResource("16_ee6o4")]

@@ -5,9 +5,12 @@ class_name Player
 # -- emitted from player_controller when reconcilliation happens for
 # -- visual smoothing in the PlayerVisualInterpolator (sprite & item_manager)
 signal reconciled
+signal died
 
 signal touched_bottom( peer_id: int)
 signal dropped_pickup_item( item_key: ItemsDb.ItemNames, item_slot: int, pos: Vector2)
+
+@export var DEBUG: bool = true
 
 var integrate_motion := true
 @export var kd: PlayerKinematicData
@@ -78,11 +81,16 @@ var is_on_ground := true
 var input_manager: LocalPlayerController
 @onready var player_controller = $PlayerController
 var is_replaying: bool = false
-@onready var animation_controller: PlayerAnimationController = ($PlayerAnimationController)
+@onready var player_visuals_manager: Node2D = $PlayerVisualsManager
 
+# ------------------------------------------------- Crash bandicoot here we come
+enum DeathTypes{
+	BURNED,
+	SPIKED,
+	ROLLED_OVER
+}
 # --------------------------------------------------- state sprite effects stuff
 var last_tocuhing_surface_state: MovementStates
-
 
 enum MovementStates
 {
@@ -102,6 +110,7 @@ enum MovementStates
 	METABALL,
 	LOG_ROLL,
 	GRABBED,
+	DEAD
 	# GENIE_HAND
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
@@ -127,17 +136,16 @@ var default_land_shake_data = ShakeData.new(Vector2.UP)
 var dynamic_objects_manager_ref
 
 func _ready() -> void:
-	if !$CharacterVisuals.visible:
-		var my_seed = name.hash()
-		seed(my_seed)
-		$DebugCharacterVisual.visible = true
-		$DebugCharacterVisual.material.set_shader_parameter("src_col", Vector4(randf(), randf(), randf(), 1.))
-	else:
-		$DebugCharacterVisual.visible = false
-	#if is_multiplayer_authority():
-		#is_interpolatable = false
+	$StuffKillsYouManager.area_entered.connect( die )
+		
+	$StuffKillsYouManager.body_entered.connect( die )
+	# --------------------------------------------------------------------------
+	$PlayerVisualsManager.death_animation_finished.connect( func():
+		died.emit())
+	$PlayerVisualsManager.color_randomly_from_peer_name( name )
+	$PlayerVisualsManager.DEBUG = DEBUG
 	
-	print( MovementStates )
+	# --------------------------------------------------------------------------
 	$GrabManager.dynamic_objects_manager_ref = dynamic_objects_manager_ref
 	$GrabManager.grabbed_a_player_or_dynamic_object.connect( func( d: CharacterBody2D):
 		pass)
@@ -150,7 +158,7 @@ func _ready() -> void:
 	# -- camera shouldn't react for non-authority players
 	default_land_shake_data.is_authority = get_multiplayer_authority()
 	
-	animation_controller.set_movement_state(movement_state)
+	player_visuals_manager.set_movement_state(movement_state)
 	#----------------------------------------------------------- Running signals
 	$StaminaVisual.stamina_depleted.connect( func(): 
 		can_run = false)
@@ -272,8 +280,10 @@ func do_jump(jump_type, velocity_override=null):
 			velocity =  Vector2(v.x *  kd.jump_speed / 2., 
 								y_dir * kd.jump_speed)
 	velocity.y *= jump_speed_modifier
-
+	
+	# --
 	movement_state_transition_to(MovementStates.JUMPING)
+	$PlayerVisualsManager.on_jump()
 	
 	if is_multiplayer_authority() and not is_replaying:
 		Events.emit_signal("play_world_sound",
@@ -620,7 +630,7 @@ func transition_to_metaball(collision_pt: Vector2,
 		do_jump_out_of_metaball_vfx()
 		go_2_circle_shape()
 		#$CollisionShape2D.set_deferred("disabled", true)
-		$CharacterVisuals/Body.visible = false
+		$PlayerVisualsManager.visible = false
 		movement_state_transition_to(MovementStates.METABALL)
 		velocity = Vector2.ZERO
 	
@@ -701,6 +711,18 @@ func metaball_state_fn(delta):
 	#
 		
 # -- consolidate the stuff that's always true on the ground
+
+# -- we're kind of filtering for node type based on collision layer
+func die( _area_or_body):
+	#if area_or_body is SpikeStrip:
+	$PlayerVisualsManager.set_visual_from_death_type( DeathTypes.SPIKED )
+	integrate_motion = false
+	movement_state_transition_to( MovementStates.DEAD )
+
+
+func dead_state_fn( _delta) -> void:
+	pass
+
 
 func idle_state_fn(_delta) -> void:
 	check_for_jump()
@@ -824,8 +846,8 @@ func non_grounded_horizontal_movement( _delta):
 		move_input.x != 0
 		and velocity.x * move_input.x < 0
 	)
-	#var is_overspeed = abs(velocity.x) > state_target_x_speed# * 1.05
-	var is_overspeed = velocity.length_squared() > state_target_x_speed * state_target_x_speed
+	var is_overspeed = abs(velocity.x) > state_target_x_speed# * 1.05
+	#var is_overspeed = velocity.length_squared() > state_target_x_speed * state_target_x_speed
 	#print(is_overspeed)
 	if is_overspeed:
 		if reversing:
@@ -1223,7 +1245,9 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				#if $CollisionShape2D.disabled:
 					#$CollisionShape2D.set_deferred("disabled", false)
 			MovementStates.METABALL:
-				$CharacterVisuals/Body.visible = true
+				# -- TODO
+				$PlayerVisualsManager.visible = true
+				
 				go_2_capsule_shape()
 				do_jump_out_of_metaball_vfx()
 
@@ -1239,6 +1263,7 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 			MovementStates.SLIDING:
 				#velocity *= 2.0
 				time_sliding = 0.
+				
 		state_target_x_speed = get_horizontal_target_speed_from_state( new_movement_state )
 		# -----------------------------------------
 		# ----------------------------------
@@ -1249,7 +1274,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 			last_tocuhing_surface_state = new_movement_state
 		set_debug_label( new_movement_state )
 		movement_state = new_movement_state
-		animation_controller.set_movement_state(new_movement_state)
+		
+		player_visuals_manager.set_movement_state(new_movement_state)
 
 @onready var one_way_collision_structs: Array = $CeilingCheckContainer.get_children() + $FloorCheckContainer.get_children()
 func toggle_one_way_platform_collisions(b: bool) -> void:
@@ -1531,7 +1557,7 @@ func apply_command( c: PlayerCommand):
 func update_visual_facing(horizontal_direction: float) -> void:
 	if absf(horizontal_direction) < 0.01:
 		return
-	animation_controller.set_facing_direction(horizontal_direction)
+	player_visuals_manager.set_facing_direction(horizontal_direction)
 
 # ------------------------------------------------------------------------------
 # -- assumes this is only called in like walking or running (grounded state)

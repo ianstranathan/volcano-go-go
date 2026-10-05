@@ -1,37 +1,36 @@
-[gd_scene load_steps=12 format=3 uid="uid://dwm2q4p45ilr7"]
+[gd_scene load_steps=11 format=3 uid="uid://t3tipjw1ehah"]
 
-[ext_resource type="Texture2D" uid="uid://b1l1jgdayhd8j" path="res://assets/Treasure/Treasure_Box.png" id="2_d6iyg"]
-[ext_resource type="Shader" uid="uid://b30pi5lqpm144" path="res://levels/level_components/treasure/treasure_pinata.gdshader" id="2_hty71"]
-[ext_resource type="Texture2D" uid="uid://ba6sq7afku8gm" path="res://assets/Treasure/treasure_atlas.png" id="6_jjmil"]
+[ext_resource type="Shader" uid="uid://b30pi5lqpm144" path="res://levels/level_components/treasure/treasure_chest/treasure_pinata.gdshader" id="1_c5f3g"]
+[ext_resource type="Texture2D" uid="uid://ba6sq7afku8gm" path="res://assets/Treasure/treasure_atlas.png" id="2_ghhpd"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ba2ll"]
-shader = ExtResource("2_hty71")
-shader_parameter/atlas = ExtResource("6_jjmil")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qfcvo"]
+shader = ExtResource("1_c5f3g")
+shader_parameter/atlas = ExtResource("2_ghhpd")
 
-[sub_resource type="Curve" id="Curve_m0dlu"]
+[sub_resource type="Curve" id="Curve_l5n02"]
 _data = [Vector2(0, 1), 0.0, 0.024990356, 0, 0, Vector2(0.49242428, 0.618859), -2.3898582, -2.3898582, 0, 0, Vector2(0.6439394, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), -0.0020636187, 0.0, 0, 0]
 point_count = 4
 
 [sub_resource type="CurveTexture" id="CurveTexture_d6iyg"]
-curve = SubResource("Curve_m0dlu")
+curve = SubResource("Curve_l5n02")
 
-[sub_resource type="Curve" id="Curve_qrext"]
+[sub_resource type="Curve" id="Curve_58sci"]
 _limits = [-360.0, 360.0, 0.0, 1.0]
 _data = [Vector2(0, 108.65912), 0.0, 0.0, 0, 0, Vector2(0.40442476, -0.6904907), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_fwg4k"]
-curve = SubResource("Curve_qrext")
+curve = SubResource("Curve_58sci")
 
-[sub_resource type="Curve" id="Curve_d6iyg"]
+[sub_resource type="Curve" id="Curve_p455d"]
 _limits = [0.99, 1.0, 0.0, 1.0]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_qrext"]
-curve = SubResource("Curve_d6iyg")
+curve = SubResource("Curve_p455d")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmlf0"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fuwtl"]
 particle_flag_disable_z = true
 emission_shape = 3
 emission_box_extents = Vector3(20, 30, 1)
@@ -54,18 +53,12 @@ collision_friction = 1.0
 collision_bounce = 0.3
 collision_use_scale = true
 
-[node name="treasure_pinata" type="Node2D"]
-
-[node name="GPUParticles2D5" type="GPUParticles2D" parent="."]
+[node name="treasure_particles" type="GPUParticles2D"]
+z_index = -5
 texture_filter = 1
-material = SubResource("ShaderMaterial_ba2ll")
-position = Vector2(0, -21)
+material = SubResource("ShaderMaterial_qfcvo")
+amount = 20
 lifetime = 3.25
 explosiveness = 1.0
 randomness = 1.0
-process_material = SubResource("ParticleProcessMaterial_xmlf0")
-
-[node name="TreasureBox" type="Sprite2D" parent="."]
-texture_filter = 1
-position = Vector2(0, -21)
-texture = ExtResource("2_d6iyg")
+process_material = SubResource("ParticleProcessMaterial_fuwtl")

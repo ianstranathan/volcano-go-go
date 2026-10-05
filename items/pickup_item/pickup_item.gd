@@ -11,6 +11,12 @@ enum ItemType {
 	DESTRUCTION
 }
 
+enum State{
+	NORMAL,
+	SACRIFICED
+}
+var state := State.NORMAL
+
 # -- backing variables for editor vs non-editor
 var _pickup_radius: float = 35.0
 var _type: ItemType = ItemType.MOBILITY
@@ -159,12 +165,27 @@ var TERMINAL_FALL_SPEED = 1400
 
 
 func execute_tick( delta: float ) -> void:
-	if !$Sprite2D.visible or is_resting or !can_execute_tick:
-		return
+	match state:
+		State.NORMAL:
+			if !$Sprite2D.visible or is_resting or !can_execute_tick:
+				return
+			if velocity.y < TERMINAL_FALL_SPEED:
+				velocity.y += gravity * delta
+			global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * gravity))
+			var collision_info = move_and_collide(velocity * delta)
+			if collision_info:
+				bounce_fn(collision_info)
+		State.SACRIFICED:
+			return
+
+
+@rpc("call_local", "any_peer", "reliable")
+func sacrifice( sacrifical_location: Vector2 ):
+	state = State.SACRIFICED
+	set_collision_layer_value.call_deferred(7, false)
+	var tween = create_tween().set_parallel(false)
 	
-	if velocity.y < TERMINAL_FALL_SPEED:
-		velocity.y += gravity * delta
-	global_position += (velocity * delta) + Vector2(0., (0.5 * delta * delta * gravity))
-	var collision_info = move_and_collide(velocity * delta)
-	if collision_info:
-		bounce_fn(collision_info)
+	# purely visual tween
+	tween.tween_property(self, "global_position", sacrifical_location, 0.4)\
+		.set_ease(Tween.EASE_IN)\
+		.set_trans(Tween.TRANS_BACK)

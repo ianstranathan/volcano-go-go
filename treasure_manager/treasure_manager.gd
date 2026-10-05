@@ -136,31 +136,8 @@ func on_player_walked_over_coin(index: int, collector_id: int) -> void:
 
 
 @onready var zero_transform = Transform2D(0.0, Vector2.ZERO, 0.0, Vector2.ZERO)
-#func collect_treasure(index: int, collector_id: int):
-	#if not coins_active[index]:
-		#return
-	#coins_active[index] = false
-	#multimesh_instance.multimesh.set_instance_transform_2d(index, zero_transform)
 
-#func collect_treasure(index: int, collector_id: int):
-	#if not coins_active[index]:
-		#return
-	#coins_active[index] = false
-	#
-	#var mm = multimesh_instance.multimesh
-	#var current_custom = mm.get_instance_custom_data(index)
-	#
-	## Set the blue channel to the current engine time (in seconds)
-	## This acts as the "ignition switch" for the vertex shader's flight math
-	#current_custom.b = Time.get_ticks_msec() / 1000.0
-	#mm.set_instance_custom_data(index, current_custom)
-	#
-	## Optional: Schedule full removal/cleanup from the grid dictionary 
-	## after the 0.4s animation finishes, without burning per-frame CPU cycles.
-	#get_tree().create_timer(0.45).timeout.connect(func():
-		#mm.set_instance_transform_2d(index, zero_transform)
-		## Award inventory/score here
-	#)
+
 func collect_treasure(index: int, collector_id: int):
 	if not coins_active[index]:
 		return

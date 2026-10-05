@@ -12,11 +12,11 @@ shader_parameter/atlas_rows = 2.0
 shader_parameter/player_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/current_time = 0.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_tshja"]
+[sub_resource type="QuadMesh" id="QuadMesh_yehac"]
 size = Vector2(32, 32)
 
 [sub_resource type="MultiMesh" id="MultiMesh_tshja"]
-mesh = SubResource("QuadMesh_tshja")
+mesh = SubResource("QuadMesh_yehac")
 
 [node name="TreasureManager" type="Node2D"]
 script = ExtResource("1_plqtx")

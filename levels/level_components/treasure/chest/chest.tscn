@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bdssm5a4f64hv"]
 
-[ext_resource type="PackedScene" uid="uid://7kmcnpy2h6ri" path="res://levels/level_components/treasure/treasure_chest_pieces.tscn" id="1_afr8y"]
-[ext_resource type="PackedScene" uid="uid://dwm2q4p45ilr7" path="res://levels/level_components/treasure/treasure_pinata.tscn" id="2_fr1hx"]
+[ext_resource type="PackedScene" uid="uid://7kmcnpy2h6ri" path="res://levels/level_components/treasure/treasure_chest/treasure_chest_pieces.tscn" id="1_afr8y"]
+[ext_resource type="PackedScene" uid="uid://dwm2q4p45ilr7" path="res://levels/level_components/treasure/treasure_chest/delete_buffer/treasure_pinata.tscn" id="2_fr1hx"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_dl0a4"]
 polygon = PackedVector2Array(-300, 0, 300, 0, 300, 20, -300, 20)

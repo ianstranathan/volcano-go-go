@@ -195,10 +195,12 @@ swing_sword={
 2d_physics/layer_2="Player"
 2d_physics/layer_3="AnimatableBodies"
 2d_physics/layer_4="Pickups"
-2d_physics/layer_5="GrabLayer"
+2d_physics/layer_5="dynamic_items"
 2d_physics/layer_6="Climb"
+2d_physics/layer_7="pickups"
 2d_physics/layer_8="enemies"
 2d_physics/layer_9="one_way_platforms"
+2d_physics/layer_11="stuff_that_kills_you"
 
 [rendering]
 

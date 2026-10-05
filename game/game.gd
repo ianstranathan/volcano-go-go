@@ -24,7 +24,7 @@ var player_data_dict:Dictionary = {} # -- id to player_data
 @export var world_effects_container: Node2D
 
 func _ready():
-	
+	camera.camera_centered_on_player.connect( ui.show_dead_player )
 	# -- we're gaurenteed that all children (level manager and world pickup items
 	# -- manager) are intialized
 	# ==> can just set the prev. world pickup items ready stuff to here
@@ -166,6 +166,7 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 		camera.target_initialize(a_player)
 		camera.global_position = a_player.global_position
 		ui.player_ref = a_player
+		a_player.died.connect(camera.on_player_died)
 		
 		print($World/ProjectilesContainer)
 	# -- we need the players to spawn before running this
@@ -251,7 +252,7 @@ func on_player_touched_bottom( _player_id):
 	#lava.start_race()
 	race_started = true
 	ui.visible = true
-
+	#camera.zoom = Vector2(1.2, 1.2)
 
 func test_death_tv():
 	$DeathTv.set_subviewports_game_world( $World.get_world_2d() )

@@ -1,0 +1,13 @@
+[gd_scene load_steps=5 format=3 uid="uid://br4rja7uqfple"]
+
+[ext_resource type="Shader" uid="uid://beqn3j3disnb3" path="res://levels/dynamic_objects/data/metaball_totem/metaball_totem_sprite.gdshader" id="1_dsvt7"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_p5sqn"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_vcnb4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_avgsf"]
+shader = ExtResource("1_dsvt7")
+shader_parameter/noise_tex = ExtResource("2_p5sqn")
+
+[node name="MetaballTotem" type="Sprite2D"]
+material = SubResource("ShaderMaterial_avgsf")
+texture = ExtResource("3_vcnb4")

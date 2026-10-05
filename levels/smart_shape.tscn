@@ -1,4 +1,4 @@
-[gd_scene load_steps=1869 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1881 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://b1nvb61fqdic5" path="res://levels/platforms/platform_components/fall_through_platform_component/fall_through_platform_component.gd" id="20_rywxm"]
 [ext_resource type="Script" uid="uid://x7uxn7nwb2x8" path="res://levels/dynamic_objects/dynamic_object_placeholder.gd" id="23_m8ier"]
 [ext_resource type="PackedScene" uid="uid://dc8lgy70k2yf8" path="res://levels/lantern_area/lantern_area.tscn" id="24_m8ier"]
+[ext_resource type="PackedScene" uid="uid://bstwsvd7h5cew" path="res://enemies/skeleton/skeleton.tscn" id="25_5o15g"]
 [ext_resource type="PackedScene" uid="uid://c37go2qp0t4v2" path="res://levels/level_components/bouncy/bouncy.tscn" id="26_cie1a"]
 [ext_resource type="PackedScene" uid="uid://bj3e2svr1xvwf" path="res://levels/level_components/elevator/elevator.tscn" id="26_dukmt"]
 [ext_resource type="PackedScene" uid="uid://csg4yx0oqcs6p" path="res://levels/level_components/switch/switch.tscn" id="27_dukmt"]
@@ -31,6 +32,11 @@
 [ext_resource type="PackedScene" uid="uid://yijgeawsp6ru" path="res://treasure_manager/treasure_manager.tscn" id="28_15kkk"]
 [ext_resource type="Script" uid="uid://h6j3d21wf1kq" path="res://levels/level_components/tickable.gd" id="28_iakei"]
 [ext_resource type="PackedScene" uid="uid://dx2v0c6arxv4a" path="res://levels/platforms/platform_components/dissolving_platform_component/dissolving_platform_component.tscn" id="29_iakei"]
+[ext_resource type="PackedScene" uid="uid://ddch3hcdhsehj" path="res://levels/level_components/item_sacrifice_altar/item_sacrifice_altar.tscn" id="32_8aauq"]
+[ext_resource type="PackedScene" uid="uid://drhrfp1dfmabb" path="res://treasure_manager/treasure_sources_manager/treasure_sources_manager.tscn" id="33_jv26l"]
+[ext_resource type="PackedScene" uid="uid://b87xcwytagn2f" path="res://levels/level_components/spikes/spikes.tscn" id="34_ptb3l"]
+[ext_resource type="PackedScene" uid="uid://bsgpimloa7djw" path="res://levels/level_components/treasure/treasure_chest/treasure_chest.tscn" id="34_yy7ml"]
+[ext_resource type="PackedScene" uid="uid://c38uqagi7jgxs" path="res://levels/level_components/spikes/spike_renderer.tscn" id="35_yck4v"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -38,10 +44,10 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(1695, -835), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(-2052, -7044), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
-"position": Vector2(-927, 76)
+"position": Vector2(-1830, -7022)
 }, {
 "item_enum": 4,
 "position": Vector2(-282, 46)
@@ -12225,10 +12231,47 @@ _data = {
 }
 point_count = 2
 
-[node name="SmartShape" type="Node2D" node_paths=PackedStringArray("coin_manager", "tickable_geometry_container", "enemy_container", "bottom_marker", "top_marker", "left_marker", "right_marker", "platforms_root", "minimap_geometry_container")]
+[sub_resource type="Curve2D" id="Curve2D_yy7ml"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -1227, -166, 117.72248, 41.772495, -117.72248, -41.772495, -2305, -169, -117.72248, 113.92498, 117.72248, -113.92498, -2408, -599, 0, 0, 0, 0, -2022.871, -630.1097, -188.30576, 43.938007, 188.30576, -43.938007, -1250, -625, -55.733322, 53.589733, 55.733322, -53.589733, -849, -930, -42.871784, 51.446144, 42.871784, -51.446144, -504, -1010, 0, 0, 0, 0, -495, -1449, -13.718979, 117.897415, 13.718979, -117.897415, -806, -1454, 0, 0, 0, 0, -858, -1543, 0, 0, 0, 0, -1018, -1541, 55.139694, -22.974873, -55.139694, 22.974873, -1516, -1220, 0, 0, 0, 0, -2351, -1192)
+}
+point_count = 13
+
+[sub_resource type="Curve2D" id="Curve2D_8aauq"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 3285, -804, 0, 0, 0, 0, 3695, -705, 0, 0, 0, 0, 3908, -573, 0, 0, 0, 0, 4266, -700, 0, 0, 0, 0, 4489, -705, 0, 0, 0, 0, 4657, -967, 0, 0, 0, 0, 5897, -957, 0, 0, 0, 0, 6105, -902, 0, 0, 0, 0, 6232, -1151, 0, 0, 0, 0, 6226, -1486, 0, 0, 0, 0, 5894, -1681, 0, 0, 0, 0, 5666, -1636, 0, 0, 0, 0, 4987, -1828, 0, 0, 0, 0, 3981, -2461, -7.4002533, 214.60735, 7.4002533, -214.60735, 3811, -2653, 0, 0, 0, 0, 3506, -2809, 0, 0, 0, 0, 3485, -3852, 0, 0, 0, 0, 4092, -3874, 0, 0, 0, 0, 4777, -3859, 0, 0, 0, 0, 4839, -4142, 0, 0, 0, 0, 4810, -4567, 0, 0, 0, 0, 4040, -5027, 0, 0, 0, 0, 4175, -5322, 0, 0, 0, 0, 4176, -5881, 0, 0, 0, 0, 3963, -6017, 0, 0, 0, 0, 3655, -6010)
+}
+point_count = 26
+
+[sub_resource type="Curve2D" id="Curve2D_ptb3l"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -2009, -7196, 0, 0, 0, 0, -2009, -8204)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_yck4v"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -1037, -7015, 0, 0, 0, 0, -1051, -8213)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_p4uyy"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -1663, -8185, 0, 0, 0, 0, -1668, -7175)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_oerk6"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -1737, -6795, 0, 0, 0, 0, -1069, -6785)
+}
+point_count = 2
+
+[node name="SmartShape" type="Node2D" node_paths=PackedStringArray("treasure_path_manager", "treasure_src_manager", "tickable_geometry_container", "enemy_container", "bottom_marker", "top_marker", "left_marker", "right_marker", "platforms_root", "minimap_geometry_container")]
 visibility_layer = 3
 script = ExtResource("1_hy8xc")
-coin_manager = NodePath("TreasureManager")
+treasure_path_manager = NodePath("TreasurePathManager")
+treasure_src_manager = NodePath("TreasureSourcesManager")
 tickable_geometry_container = NodePath("TickableGeometry")
 enemy_container = NodePath("StandInForEnemyManager")
 bottom_marker = NodePath("DimMarkers/Bottom")
@@ -12261,7 +12304,7 @@ position = Vector2(-1352, -9648)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(1695, -835)
+position = Vector2(-2052, -7044)
 
 [node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(-163, -143)
@@ -13586,7 +13629,7 @@ shape = SubResource("RectangleShape2D_go1yl")
 position = Vector2(0, -41)
 
 [node name="PickupEditorPlaceholder" type="Marker2D" parent="PickupPlaceholders"]
-position = Vector2(-927, 76)
+position = Vector2(-1830, -7022)
 script = ExtResource("20_5ghxw")
 item_enum_type = 3
 metadata/_custom_type_script = "uid://dfndtocpf6lff"
@@ -14106,6 +14149,9 @@ coll_extents = Vector2(400, 400)
 
 [node name="StandInForEnemyManager" type="Node2D" parent="."]
 
+[node name="Skeleton" parent="StandInForEnemyManager" instance=ExtResource("25_5o15g")]
+position = Vector2(3940, -122)
+
 [node name="TickableGeometry" type="Node2D" parent="."]
 position = Vector2(-499, 0)
 
@@ -14159,12 +14205,63 @@ component_modifier = ExtResource("29_iakei")
 make_bridge = true
 metadata/_custom_type_script = "uid://dpkkawt7f4diq"
 
-[node name="TreasureManager" parent="." instance=ExtResource("28_15kkk")]
+[node name="TreasurePathManager" parent="." instance=ExtResource("28_15kkk")]
 
-[node name="Path2D" type="Path2D" parent="TreasureManager"]
+[node name="Path2D" type="Path2D" parent="TreasurePathManager"]
 curve = SubResource("Curve2D_15kkk")
 
-[node name="Path2D2" type="Path2D" parent="TreasureManager"]
+[node name="Path2D2" type="Path2D" parent="TreasurePathManager"]
 curve = SubResource("Curve2D_pcc7t")
 
+[node name="Path2D3" type="Path2D" parent="TreasurePathManager"]
+curve = SubResource("Curve2D_yy7ml")
+
+[node name="Path2D4" type="Path2D" parent="TreasurePathManager"]
+curve = SubResource("Curve2D_8aauq")
+
 [node name="NonTickingGeometryContainer" type="Node2D" parent="."]
+
+[node name="ItemSacrificeAltar" parent="NonTickingGeometryContainer" node_paths=PackedStringArray("spike_strip_to_recede") instance=ExtResource("32_8aauq")]
+position = Vector2(-2303, -7028)
+spike_strip_to_recede = NodePath("../SpikeContainer/Spikes")
+_size = Vector2(200, 100)
+
+[node name="SpikeContainer" type="Node2D" parent="NonTickingGeometryContainer"]
+
+[node name="Spikes" parent="NonTickingGeometryContainer/SpikeContainer" instance=ExtResource("34_ptb3l")]
+position = Vector2(45, 15)
+thickness = 128.0
+
+[node name="Path2D" type="Path2D" parent="NonTickingGeometryContainer/SpikeContainer/Spikes"]
+curve = SubResource("Curve2D_ptb3l")
+
+[node name="Spikes2" parent="NonTickingGeometryContainer/SpikeContainer" instance=ExtResource("34_ptb3l")]
+position = Vector2(12, 0)
+thickness = 128.0
+
+[node name="Path2D" type="Path2D" parent="NonTickingGeometryContainer/SpikeContainer/Spikes2"]
+curve = SubResource("Curve2D_yck4v")
+
+[node name="Spikes3" parent="NonTickingGeometryContainer/SpikeContainer" instance=ExtResource("34_ptb3l")]
+position = Vector2(-21, 0)
+thickness = 128.0
+
+[node name="Path2D" type="Path2D" parent="NonTickingGeometryContainer/SpikeContainer/Spikes3"]
+curve = SubResource("Curve2D_p4uyy")
+
+[node name="Spikes4" parent="NonTickingGeometryContainer/SpikeContainer" instance=ExtResource("34_ptb3l")]
+position = Vector2(0, 34)
+thickness = 128.0
+
+[node name="Path2D" type="Path2D" parent="NonTickingGeometryContainer/SpikeContainer/Spikes4"]
+curve = SubResource("Curve2D_oerk6")
+
+[node name="SpikeRenderer" parent="NonTickingGeometryContainer" node_paths=PackedStringArray("spike_container", "treasure_altar") instance=ExtResource("35_yck4v")]
+spike_container = NodePath("../SpikeContainer")
+treasure_altar = NodePath("../ItemSacrificeAltar")
+recede_duration = 0.3
+
+[node name="TreasureSourcesManager" parent="." instance=ExtResource("33_jv26l")]
+
+[node name="TreasureChest" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
+position = Vector2(1906, 14)

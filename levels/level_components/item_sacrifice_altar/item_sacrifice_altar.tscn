@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3 uid="uid://ddch3hcdhsehj"]
+
+[ext_resource type="Script" uid="uid://cbv3vktxrde0p" path="res://levels/level_components/item_sacrifice_altar/item_sacrifice_altar.gd" id="1_odtm5"]
+[ext_resource type="Shader" uid="uid://bb5jb68knhnks" path="res://levels/level_components/item_sacrifice_altar/put_in_indicator.gdshader" id="2_0ji8v"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_ueefd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kaosv"]
+resource_local_to_scene = true
+size = Vector2(400, 200)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ueefd"]
+shader = ExtResource("2_0ji8v")
+shader_parameter/pulse_speed = 6.0
+shader_parameter/pulse_intensity = 10.000000475
+shader_parameter/arrow_color = Color(1, 1, 0, 1)
+shader_parameter/line_width = 0.10000000149012
+shader_parameter/arrow_head_length = 0.10000000405148
+shader_parameter/arrow_head_width = 0.34500001568898
+shader_parameter/aspect_ratio = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ueefd"]
+resource_local_to_scene = true
+size = Vector2(480.00003, 240.00002)
+
+[node name="ItemSacrificeAltar" type="Node2D"]
+script = ExtResource("1_odtm5")
+_size = Vector2(400, 200)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(1.1026818, 0.6605883, 0, 0.45490196)
+polygon = PackedVector2Array(-200, -100, 200, -100, 200, 100, -200, 100)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_kaosv")
+
+[node name="PutInIndicator" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_ueefd")
+position = Vector2(0, -150)
+scale = Vector2(3.125, 1.5625)
+texture = ExtResource("3_ueefd")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 64
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_ueefd")
