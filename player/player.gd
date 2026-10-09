@@ -5,7 +5,7 @@ class_name Player
 # -- emitted from player_controller when reconcilliation happens for
 # -- visual smoothing in the PlayerVisualInterpolator (sprite & item_manager)
 signal reconciled
-signal died
+signal died( visibility_callback: Callable )
 
 signal touched_bottom( peer_id: int)
 signal dropped_pickup_item( item_key: ItemsDb.ItemNames, item_slot: int, pos: Vector2)
@@ -87,7 +87,8 @@ var is_replaying: bool = false
 enum DeathTypes{
 	BURNED,
 	SPIKED,
-	ROLLED_OVER
+	ROLLED_OVER,
+	RESPAWN
 }
 # --------------------------------------------------- state sprite effects stuff
 var last_tocuhing_surface_state: MovementStates
@@ -110,7 +111,8 @@ enum MovementStates
 	METABALL,
 	LOG_ROLL,
 	GRABBED,
-	DEAD
+	DEAD,
+	RESPAWNED
 	# GENIE_HAND
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
@@ -140,14 +142,16 @@ func _ready() -> void:
 		
 	$StuffKillsYouManager.body_entered.connect( die )
 	# --------------------------------------------------------------------------
-	$PlayerVisualsManager.death_animation_finished.connect( func():
-		died.emit())
+	$PlayerVisualsManager.death_animation_finished.connect( 
+		func():
+			died.emit( func(): 
+				$PlayerVisualsManager.visible = false ))
 	$PlayerVisualsManager.color_randomly_from_peer_name( name )
 	$PlayerVisualsManager.DEBUG = DEBUG
 	
 	# --------------------------------------------------------------------------
 	$GrabManager.dynamic_objects_manager_ref = dynamic_objects_manager_ref
-	$GrabManager.grabbed_a_player_or_dynamic_object.connect( func( d: CharacterBody2D):
+	$GrabManager.grabbed_a_player_or_dynamic_object.connect( func( _d: CharacterBody2D):
 		pass)
 		#grabbed_dynamic_object_ref = d)
 	$GrabManager.threw_a_player_or_dynamic_object.connect( func():
@@ -1178,6 +1182,15 @@ func cloud_state_fn( _delta: float ) -> void:
 		movement_state_transition_to( MovementStates.IDLE )
 
 
+#func toggle_visibility(b=true):
+	#$PlayerVisualsManager.toggle_visibility(b)
+
+
+func respawn():
+	$PlayerVisualsManager.visible = true
+	integrate_motion = true
+	movement_state_transition_to( MovementStates.IDLE )
+	do_respawn_vfx()
 
 
 func movement_state_transition_to(new_movement_state: MovementStates):
@@ -1291,7 +1304,9 @@ func toggle_one_way_platform_collisions(b: bool) -> void:
 @onready var landing_effect = EffectParameters.new(Effects.EffectNames.LANDING_SMOKE, Vector2.ZERO, false, Vector2.ZERO)
 @onready var wall_jump_effect = EffectParameters.new(Effects.EffectNames.WALL_JUMP, Vector2.ZERO, false, Vector2.ZERO)
 @onready var metaball_jump_out_effect = EffectParameters.new(Effects.EffectNames.JUMPED_OUT_OF_METABALL, Vector2.ZERO, false, Vector2.ZERO)
+@onready var spawn_effect = EffectParameters.new(Effects.EffectNames.SPAWNED, Vector2.ZERO, false, Vector2.ZERO)
 
+# -- TODO D.R.Y
 func do_landing_vfx():
 	landing_effect.pos = global_position - Vector2(0., $CollisionShape2D.shape.height / 2.)
 	landing_effect.flip = false
@@ -1307,6 +1322,11 @@ func do_jump_out_of_metaball_vfx():
 	metaball_jump_out_effect.pos = global_position - $CollisionShape2D.shape.height * n
 	metaball_jump_out_effect.dir = n
 	Events.world_effect.emit( name.to_int(), metaball_jump_out_effect )
+
+
+func do_respawn_vfx():
+	spawn_effect.pos = global_position
+	Events.world_effect.emit( name.to_int(), spawn_effect )
 
 # -------------------------------------------------------------------------------------------- utils
 @onready var state_target_x_speed : float = kd.baseline_speed

@@ -24,7 +24,7 @@ func _process(_delta: float) -> void:
 		make = false
 		_make_collision()
 
-
+# -- TODO clean up slop
 func _make_collision() -> void:
 	var path := get_node_or_null("Path2D") as Path2D
 	var collision_shape := get_node_or_null(
@@ -55,8 +55,6 @@ func _make_collision() -> void:
 	var center := (start + end) * 0.5
 	var angle := direction.angle()
 
-	# IMPORTANT:
-	# Always create a unique shape for this SpikeStrip.
 	var rectangle := RectangleShape2D.new()
 
 	rectangle.size = Vector2(
@@ -88,5 +86,5 @@ func get_visual_data() -> Dictionary:
 	}
 
 func disable_spike_area(b):
-	$Area2D.set_deferred("monitoring", b)
-	$Area2D.set_deferred("monitorable", b)
+	$Area2D.set_deferred("monitoring", !b)
+	$Area2D.set_deferred("monitorable", !b)

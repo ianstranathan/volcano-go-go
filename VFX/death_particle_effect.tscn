@@ -1,0 +1,56 @@
+[gd_scene load_steps=11 format=3 uid="uid://nykhxcsdhvma"]
+
+[ext_resource type="Shader" uid="uid://c208ayjmiubv4" path="res://VFX/poof_particles/despawn_poof/deathparticle.gdshader" id="1_03ri2"]
+[ext_resource type="Texture2D" uid="uid://v1r2n7jm2itp" path="res://assets/Treasure/death particles 3.png" id="2_8jhce"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hjwx2"]
+shader = ExtResource("1_03ri2")
+shader_parameter/atlas = ExtResource("2_8jhce")
+
+[sub_resource type="Curve" id="Curve_8jhce"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_p2q7s"]
+curve = SubResource("Curve_8jhce")
+
+[sub_resource type="Curve" id="Curve_p2q7s"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.13257575, 0.025487304), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kolo3"]
+curve = SubResource("Curve_p2q7s")
+
+[sub_resource type="Curve" id="Curve_03ri2"]
+_data = [Vector2(0.3598485, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8jhce"]
+curve = SubResource("Curve_03ri2")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8jhce"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(30, 5, 1)
+spread = 0.0
+flatness = 1.0
+angular_velocity_min = -40.000015
+angular_velocity_max = 39.999985
+radial_velocity_min = -2.2351742e-05
+radial_velocity_max = 499.99997
+radial_velocity_curve = SubResource("CurveTexture_kolo3")
+gravity = Vector3(0, 0, 0)
+scale_min = 20.0
+scale_max = 50.0
+scale_curve = SubResource("CurveTexture_8jhce")
+alpha_curve = SubResource("CurveTexture_p2q7s")
+hue_variation_min = -1.0
+hue_variation_max = 0.99999994
+
+[node name="RadialClouds" type="GPUParticles2D"]
+material = SubResource("ShaderMaterial_hjwx2")
+amount = 50
+explosiveness = 1.0
+randomness = 1.0
+draw_order = 0
+process_material = SubResource("ParticleProcessMaterial_8jhce")

@@ -24,13 +24,19 @@ var player_data_dict:Dictionary = {} # -- id to player_data
 @export var world_effects_container: Node2D
 
 func _ready():
-	camera.camera_centered_on_player.connect( ui.show_dead_player )
+	camera.camera_centered_on_player.connect( func():
+			ui.show_dead_player()
+			post_processing_quad.fade_to_black())
 	# -- we're gaurenteed that all children (level manager and world pickup items
 	# -- manager) are intialized
 	# ==> can just set the prev. world pickup items ready stuff to here
 	post_processing_quad.transition_finished.connect(
 		func(): world_level_manager.call_deferred("start_level")
 	)
+	post_processing_quad.fade_back_from_black_finished.connect( func():
+		ui.hide_dead_player()
+		camera.is_dead = false)
+	
 	world_pickup_items_manager.load_pickup_items_from_level_chunks(
 		world_level_manager.get_all_pickup_item_definitions()
 	)
@@ -110,7 +116,7 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 	
 	# -- TODO Need to formalize player intialization into its own thing
 	# -- there's too much going on here
-	var a_player = player_scene.instantiate()
+	var a_player = player_scene.instantiate() as Player
 	a_player.name = a_players_name
 	
 	# -- ahhh so messy
@@ -166,8 +172,25 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 		camera.target_initialize(a_player)
 		camera.global_position = a_player.global_position
 		ui.player_ref = a_player
-		a_player.died.connect(camera.on_player_died)
 		
+		# -- camera has to focus player to align it with the static visual in UI
+		# -- plus make it more dramatic
+		# -- so, camera centers to screen, then player's visual turns off
+		# -- then UI visual takes its place
+		a_player.died.connect( func(visibility_callback: Callable):
+			camera.on_player_died(visibility_callback))
+		post_processing_quad.fade_back_from_black_finished.connect( func():
+			a_player.respawn())
+		# -- set the player back at his spawn position when he dies (when 
+		# -- the post processing quad is hiding everything
+		
+		# -- closure around spawn_marker_pos for this player
+		post_processing_quad.fade_to_black_finished.connect( func():
+			#a_player.toggle_visibility()
+			a_player.movement_state_transition_to(Player.MovementStates.IDLE)
+			a_player.global_position = spawn_marker_pos)
+		
+		#a_player.died.connect( post_processing_quad.fade_to_black )
 		print($World/ProjectilesContainer)
 	# -- we need the players to spawn before running this
 	world_effects_container.initialize_recurring_player_vfx()

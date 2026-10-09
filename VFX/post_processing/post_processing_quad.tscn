@@ -16,6 +16,7 @@ shader_parameter/sc = PackedVector3Array(0, 0, 0)
 shader_parameter/transition_data = Vector2(0, 0)
 shader_parameter/rel_pos_portal = Vector2(0, 0)
 shader_parameter/race_started = 0.0
+shader_parameter/fade_progress = 0.0
 
 [node name="PostProcessingQuad" type="Sprite2D"]
 material = SubResource("ShaderMaterial_n4uac")

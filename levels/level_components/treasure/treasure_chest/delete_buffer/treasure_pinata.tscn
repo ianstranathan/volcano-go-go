@@ -11,7 +11,7 @@ shader_parameter/atlas = ExtResource("2_abpmc")
 _data = [Vector2(0, 1), 0.0, 0.024990356, 0, 0, Vector2(0.49242428, 0.618859), -2.3898582, -2.3898582, 0, 0, Vector2(0.6439394, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), -0.0020636187, 0.0, 0, 0]
 point_count = 4
 
-[sub_resource type="CurveTexture" id="CurveTexture_k8bc0"]
+[sub_resource type="CurveTexture" id="CurveTexture_sgp8u"]
 curve = SubResource("Curve_m0dlu")
 
 [sub_resource type="Curve" id="Curve_qrext"]
@@ -19,7 +19,7 @@ _limits = [-360.0, 360.0, 0.0, 1.0]
 _data = [Vector2(0, 108.65912), 0.0, 0.0, 0, 0, Vector2(0.40442476, -0.6904907), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_wjb8x"]
+[sub_resource type="CurveTexture" id="CurveTexture_abpmc"]
 curve = SubResource("Curve_qrext")
 
 [sub_resource type="Curve" id="Curve_d6iyg"]
@@ -27,7 +27,7 @@ _limits = [0.99, 1.0, 0.0, 1.0]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_1c75p"]
+[sub_resource type="CurveTexture" id="CurveTexture_k8bc0"]
 curve = SubResource("Curve_d6iyg")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmlf0"]
@@ -40,14 +40,14 @@ initial_velocity_min = 100.0
 initial_velocity_max = 200.0
 angular_velocity_min = -384.77002
 angular_velocity_max = 435.03998
-angular_velocity_curve = SubResource("CurveTexture_wjb8x")
+angular_velocity_curve = SubResource("CurveTexture_abpmc")
 gravity = Vector3(0, 400, 0)
 scale_min = 3.0
 scale_max = 10.0
-alpha_curve = SubResource("CurveTexture_k8bc0")
+alpha_curve = SubResource("CurveTexture_sgp8u")
 hue_variation_min = -1.0
 hue_variation_max = 0.99999994
-hue_variation_curve = SubResource("CurveTexture_1c75p")
+hue_variation_curve = SubResource("CurveTexture_k8bc0")
 collision_mode = 1
 collision_friction = 1.0
 collision_bounce = 0.3

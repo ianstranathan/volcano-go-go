@@ -1,6 +1,8 @@
 extends Sprite2D
 
 signal transition_finished
+signal fade_to_black_finished
+signal fade_back_from_black_finished
 
 @export var cam: Camera2D
 @export var lava_ref: TheLava
@@ -9,13 +11,15 @@ signal transition_finished
 var transition_to_black_timer = TickTimer.new(1)
 var transition_back_timer = TickTimer.new(1)
 
+
 func _ready() -> void:
+	material.set_shader_parameter("fade_progress", 0.0)
 	material.set_shader_parameter("transition_data", 
-		Vector2(0., 1.0))
+		Vector2(0., 0.0))
 		
 	transition_back_timer.timeout.connect( func():
 		material.set_shader_parameter("transition_data", 
-		Vector2(0., 1.0)))
+		Vector2(0., 0.0)))
 	# -- transition to black
 	transition_to_black_timer.timeout.connect( func():
 		transition_finished.emit())
@@ -68,3 +72,31 @@ func execute_tick(_delta: float) -> void:
 		var _t = transition_back_timer.normalized_time()
 		material.set_shader_parameter("transition_data", 
 			Vector2(1. - (_t * _t), 1.0))
+
+
+func material_uniform_float_fn(v: float, mat: Material, p: String):
+	mat.set_shader_parameter(p, v)
+	#print("v: ", v)
+	#print("mat: ", mat)
+	#print("param: ", mat.get_shader_parameter(p))
+
+func fade_to_black(duration: float = 1.5) -> void:
+	var tween := create_tween()
+	tween.tween_method(
+		material_uniform_float_fn.bind(material, "fade_progress"),
+		0.,
+		1.,
+		duration
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_callback( func():
+		fade_to_black_finished.emit()
+		var tween_back := create_tween()
+		tween_back.tween_method(
+			material_uniform_float_fn.bind(material, "fade_progress"),
+			1,
+			0.,
+			duration * 1.2
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		tween_back.tween_callback( func():
+			fade_back_from_black_finished.emit())
+	)

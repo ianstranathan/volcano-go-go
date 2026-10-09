@@ -2,6 +2,8 @@ extends Camera2D
 
 signal camera_centered_on_player()
 
+# --
+var DEBUG := false
 # -- shaking vars
 var noise = FastNoiseLite.new()
 var noise_time: float = 0.0
@@ -31,9 +33,9 @@ func _ready():
 
 
 func _physics_process(delta: float) -> void:
-	queue_redraw()
+	if DEBUG:
+		queue_redraw()
 	
-	 
 	if not target:
 		return
 	
@@ -50,14 +52,14 @@ func _physics_process(delta: float) -> void:
 		global_position.x = move_toward(global_position.x, target.global_position.x, abs(global_position.x - target.global_position.x) * 10.0 * delta)
 		global_position.y = move_toward(global_position.y, target.global_position.y, abs(global_position.y - target.global_position.y) * 10.0 * delta)
 		
-		print( global_position )
+		#print( global_position )
 		# Check if we have arrived close enough to the player
 		if not has_centered:
 			if global_position.distance_squared_to(target.global_position) < 4.0:
 				global_position = target.global_position
 				has_centered = true
-				camera_centered_on_player.emit()
-				
+				on_centered_callback.call()       # -- turns off player visibility
+				camera_centered_on_player.emit( ) # -- turns on UI canvas layer visual of player
 		return
 	# ----------------------------------------------------------------------------- Horizontal stuff
 
@@ -158,20 +160,22 @@ func shake_offset( delta: float) -> Vector2:
 		return Vector2.ZERO 
 	return ret * current_shake.amplitude * envelope
 
-func _draw() -> void:
-	var rect := Rect2(
-		Vector2(-debug_rect_width * 0.5, -deadzone_height * 0.5),
-		Vector2(debug_rect_width, deadzone_height)
-	)
-
-	draw_rect(rect, Color(1., 0., 1., 0.5), false, 2.0)
-	draw_circle(Vector2.ZERO, 10., Color(1., 0., 0., 0.5))
-
-	draw_dashed_line(Vector2(0., -deadzone_height * 0.5), Vector2(0., deadzone_height * 0.5), Color(0.1, 0.1, 0.6), 5, 5)
+#func _draw() -> void:
+	#var rect := Rect2(
+		#Vector2(-debug_rect_width * 0.5, -deadzone_height * 0.5),
+		#Vector2(debug_rect_width, deadzone_height)
+	#)
+#
+	#draw_rect(rect, Color(1., 0., 1., 0.5), false, 2.0)
+	#draw_circle(Vector2.ZERO, 10., Color(1., 0., 0., 0.5))
+#
+	#draw_dashed_line(Vector2(0., -deadzone_height * 0.5), Vector2(0., deadzone_height * 0.5), Color(0.1, 0.1, 0.6), 5, 5)
 	
 var is_dead: bool = false
 var has_centered: bool = false
-func on_player_died() -> void:
+var on_centered_callback: Callable
+func on_player_died( visibility_callback: Callable) -> void:
+	on_centered_callback = func(): visibility_callback.call()
 	is_dead = true
 	shake_timer = 0.0
 	current_shake = null

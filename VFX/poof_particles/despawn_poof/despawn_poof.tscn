@@ -1,0 +1,205 @@
+[gd_scene load_steps=35 format=3 uid="uid://76yuo030flcc"]
+
+[ext_resource type="Script" uid="uid://daqpue6kfgcpg" path="res://VFX/poof_particles/despawn_poof/despawn_poof.gd" id="1_fww2f"]
+[ext_resource type="Shader" uid="uid://c208ayjmiubv4" path="res://VFX/poof_particles/despawn_poof/deathparticle.gdshader" id="2_fww2f"]
+[ext_resource type="Texture2D" uid="uid://v1r2n7jm2itp" path="res://assets/Treasure/death particles 3.png" id="3_epofd"]
+[ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="3_hap3e"]
+[ext_resource type="Shader" uid="uid://caq8qxch7tvug" path="res://VFX/poof_particles/despawn_poof/trailing_subemitter.gdshader" id="4_epofd"]
+[ext_resource type="Shader" uid="uid://dw8xvjau6nmxv" path="res://VFX/poof_particles/despawn_poof/despawn_poof_light_circ.gdshader" id="6_nu4ke"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="7_ixp7c"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="8_7scx4"]
+[ext_resource type="Texture2D" uid="uid://vc4wmewwfixw" path="res://assets/particle_masks/floaty_64.png" id="8_nu4ke"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jpbs0"]
+shader = ExtResource("6_nu4ke")
+shader_parameter/noise_tex = ExtResource("7_ixp7c")
+shader_parameter/spark_width = 0.0010000000475
+shader_parameter/min_length = 0.2290000108775
+shader_parameter/max_length = 1.5
+shader_parameter/min_radius = 0.0
+shader_parameter/max_radius = 0.5
+shader_parameter/attenuation = 1.01000004471512
+shader_parameter/glow_radius = 0.190000009025
+shader_parameter/glow_strength = 1.5690000745275001
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ixp7c"]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 7
+particles_anim_v_frames = 7
+particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_7scx4"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_jpbs0"]
+curve = SubResource("Curve_7scx4")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_u0p71"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(100, 50, 1)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+gravity = Vector3(0, -10, 0)
+scale_min = 2.0
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_jpbs0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5vli8"]
+shader = ExtResource("2_fww2f")
+shader_parameter/atlas = ExtResource("3_epofd")
+
+[sub_resource type="Curve" id="Curve_8jhce"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_p2q7s"]
+curve = SubResource("Curve_8jhce")
+
+[sub_resource type="Curve" id="Curve_p2q7s"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.13257575, 0.025487304), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kolo3"]
+curve = SubResource("Curve_p2q7s")
+
+[sub_resource type="Curve" id="Curve_03ri2"]
+_data = [Vector2(0.25378788, 0.9902549), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8jhce"]
+curve = SubResource("Curve_03ri2")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nu4ke"]
+lifetime_randomness = 0.5
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(75, 10, 1)
+spread = 0.0
+flatness = 1.0
+angular_velocity_min = -40.000015
+angular_velocity_max = 39.999985
+radial_velocity_min = -2.2351742e-05
+radial_velocity_max = 499.99997
+radial_velocity_curve = SubResource("CurveTexture_kolo3")
+gravity = Vector3(0, 0, 0)
+scale_min = 50.0
+scale_max = 75.0
+scale_curve = SubResource("CurveTexture_8jhce")
+alpha_curve = SubResource("CurveTexture_p2q7s")
+hue_variation_min = -1.0
+hue_variation_max = 0.99999994
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fww2f"]
+shader = ExtResource("2_fww2f")
+shader_parameter/atlas = ExtResource("3_epofd")
+
+[sub_resource type="Curve" id="Curve_epofd"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 55.70523), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_wjjmn"]
+curve = SubResource("Curve_epofd")
+
+[sub_resource type="Curve" id="Curve_wjjmn"]
+_data = [Vector2(0.43181822, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_5vli8"]
+curve = SubResource("Curve_wjjmn")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hap3e"]
+particle_flag_align_y = true
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+initial_velocity_min = 400.0
+initial_velocity_max = 600.0
+angular_velocity_min = -40.000015
+angular_velocity_max = 39.999985
+gravity = Vector3(0, 500, 0)
+damping_min = 2.0
+damping_max = 5.0
+damping_curve = SubResource("CurveTexture_wjjmn")
+scale_min = 40.0
+scale_max = 40.0
+scale_curve = SubResource("CurveTexture_5vli8")
+hue_variation_min = -2.2351742e-08
+hue_variation_max = 0.99999994
+sub_emitter_mode = 1
+sub_emitter_frequency = 4.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hap3e"]
+shader = ExtResource("4_epofd")
+
+[sub_resource type="Curve" id="Curve_fww2f"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_epofd"]
+curve = SubResource("Curve_fww2f")
+
+[sub_resource type="Curve" id="Curve_02rhe"]
+_data = [Vector2(0.50757575, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.072900176), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_hap3e"]
+curve = SubResource("Curve_02rhe")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_02rhe"]
+lifetime_randomness = 1.0
+particle_flag_disable_z = true
+scale_min = 0.59999996
+scale_max = 0.79999995
+scale_curve = SubResource("CurveTexture_hap3e")
+hue_variation_min = -2.2351742e-08
+hue_variation_max = 0.99999994
+hue_variation_curve = SubResource("CurveTexture_epofd")
+
+[node name="DespawnPoof" type="Node2D"]
+script = ExtResource("1_fww2f")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_jpbs0")
+scale = Vector2(3, 3)
+texture = ExtResource("8_7scx4")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_ixp7c")
+amount = 10
+texture = ExtResource("8_nu4ke")
+process_material = SubResource("ParticleProcessMaterial_u0p71")
+
+[node name="Radial" type="GPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_5vli8")
+amount = 20
+lifetime = 1.5
+explosiveness = 1.0
+draw_order = 0
+process_material = SubResource("ParticleProcessMaterial_nu4ke")
+
+[node name="Upward" type="GPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_fww2f")
+amount = 5
+sub_emitter = NodePath("../UpwardSE")
+lifetime = 1.5
+explosiveness = 1.0
+randomness = 1.0
+draw_order = 0
+process_material = SubResource("ParticleProcessMaterial_hap3e")
+
+[node name="UpwardSE" type="GPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_hap3e")
+emitting = false
+amount = 10
+texture = ExtResource("3_epofd")
+lifetime = 2.0
+one_shot = true
+draw_order = 0
+process_material = SubResource("ParticleProcessMaterial_02rhe")
+
+[node name="Player" parent="." instance=ExtResource("3_hap3e")]
+visible = false

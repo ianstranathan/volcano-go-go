@@ -6,7 +6,7 @@ float hash(float n) {
     return fract(sin(n * 12.9898) * 43758.5453);
 }
 
-uniform sampler2D atlas;
+uniform sampler2D atlas: filter_nearest;
 
 void fragment() 
 {

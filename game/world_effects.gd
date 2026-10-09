@@ -7,7 +7,8 @@ var effects_container = {}
 	Effects.EffectNames.LANDING_SMOKE,
 	Effects.EffectNames.WALL_JUMP,
 	Effects.EffectNames.DIRECTION_CHANGE,
-	Effects.EffectNames.JUMPED_OUT_OF_METABALL
+	Effects.EffectNames.JUMPED_OUT_OF_METABALL,
+	Effects.EffectNames.SPAWNED
 ]
 
 func initialize_recurring_player_vfx():
@@ -43,12 +44,7 @@ func do_effect(player_id: int, params: EffectParameters):
 	if sprite:
 		sprite.flip_h = params.flip
 	effect.global_position = params.pos
-	#print(effect.name)
-	#print(effect.global_position)
-	#print("Is in tree: ", effect.is_inside_tree())
-	#print("-----------------")
 	
-	#print(effect.name)
 	# -- we're mandating that all effects have a vfx component
 	assert(effect.get_node("VfxEffectComponent"))
 	effect.get_node("VfxEffectComponent").start.call(params)

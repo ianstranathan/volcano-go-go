@@ -2,6 +2,8 @@ extends Node2D
 
 signal death_animation_finished
 
+static var last_death_type: Player.DeathTypes
+
 # ------------------------------------------------------------------ member vars
 @export var DEBUG := false:
 	set(b):
@@ -66,11 +68,18 @@ func set_facing_direction(horizontal_direction: float) -> void:
 # we should be able to skip to the end when not emitting
 # so that we're showing the same thing on the UI canvas layer as whatever
 # is shown at the end of the death animation
-func set_visual_from_death_type( _type: Player.DeathTypes, should_emit:=true):
-	match _type:
+func set_visual_from_death_type( death_type=null ):
+	# -- the player died and we're setting this
+	if death_type:
+		assert( death_type is Player.DeathTypes)
+		# -- the static var is set by the death
+		last_death_type = death_type
+		# -- UI uses this var, so just feeds it back here to recreate the visual
+		#visible = false
+		death_animation_finished.emit()
+	
+	# -- regardless, if UI or normal player visuals manager
+	# -- play the associated death
+	match last_death_type:
 		Player.DeathTypes.SPIKED:
 			pass
-	# -- I'm reusing this node in the UI, but I don't want to emit twice
-	if should_emit:
-		visible = false
-		death_animation_finished.emit()

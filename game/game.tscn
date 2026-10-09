@@ -97,7 +97,6 @@ players_container = NodePath("../PlayersContainer")
 [node name="CanvasLayer" type="CanvasLayer" parent="World"]
 
 [node name="Ui" parent="World/CanvasLayer" instance=ExtResource("14_b686c")]
-DEBUG = null
 metadata/_edit_use_anchors_ = true
 
 [node name="OptionsWindow" parent="World/CanvasLayer" instance=ExtResource("16_ee6o4")]

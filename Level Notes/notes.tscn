@@ -1,0 +1,250 @@
+[gd_scene load_steps=2 format=3 uid="uid://df03ubrosjjhq"]
+
+[ext_resource type="Script" uid="uid://caucxban4octc" path="res://utils/debugging/marker_reflector.gd" id="1_1ldwk"]
+
+[node name="Notes" type="Marker2D"]
+script = ExtResource("1_1ldwk")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 124
+text = "AHHHHHHHHHH"
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 2151.0002
+offset_top = -1283.0
+offset_right = 2308.0002
+offset_bottom = -1260.0
+scale = Vector2(3.882506, 3.882506)
+text = "dissolving platforms"
+
+[node name="Label3" type="Label" parent="."]
+offset_left = 754.0
+offset_top = -1318.0001
+offset_right = 911.0
+offset_bottom = -1295.0001
+scale = Vector2(3.882506, 3.882506)
+text = "dissolving platforms"
+
+[node name="Label4" type="Label" parent="."]
+offset_left = -3866.0
+offset_top = -2781.0
+offset_right = -3826.0
+offset_bottom = -2758.0
+text = "push button to make platforms appear"
+
+[node name="Label5" type="Label" parent="."]
+offset_left = 6044.0
+offset_top = -1440.0
+offset_right = 6487.0
+offset_bottom = -1417.0
+text = "Push button for wall jump platform to pop out of the wall"
+
+[node name="Label6" type="Label" parent="."]
+offset_left = 5276.0
+offset_top = -1891.0
+offset_right = 5719.0
+offset_bottom = -1868.0
+text = "Defeat enemy to make top of dome open up"
+
+[node name="Label7" type="Label" parent="."]
+offset_left = 4062.0
+offset_top = -5359.0005
+offset_right = 4505.0
+offset_bottom = -5336.0005
+rotation = 0.50778645
+text = "Log roll right here"
+
+[node name="Label8" type="Label" parent="."]
+offset_left = 3941.0002
+offset_top = -5168.0005
+offset_right = 4384.0
+offset_bottom = -5145.0005
+rotation = 0.50778645
+text = "spikes that go up to the collumns"
+
+[node name="Label9" type="Label" parent="."]
+offset_left = 1898.0
+offset_top = -5689.0
+offset_right = 2340.9998
+offset_bottom = -5666.0
+rotation = 0.0013837871
+text = "door that seals off onces all players are present"
+
+[node name="Label10" type="Label" parent="."]
+offset_left = 884.0
+offset_top = -5723.0
+offset_right = 1326.9998
+offset_bottom = -5700.0
+rotation = 0.0013837871
+text = "door that seals off onces all players are present"
+
+[node name="Label11" type="Label" parent="."]
+offset_left = 34.99994
+offset_top = -5687.0
+offset_right = 477.9997
+offset_bottom = -5664.0
+rotation = 0.0013837871
+text = "door that seals off onces all players are present"
+
+[node name="Label12" type="Label" parent="."]
+offset_left = 908.00006
+offset_top = -6818.0
+offset_right = 1350.9998
+offset_bottom = -6795.0
+rotation = 0.0013837871
+text = "buttons that both players would press to open opposite door"
+
+[node name="Label13" type="Label" parent="."]
+offset_left = 926.00006
+offset_top = -7409.0
+offset_right = 1397.0
+offset_bottom = -7386.0
+rotation = 0.0013837871
+text = "Oasis portal"
+
+[node name="Label14" type="Label" parent="."]
+offset_left = 879.0
+offset_top = -7615.0005
+offset_right = 1350.0
+offset_bottom = -7592.0005
+rotation = 0.0013837871
+text = "Spawn point for players after they exit the oasis"
+
+[node name="Label15" type="Label" parent="."]
+offset_left = -1723.0001
+offset_top = -7335.0
+offset_right = -1117.0001
+offset_bottom = -7312.0
+rotation = 0.0013837871
+text = "Spikes and an air collumn for players who would have the parachute power up"
+
+[node name="Label16" type="Label" parent="."]
+offset_left = -1057.0
+offset_top = -7960.0
+offset_right = -451.0
+offset_bottom = -7937.0
+rotation = -1.5707964
+text = "Walls that can not be wall jumped"
+
+[node name="Label17" type="Label" parent="."]
+offset_left = -1698.0
+offset_top = -7988.0
+offset_right = -1092.0
+offset_bottom = -7965.0
+rotation = -1.5707964
+text = "Walls that can not be wall jumped"
+
+[node name="Label18" type="Label" parent="."]
+offset_left = -2373.0
+offset_top = -7588.0
+offset_right = -1767.0
+offset_bottom = -7565.0
+text = "an elevator that requires the input of money or an item to get running"
+
+[node name="Label19" type="Label" parent="."]
+offset_left = -2638.0
+offset_top = -7592.0
+offset_right = -2032.0
+offset_bottom = -7569.0
+text = "breakable boulder"
+
+[node name="Label27" type="Label" parent="."]
+offset_left = 2401.0
+offset_top = -8640.0
+offset_right = 2544.0
+offset_bottom = -8617.0
+text = "breakable boulder"
+
+[node name="Label29" type="Label" parent="."]
+offset_left = -55.0
+offset_top = -9942.0
+offset_right = 1222.0
+offset_bottom = -9919.0
+text = "wall that appears when all players pass a certain point. Wall will slowly start to move forward unil it reaches the edge. can only be stopped if a player gives up an item"
+
+[node name="Label30" type="Label" parent="."]
+offset_left = -1263.0001
+offset_top = -9798.0
+offset_right = -779.0001
+offset_bottom = -9775.0
+scale = Vector2(1.8890965, 3.065524)
+text = "platform that will only appear after the door has been stopped"
+
+[node name="Label31" type="Label" parent="."]
+offset_left = 342.0
+offset_top = -11195.0
+offset_right = 826.0
+offset_bottom = -11172.0
+scale = Vector2(1.8890965, 3.065524)
+text = "breakable pillar"
+
+[node name="Label32" type="Label" parent="."]
+offset_left = 643.0
+offset_top = -12818.0
+offset_right = 1127.0
+offset_bottom = -12795.0
+scale = Vector2(1.8890965, 3.065524)
+text = "getaway rug"
+
+[node name="Label26" type="Label" parent="."]
+offset_left = 605.0
+offset_top = -8934.001
+offset_right = 679.0
+offset_bottom = -8878.001
+scale = Vector2(4.2183905, 6.986145)
+text = "Genie toll"
+
+[node name="Label20" type="Label" parent="."]
+offset_left = 4208.0
+offset_top = -4492.0
+offset_right = 4814.0
+offset_bottom = -4469.0
+text = "huge breakable boulder"
+
+[node name="Label21" type="Label" parent="."]
+offset_left = 4956.0
+offset_top = -4409.0
+offset_right = 5562.0
+offset_bottom = -4386.0
+text = "items or treasure for breaking huge boulder"
+
+[node name="Label25" type="Label" parent="."]
+offset_left = -2963.0002
+offset_top = -6195.0
+offset_right = -2910.0002
+offset_bottom = -6172.0
+rotation = -0.43995586
+scale = Vector2(2.7232876, 1.726988)
+text = "log roll"
+
+[node name="Label22" type="Label" parent="."]
+offset_left = -390.0
+offset_top = -4921.0
+offset_right = 216.0
+offset_bottom = -4898.0
+text = "safe zone from huge boulder that rolls past"
+
+[node name="Label28" type="Label" parent="."]
+offset_left = 2897.0
+offset_top = -7898.0
+offset_right = 3503.0
+offset_bottom = -7875.0
+text = "safe zone from huge boulder that rolls past"
+
+[node name="Label23" type="Label" parent="."]
+offset_left = -3056.0
+offset_top = -5376.0
+offset_right = -2890.0
+offset_bottom = -5353.0
+scale = Vector2(2.980443, 1.8874624)
+text = "dissolvable platforms"
+
+[node name="Label24" type="Label" parent="."]
+offset_left = -3653.0
+offset_top = -5517.0
+offset_right = -3487.0
+offset_bottom = -5494.0
+scale = Vector2(1.5034488, 2.058723)
+text = "dissolvable platforms"

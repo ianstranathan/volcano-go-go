@@ -32,8 +32,18 @@ func execute_tick( _delta: float ):
 
 
 func _ready() -> void:
+	$PlayerVisualsManager.visible = false
+	race_state_label.visible = false
+	death_label.visible = false
+	# -- main camera is using a zoom other than 1
+	# -- so, we need to match it for the player visual for death framing
+	var vp = get_viewport()
+	$PlayerVisualsManager.scale = vp.get_camera_2d().zoom
 	$PlayerVisualsManager.position = size / 2.0
-
+	vp.size_changed.connect( func():
+		$PlayerVisualsManager.scale = vp.get_camera_2d().zoom
+		$PlayerVisualsManager.position = size / 2.0)
+	
 
 func _physics_process(_delta: float) -> void:
 	if player_ref:
@@ -49,18 +59,30 @@ func set_minimap_world2d( w: World2D):
 
 
 const starting_state_texts: Array[String] = ["GET READY", "GO!"]
-const died_state_text: String = "YOU DIED"
+
+# -- context aware death string?
+var died_state_text: String = ""
+
+@onready var race_state_label := $StateTextContainer/MarginContainer/RaceStateLabel
+@onready var death_label := $StateTextContainer/MarginContainer/DeathLabel
 
 func on_start_race_signal( count: int):
-	$StateTextContainer/MarginContainer/VBoxContainer/Label.text = starting_state_texts[ count ]
-	$StateTextContainer.visible = true
+	race_state_label.text = starting_state_texts[ count ]
 	if count == 1:
 		# -- await is fine here because it's purely visual the race has already started
 		await get_tree().create_timer(1.0).timeout
-		$StateTextContainer.visible = false
+		race_state_label.visible = false
 
 
-func show_dead_player(_type: Player.DeathTypes):
+func show_dead_player():
 	$HudMargin.visible = false
-	$PlayerVisualsManager.set_visual_from_death_type(_type, false)
+	# -- this is saving a static var to just do whatever the last death was
+	$PlayerVisualsManager.set_visual_from_death_type()
 	$PlayerVisualsManager.visible = true
+	death_label.visible = true
+
+
+func hide_dead_player():
+	$HudMargin.visible = true
+	$PlayerVisualsManager.visible = false
+	death_label.visible = false

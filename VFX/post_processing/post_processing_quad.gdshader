@@ -9,18 +9,16 @@ void vertex() {
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
 uniform sampler2D noise_tex : repeat_enable;
 
-//uniform vec2 camera_world_pos;
 uniform float lava_level;
 uniform float distortion_strength : hint_range(0.0, 0.1) = 0.02;
 uniform float heat_range : hint_range(0.0, 1000.0) = 600.0;
 uniform float t;
-
 uniform vec3 sc[1];
-
 uniform vec2 transition_data; // t, relative vec2, is_transitioning
 uniform vec2 rel_pos_portal;
-
 uniform float race_started = 0.;
+
+uniform float fade_progress = 1.;
 
 void fragment() {
     vec2 uv = SCREEN_UV * 2.0 - 1.0;
@@ -48,18 +46,26 @@ void fragment() {
     vec4 scene_color = textureLod(screen_texture,
 	// -- only distort if we're in the lava area: race_started
 	SCREEN_UV + (distortion * race_started), 0.0);
-    vec3 heat_tint = vec3(1.0, 0.4, 0.0);
-    scene_color.rgb = mix(scene_color.rgb, heat_tint, heat_mask * 0.15);
+    //vec3 heat_tint = vec3(1.0, 0.4, 0.0);
+    //scene_color.rgb = mix(scene_color.rgb, heat_tint, heat_mask * 0.15);
 
-	// -- transition stuff
+	// -- transition stuffa 
 	vec2 rel = rel_pos_portal / dims;
 	rel.x *= dims.x / dims.y;
 	float r = length(uv - rel);
 	float _t = mix(0., 3.0, transition_data.x * transition_data.x);
 	float mask = 1. - smoothstep( _t, _t + fwidth( r), r);
-	vec4 transition_col = vec4( vec3(0.2), mask);
+	
+	float is_transitioning = transition_data.y;
+	vec3 transition_col = vec3(0.2) * mask;
 
-
-    COLOR = (1. - transition_data.y) * scene_color + transition_data.y * transition_col;
-	//COLOR = vec4(vec3(0.), 1.);
+	// scene color has to remove whatever the mask is if the transition mask is
+	// active, so scene_color.xyz * (1. - (mask * is_transitioning))
+	vec3 col = scene_color.xyz * (1. - (mask * is_transitioning)) + 
+			   (is_transitioning * transition_col);
+	//vec4 transition_col = vec4( , 1.);
+	
+	//vec3 col = (1. - transition_data.y) * scene_color.xyz;
+	//COLOR = textureLod(screen_texture, SCREEN_UV, 0.);
+	COLOR = vec4(col * (1. - fade_progress), 1.);
 }
