@@ -1,6 +1,7 @@
 extends Sprite2D
 
 signal transition_finished
+signal transition_back_finished
 signal fade_to_black_finished
 signal fade_back_from_black_finished
 
@@ -19,7 +20,9 @@ func _ready() -> void:
 		
 	transition_back_timer.timeout.connect( func():
 		material.set_shader_parameter("transition_data", 
-		Vector2(0., 0.0)))
+		Vector2(0., 0.0))
+		transition_back_finished.emit()
+		)
 	# -- transition to black
 	transition_to_black_timer.timeout.connect( func():
 		transition_finished.emit())
@@ -88,15 +91,16 @@ func fade_to_black(duration: float = 1.5) -> void:
 		1.,
 		duration
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	tween.tween_callback( func():
-		fade_to_black_finished.emit()
-		var tween_back := create_tween()
-		tween_back.tween_method(
-			material_uniform_float_fn.bind(material, "fade_progress"),
-			1,
-			0.,
-			duration * 1.2
-		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-		tween_back.tween_callback( func():
-			fade_back_from_black_finished.emit())
-	)
+
+
+func fade_back_from_black(duration: float = 0.5):
+	fade_to_black_finished.emit()   # -- technically too early, but it looks ok
+	var tween_back := create_tween()
+	tween_back.tween_method(
+		material_uniform_float_fn.bind(material, "fade_progress"),
+		1,
+		0.,
+		duration * 0.25
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween_back.tween_callback( func():
+		fade_back_from_black_finished.emit())

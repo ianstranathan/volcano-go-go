@@ -1,4 +1,4 @@
-[gd_scene load_steps=1881 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1883 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -37,6 +37,8 @@
 [ext_resource type="PackedScene" uid="uid://b87xcwytagn2f" path="res://levels/level_components/spikes/spikes.tscn" id="34_ptb3l"]
 [ext_resource type="PackedScene" uid="uid://bsgpimloa7djw" path="res://levels/level_components/treasure/treasure_chest/treasure_chest.tscn" id="34_yy7ml"]
 [ext_resource type="PackedScene" uid="uid://c38uqagi7jgxs" path="res://levels/level_components/spikes/spike_renderer.tscn" id="35_yck4v"]
+[ext_resource type="PackedScene" uid="uid://df03ubrosjjhq" path="res://Level Notes/notes.tscn" id="38_p4uyy"]
+[ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="39_oerk6"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -44,7 +46,7 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(-2052, -7044), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(-2030, -7059), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
 "position": Vector2(-1830, -7022)
@@ -12304,7 +12306,7 @@ position = Vector2(-1352, -9648)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(-2052, -7044)
+position = Vector2(-2030, -7059)
 
 [node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(-163, -143)
@@ -14261,7 +14263,17 @@ spike_container = NodePath("../SpikeContainer")
 treasure_altar = NodePath("../ItemSacrificeAltar")
 recede_duration = 0.3
 
+[node name="WindGustLift" parent="NonTickingGeometryContainer" instance=ExtResource("39_oerk6")]
+position = Vector2(-1367, -7675)
+coll_extents = Vector2(300, 1200)
+
+[node name="WindGustLift2" parent="NonTickingGeometryContainer" instance=ExtResource("39_oerk6")]
+position = Vector2(1223, -1640)
+coll_extents = Vector2(300, 1400)
+
 [node name="TreasureSourcesManager" parent="." instance=ExtResource("33_jv26l")]
 
 [node name="TreasureChest" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
 position = Vector2(1906, 14)
+
+[node name="Notes2" parent="." instance=ExtResource("38_p4uyy")]

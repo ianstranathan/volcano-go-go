@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://bskfrbqcf1eoe"]
+
+[ext_resource type="Shader" uid="uid://kda1g0vi3ciu" path="res://UI/death_circular_menu/death_circular_menu.gdshader" id="1_n1wbc"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_hrv52"]
+[ext_resource type="Script" uid="uid://x5fscbhy2frk" path="res://UI/death_circular_menu/death_circular_menu.gd" id="3_4vbfh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lexru"]
+shader = ExtResource("1_n1wbc")
+shader_parameter/segment_count = 6
+shader_parameter/inner_radius = 0.5
+shader_parameter/outer_radius = 0.8
+shader_parameter/hover_radius_expand = 0.08
+shader_parameter/gap = 0.035
+shader_parameter/hovered_index = 2
+shader_parameter/base_color = Color(1, 1, 1, 1)
+shader_parameter/hover_color = Color(0.9626681, 0.4555518, 0.24254313, 1)
+
+[node name="TextureRect" type="TextureRect"]
+material = SubResource("ShaderMaterial_lexru")
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_hrv52")
+script = ExtResource("3_4vbfh")

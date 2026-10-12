@@ -1186,16 +1186,19 @@ func cloud_state_fn( _delta: float ) -> void:
 	#$PlayerVisualsManager.toggle_visibility(b)
 
 
-func respawn():
+func respawn(p: Vector2):
+	global_position = p
+	velocity = Vector2.ZERO
 	$PlayerVisualsManager.visible = true
-	integrate_motion = true
-	movement_state_transition_to( MovementStates.IDLE )
 	do_respawn_vfx()
-
+	movement_state_transition_to( MovementStates.IDLE )
+	
 
 func movement_state_transition_to(new_movement_state: MovementStates):
 	if movement_state != new_movement_state:
 		match movement_state:
+			MovementStates.DEAD:
+				integrate_motion = true
 			MovementStates.IDLE:
 				match new_movement_state:
 					MovementStates.JUMPING:

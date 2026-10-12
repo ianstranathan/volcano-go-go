@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=20 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="2_4fuuu"]
@@ -14,31 +14,13 @@
 [ext_resource type="PackedScene" uid="uid://cntneundq200x" path="res://lava/lava.tscn" id="15_hb504"]
 [ext_resource type="PackedScene" uid="uid://dv6yjtu0iucn2" path="res://levels/level_manager.tscn" id="16_4cobl"]
 [ext_resource type="PackedScene" uid="uid://dkb4hsfhvjgih" path="res://UI/options_window/options_window.tscn" id="16_ee6o4"]
-[ext_resource type="Material" uid="uid://3v66203jd2su" path="res://VFX/parallax/background/bg_1.tres" id="18_dxwpq"]
-[ext_resource type="Script" uid="uid://c1v1wffkshhet" path="res://VFX/parallax/background/background_manager.gd" id="18_mhvfb"]
 [ext_resource type="Script" uid="uid://bbd4i5vqp570v" path="res://game/projectiles_container.gd" id="18_q52ks"]
-[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="19_dxwpq"]
 [ext_resource type="Script" uid="uid://cij6f0lnimy3e" path="res://game/world_dynamic_objects_manager.gd" id="19_jucfl"]
-[ext_resource type="Script" uid="uid://d2hrglvsb7qwg" path="res://VFX/parallax/background/follow_cam_container.gd" id="20_leid8"]
-[ext_resource type="Script" uid="uid://cr80xpke88uhc" path="res://VFX/parallax/background/mesh_2_viewport_component.gd" id="21_5e03w"]
 [ext_resource type="Script" uid="uid://bkph433k5qarc" path="res://game/gambling/wager_manager.gd" id="21_58yx1"]
-[ext_resource type="Shader" uid="uid://ftymhn0l1uan" path="res://VFX/parallax/background/background_screen_quad.gdshader" id="22_5e03w"]
-[ext_resource type="Script" uid="uid://buaw6vowb1vpp" path="res://VFX/parallax/background/follow_cam_component.gd" id="24_8bboj"]
 [ext_resource type="PackedScene" uid="uid://cmw4mc183vist" path="res://game/genie/the_genie.tscn" id="25_8bboj"]
 
 [sub_resource type="Curve2D" id="Curve2D_4cobl"]
 resource_local_to_scene = true
-
-[sub_resource type="QuadMesh" id="QuadMesh_mhvfb"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_leid8"]
-shader = ExtResource("22_5e03w")
-shader_parameter/blur_radius = 2.0
-
-[sub_resource type="QuadMesh" id="QuadMesh_dxwpq"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_mhvfb"]
-viewport_path = NodePath("World/BackgroundManager/Layer1/SubViewportLayer0")
 
 [node name="Game" type="Node2D" node_paths=PackedStringArray("players_container", "spawn_points", "ui", "wager_window", "post_processing_quad", "world_pickup_items_manager", "world_dynamic_objects_manager", "world_level_manager", "oasis", "wager_manager", "camera", "world_effects_container")]
 visibility_layer = 3
@@ -59,13 +41,13 @@ world_effects_container = NodePath("World/WorldEffects")
 metadata/_edit_group_ = true
 
 [node name="TheGenie" parent="." instance=ExtResource("25_8bboj")]
-position = Vector2(-5321, 5494)
+position = Vector2(-6457, 5494)
 
 [node name="WagerManager" type="Node2D" parent="."]
 script = ExtResource("21_58yx1")
 
 [node name="Oasis" parent="." instance=ExtResource("10_j8tme")]
-position = Vector2(-5000, 5000)
+position = Vector2(-6120, 5000)
 
 [node name="PathFollowPlatformComponent" parent="Oasis" instance=ExtResource("13_ln7ps")]
 curve = SubResource("Curve2D_4cobl")
@@ -109,7 +91,7 @@ initial_world_lava_level = 0
 [node name="InitialSpawnPoints" type="Node2D" parent="World"]
 
 [node name="Marker2D" type="Marker2D" parent="World/InitialSpawnPoints"]
-position = Vector2(-4712, 4578)
+position = Vector2(-5889, 4665)
 
 [node name="Marker2D2" type="Marker2D" parent="World/InitialSpawnPoints"]
 position = Vector2(-5149, 4648)
@@ -131,43 +113,6 @@ z_index = 1000
 cam = NodePath("../Camera")
 lava_ref = NodePath("../Lava")
 
-[node name="BackgroundManager" type="Node2D" parent="World" node_paths=PackedStringArray("backgrond_layer", "cam_ref")]
-z_index = -1001
-script = ExtResource("18_mhvfb")
-backgrond_layer = NodePath("Layer1")
-background_material = ExtResource("18_dxwpq")
-cam_ref = NodePath("../Camera")
-
-[node name="Layer1" type="Node2D" parent="World/BackgroundManager"]
-
-[node name="SubViewportLayer0" type="SubViewport" parent="World/BackgroundManager/Layer1"]
-
-[node name="FollowMainCam" type="Node2D" parent="World/BackgroundManager/Layer1/SubViewportLayer0" node_paths=PackedStringArray("cam", "sub_cam")]
-script = ExtResource("20_leid8")
-cam = NodePath("../../../../Camera")
-sub_cam = NodePath("Camera2D")
-
-[node name="MeshInstance2D" type="MeshInstance2D" parent="World/BackgroundManager/Layer1/SubViewportLayer0/FollowMainCam" node_paths=PackedStringArray("cam")]
-material = ExtResource("18_dxwpq")
-mesh = SubResource("QuadMesh_mhvfb")
-texture = ExtResource("19_dxwpq")
-script = ExtResource("21_5e03w")
-cam = NodePath("../Camera2D")
-
-[node name="Camera2D" type="Camera2D" parent="World/BackgroundManager/Layer1/SubViewportLayer0/FollowMainCam"]
-
-[node name="Layer0_render_target" type="MeshInstance2D" parent="World/BackgroundManager/Layer1" node_paths=PackedStringArray("cam")]
-material = SubResource("ShaderMaterial_leid8")
-mesh = SubResource("QuadMesh_dxwpq")
-texture = SubResource("ViewportTexture_mhvfb")
-script = ExtResource("21_5e03w")
-cam = NodePath("../SubViewportLayer0/FollowMainCam/Camera2D")
-
-[node name="Node2D" type="Node2D" parent="World/BackgroundManager/Layer1/Layer0_render_target" node_paths=PackedStringArray("target_2_move", "cam")]
-script = ExtResource("24_8bboj")
-target_2_move = NodePath("..")
-cam = NodePath("../../../../Camera")
-
 [node name="ProjectilesContainer" type="Node2D" parent="World"]
 script = ExtResource("18_q52ks")
 
@@ -176,5 +121,5 @@ script = ExtResource("19_jucfl")
 
 [node name="DeathTv" parent="." node_paths=PackedStringArray("starting_position_marker") instance=ExtResource("12_qf6n1")]
 z_as_relative = false
-position = Vector2(-5716, 5463)
+position = Vector2(-7030, 5520)
 starting_position_marker = NodePath("../Oasis/DeathTVPosition")

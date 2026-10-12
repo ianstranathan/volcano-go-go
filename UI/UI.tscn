@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://btg4x06vjsk5q"]
+[gd_scene load_steps=15 format=3 uid="uid://btg4x06vjsk5q"]
 
 [ext_resource type="Script" uid="uid://ctyi08d6b1xq2" path="res://UI/UI.gd" id="1_6dd3c"]
 [ext_resource type="PackedScene" uid="uid://ceborxxuc334h" path="res://UI/HotBar/hotbar_ui.tscn" id="2_dhe1o"]
@@ -8,7 +8,9 @@
 [ext_resource type="Shader" uid="uid://bmxcw5ep3dfa4" path="res://UI/minimap.gdshader" id="6_jqf55"]
 [ext_resource type="Texture2D" uid="uid://1c7qd20h0yjl" path="res://assets/arabesque/633.jpg" id="7_byuxr"]
 [ext_resource type="PackedScene" uid="uid://dj4ikjlvtcgys" path="res://player/player_visuals/player_visuals.tscn" id="9_qgmx8"]
+[ext_resource type="PackedScene" uid="uid://bskfrbqcf1eoe" path="res://UI/death_circular_menu/death_circular_menu.tscn" id="10_r2vy3"]
 [ext_resource type="FontFile" uid="uid://wxpoic4an7pc" path="res://assets/fonts/Shakira.ttf" id="10_vx7wu"]
+[ext_resource type="PackedScene" uid="uid://eyphrd643hi" path="res://VFX/skull.tscn" id="11_r2vy3"]
 
 [sub_resource type="Shader" id="Shader_f1fl4"]
 resource_local_to_scene = true
@@ -221,15 +223,24 @@ theme_override_fonts/font = ExtResource("10_vx7wu")
 theme_override_font_sizes/font_size = 80
 text = "GET READY!"
 
-[node name="DeathLabel" type="Label" parent="StateTextContainer/MarginContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0, 0, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 60
-text = "FAILURE"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="PlayerVisualsManager" parent="." instance=ExtResource("9_qgmx8")]
 position = Vector2(380, 280)
 DEBUG = true
+
+[node name="DeathRadialMenu" parent="." instance=ExtResource("10_r2vy3")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="skull" parent="." instance=ExtResource("11_r2vy3")]
+position = Vector2(396, 97)
+scale = Vector2(2, 2)

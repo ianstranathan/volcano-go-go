@@ -1,5 +1,7 @@
 extends Control
 
+signal death_fault_selection_made
+
 @export var DEBUG: bool = true # -- networking stats overlay uses this
 
 
@@ -30,18 +32,34 @@ func execute_tick( _delta: float ):
 			ordered_players.map( func(c): return c.name.to_int()),
 			game_ref.player_data_dict)
 
+# -- TODO
+@onready var skull_texture_height = 80;
 
 func _ready() -> void:
+	$DeathRadialMenu.choice_made.connect( func():
+		$DeathRadialMenu.hide()
+		death_fault_selection_made.emit()
+		)
+	
+	$DeathRadialMenu.visible = false
 	$PlayerVisualsManager.visible = false
 	race_state_label.visible = false
-	death_label.visible = false
+	$skull.visible = false
 	# -- main camera is using a zoom other than 1
 	# -- so, we need to match it for the player visual for death framing
+	
+	# -- TODO put this somewhere dude
 	var vp = get_viewport()
-	$PlayerVisualsManager.scale = vp.get_camera_2d().zoom
+	var s = vp.get_camera_2d().zoom
+	$PlayerVisualsManager.scale = s
+	$skull.scale = $skull.scale * s
 	$PlayerVisualsManager.position = size / 2.0
+	$skull.position = Vector2(size.x / 2., $skull.position.y)
 	vp.size_changed.connect( func():
-		$PlayerVisualsManager.scale = vp.get_camera_2d().zoom
+		var _s = vp.get_camera_2d().zoom
+		$skull.scale = $skull.scale * s
+		$skull.position = Vector2(size.x / 2., $skull.position.y)
+		$PlayerVisualsManager.scale = _s
 		$PlayerVisualsManager.position = size / 2.0)
 	
 
@@ -64,7 +82,6 @@ const starting_state_texts: Array[String] = ["GET READY", "GO!"]
 var died_state_text: String = ""
 
 @onready var race_state_label := $StateTextContainer/MarginContainer/RaceStateLabel
-@onready var death_label := $StateTextContainer/MarginContainer/DeathLabel
 
 func on_start_race_signal( count: int):
 	race_state_label.text = starting_state_texts[ count ]
@@ -79,10 +96,13 @@ func show_dead_player():
 	# -- this is saving a static var to just do whatever the last death was
 	$PlayerVisualsManager.set_visual_from_death_type()
 	$PlayerVisualsManager.visible = true
-	death_label.visible = true
-
+	$skull.visible = true
+	$DeathRadialMenu.show()
 
 func hide_dead_player():
 	$HudMargin.visible = true
 	$PlayerVisualsManager.visible = false
-	death_label.visible = false
+	$skull.visible = false
+	
+#func show_death_radial_choice_menu():
+	#$DeathRadialMenu.show()

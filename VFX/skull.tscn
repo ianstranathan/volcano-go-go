@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://eyphrd643hi"]
+[gd_scene load_steps=12 format=3 uid="uid://eyphrd643hi"]
 
 [ext_resource type="Texture2D" uid="uid://bragjl1f3g011" path="res://assets/Treasure/death skull.png" id="1_pa187"]
+[ext_resource type="Script" uid="uid://dhsluofgrfsar" path="res://VFX/skull.gd" id="2_fls2y"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cmsuk"]
 atlas = ExtResource("1_pa187")
@@ -63,11 +64,12 @@ animations = [{
 }],
 "loop": true,
 "name": &"default",
-"speed": 14.0
+"speed": 24.0
 }]
 
 [node name="skull" type="AnimatedSprite2D"]
-visible = false
+texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_g7wbm")
 autoplay = "default"
-frame_progress = 0.2605879
+frame_progress = 0.0032244376
+script = ExtResource("2_fls2y")

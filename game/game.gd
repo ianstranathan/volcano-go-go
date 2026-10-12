@@ -23,19 +23,34 @@ var player_data_dict:Dictionary = {} # -- id to player_data
 @export var camera: Camera2D
 @export var world_effects_container: Node2D
 
+enum GameStates{
+	PRESTART,
+	STARTED,
+	INTERMISSION,
+	POST_INTERMISSION,
+	FINISHED
+}
+var game_state: GameStates = GameStates.PRESTART
+
 func _ready():
+	
 	camera.camera_centered_on_player.connect( func():
 			ui.show_dead_player()
 			post_processing_quad.fade_to_black())
+			
+	ui.death_fault_selection_made.connect( func():
+		post_processing_quad.fade_back_from_black())
 	# -- we're gaurenteed that all children (level manager and world pickup items
 	# -- manager) are intialized
 	# ==> can just set the prev. world pickup items ready stuff to here
+	#post_processing_quad.transition_back_finished.connect( func():
+		#camera.zoom_out_on_player())
 	post_processing_quad.transition_finished.connect(
 		func(): world_level_manager.call_deferred("start_level")
 	)
 	post_processing_quad.fade_back_from_black_finished.connect( func():
 		ui.hide_dead_player()
-		camera.is_dead = false)
+		camera.unlock_from_player())
 	
 	world_pickup_items_manager.load_pickup_items_from_level_chunks(
 		world_level_manager.get_all_pickup_item_definitions()
@@ -88,8 +103,6 @@ var world_is_ticking := false
 	world_dynamic_objects_manager
 ]
 
-
-var race_started := false
 
 func execute_tick( delta: float ):
 	#print(players_container.get_child(0).global_position)
@@ -179,19 +192,14 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 		# -- then UI visual takes its place
 		a_player.died.connect( func(visibility_callback: Callable):
 			camera.on_player_died(visibility_callback))
-		post_processing_quad.fade_back_from_black_finished.connect( func():
-			a_player.respawn())
-		# -- set the player back at his spawn position when he dies (when 
-		# -- the post processing quad is hiding everything
-		
+			
 		# -- closure around spawn_marker_pos for this player
+		# -- so we're turning on the player's visuals in respawn before
+		# -- the post processing quad has faded back in
 		post_processing_quad.fade_to_black_finished.connect( func():
-			#a_player.toggle_visibility()
-			a_player.movement_state_transition_to(Player.MovementStates.IDLE)
-			a_player.global_position = spawn_marker_pos)
-		
-		#a_player.died.connect( post_processing_quad.fade_to_black )
-		print($World/ProjectilesContainer)
+			a_player.respawn(spawn_marker_pos)
+		)
+
 	# -- we need the players to spawn before running this
 	world_effects_container.initialize_recurring_player_vfx()
 	#print_tree_pretty()
@@ -251,6 +259,7 @@ func on_oasis_portal_entered( body, portal_pos: Vector2 ) -> void:
 		# -- relative vector for origin of transition point; can change or w/e
 		post_processing_quad.start_transition_anim(
 			(portal_pos  - camera.global_position))
+		#num_players_initialized = 0.
 		#world_level_manager.call_deferred("start_level")
 
 
@@ -273,10 +282,27 @@ func on_level_manager_loaded_first_chunk( _spawn_points: Array ):
 func on_player_touched_bottom( _player_id):
 	#lava.global_position = Vector2(0., 0.)
 	#lava.start_race()
-	race_started = true
+	
+	# -- start timer to start race
 	ui.visible = true
-	#camera.zoom = Vector2(1.2, 1.2)
+	
+	# -- camera should return back to player perspective
+	# -- tween is fine because it only is visual for the authority
+	camera.zoom_in_to_player()
+
 
 func test_death_tv():
 	$DeathTv.set_subviewports_game_world( $World.get_world_2d() )
 	$DeathTv.target_player = players_container.get_children()[0]
+
+
+func initialize_volcano():
+	pass
+
+
+func start_race():
+	# -- tell UI to show race starting
+	
+	# -- lava start
+	
+	pass

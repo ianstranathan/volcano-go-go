@@ -44,22 +44,20 @@ func _physics_process(delta: float) -> void:
 		global_position = target.global_position
 		return
 	
-	# --- DEATH LOCK BEHAVIOR ---
-	# --- DEATH LOCK BEHAVIOR ---
-	if is_dead:
-		current_look_ahead_offset = move_toward(current_look_ahead_offset, 0.0, 500.0 * delta)
+	# -- 
+	if lock_to_player:
+		current_look_ahead_offset = lerp(current_look_ahead_offset, 0., 4. * delta)
+		#move_toward(current_look_ahead_offset, 0.0, 500.0 * delta)
+		global_position = global_position.lerp( target.global_position, 4. * delta)
 		
-		global_position.x = move_toward(global_position.x, target.global_position.x, abs(global_position.x - target.global_position.x) * 10.0 * delta)
-		global_position.y = move_toward(global_position.y, target.global_position.y, abs(global_position.y - target.global_position.y) * 10.0 * delta)
-		
-		#print( global_position )
-		# Check if we have arrived close enough to the player
-		if not has_centered:
-			if global_position.distance_squared_to(target.global_position) < 4.0:
-				global_position = target.global_position
-				has_centered = true
-				on_centered_callback.call()       # -- turns off player visibility
-				camera_centered_on_player.emit( ) # -- turns on UI canvas layer visual of player
+		# -- we only want to emit this once, thus the has_centered
+		if not has_centered and global_position.distance_squared_to(target.global_position) < 5.0:
+			global_position = target.global_position
+			has_centered = true
+			on_centered_callback.call()       # -- turns off player visibility
+			camera_centered_on_player.emit( ) # -- turns on UI canvas layer visual of player
+		else:
+			global_position = target.global_position
 		return
 	# ----------------------------------------------------------------------------- Horizontal stuff
 
@@ -171,11 +169,41 @@ func shake_offset( delta: float) -> Vector2:
 #
 	#draw_dashed_line(Vector2(0., -deadzone_height * 0.5), Vector2(0., deadzone_height * 0.5), Color(0.1, 0.1, 0.6), 5, 5)
 	
-var is_dead: bool = false
+var lock_to_player: bool = false
 var has_centered: bool = false
 var on_centered_callback: Callable
 func on_player_died( visibility_callback: Callable) -> void:
 	on_centered_callback = func(): visibility_callback.call()
-	is_dead = true
+	lock_to_player = true
 	shake_timer = 0.0
 	current_shake = null
+
+
+func unlock_from_player():
+	await get_tree().create_timer(0.5).timeout
+	lock_to_player = false
+	has_centered = false
+	current_shake = null
+
+
+const zoomed_in_scale = Vector2(1.2, 1.2)
+const zoomed_out_scale = zoomed_in_scale / 2.
+const time_to_zoom_in = 1.0
+const time_to_zoom_out = 1.2
+func zoom_in_to_player() -> void:
+	var tween = create_tween()
+	tween.tween_property( 
+		self, 
+		"zoom",
+		zoomed_in_scale,
+		time_to_zoom_in
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	
+func zoom_out_on_player() -> void:
+	var tween = create_tween()
+	tween.tween_property( 
+		self, 
+		"zoom",
+		zoomed_out_scale,
+		time_to_zoom_out
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
