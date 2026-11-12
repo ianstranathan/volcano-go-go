@@ -1,0 +1,28 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://ccor0k6f1lh5r"]
+
+[ext_resource type="Shader" uid="uid://bogciwlj2cnay" path="res://VFX/parallax/layers/bg_pll_2/bg_pll_2.gdshader" id="1_sv3yi"]
+[ext_resource type="Texture2D" uid="uid://g832rt407u8f" path="res://assets/arabesque/luke_background_0.png" id="2_lwkpn"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="3_j6q80"]
+[ext_resource type="Texture2D" uid="uid://cs5x25roea0b3" path="res://assets/PBR textures/Rocks011_2K-JPG_NormalGL.jpg" id="4_4me0u"]
+[ext_resource type="Texture2D" uid="uid://opy7dao8ejop" path="res://assets/PBR textures/Rocks011_1K-PNG_Color.png" id="5_v8uxw"]
+
+[resource]
+shader = ExtResource("1_sv3yi")
+shader_parameter/noise_tex = ExtResource("3_j6q80")
+shader_parameter/rock_tex = ExtResource("5_v8uxw")
+shader_parameter/rock_normal = ExtResource("4_4me0u")
+shader_parameter/pattern_tex = ExtResource("2_lwkpn")
+shader_parameter/tiles_around = 2.0
+shader_parameter/rock_tiles_around = 4.0
+shader_parameter/spin_speed = 0.05
+shader_parameter/aspect = 1.0
+shader_parameter/lod = 2.0000000298024
+shader_parameter/edge_bump_strength = 0.2
+shader_parameter/bump_strength = 3.20000004768384
+shader_parameter/rock_normal_strength = 1.0
+shader_parameter/cavity_strength = 0.5
+shader_parameter/normal_depth = 0.40000000596048
+shader_parameter/flip_normal_y = false
+shader_parameter/cel_steps = 6.0
+shader_parameter/light_strength = 1.0
+shader_parameter/light_dir = Vector3(-0.735, 1.33, 0.72)

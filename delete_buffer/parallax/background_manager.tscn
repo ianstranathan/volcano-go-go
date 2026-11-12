@@ -1,12 +1,12 @@
 [gd_scene load_steps=12 format=3 uid="uid://bde4my0fjw7ow"]
 
-[ext_resource type="Script" uid="uid://c1v1wffkshhet" path="res://VFX/parallax/background/background_manager.gd" id="1_iembq"]
-[ext_resource type="Material" uid="uid://3v66203jd2su" path="res://VFX/parallax/background/bg_1.tres" id="2_mp1qu"]
-[ext_resource type="Script" uid="uid://d2hrglvsb7qwg" path="res://VFX/parallax/background/follow_cam_container.gd" id="3_3h7x8"]
+[ext_resource type="Script" uid="uid://c1v1wffkshhet" path="res://VFX/parallax/background (old - delete)/background_manager.gd" id="1_iembq"]
+[ext_resource type="Material" uid="uid://3v66203jd2su" path="res://VFX/parallax/background (old - delete)/bg_1.tres" id="2_mp1qu"]
+[ext_resource type="Script" uid="uid://d2hrglvsb7qwg" path="res://VFX/parallax/background (old - delete)/follow_cam_container.gd" id="3_3h7x8"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="4_4u71t"]
-[ext_resource type="Script" uid="uid://cr80xpke88uhc" path="res://VFX/parallax/background/mesh_2_viewport_component.gd" id="5_2tqp8"]
-[ext_resource type="Shader" uid="uid://ftymhn0l1uan" path="res://VFX/parallax/background/background_screen_quad.gdshader" id="6_7rpju"]
-[ext_resource type="Script" uid="uid://buaw6vowb1vpp" path="res://VFX/parallax/background/follow_cam_component.gd" id="7_c3x4q"]
+[ext_resource type="Script" uid="uid://cr80xpke88uhc" path="res://VFX/parallax/background (old - delete)/mesh_2_viewport_component.gd" id="5_2tqp8"]
+[ext_resource type="Shader" uid="uid://ftymhn0l1uan" path="res://VFX/parallax/background (old - delete)/background_screen_quad.gdshader" id="6_7rpju"]
+[ext_resource type="Script" uid="uid://buaw6vowb1vpp" path="res://VFX/parallax/background (old - delete)/follow_cam_component.gd" id="7_c3x4q"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_mhvfb"]
 

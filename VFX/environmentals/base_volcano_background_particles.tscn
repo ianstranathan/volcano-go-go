@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw52i8tmboyfh"]
+
+[ext_resource type="Texture2D" uid="uid://cw3uer8byhqs2" path="res://assets/particle_masks/T_VFX_basic1.PNG" id="1_3h7f3"]
+
+[node name="BaseVolcanoBackgroundParticles" type="Node2D"]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+texture = ExtResource("1_3h7f3")

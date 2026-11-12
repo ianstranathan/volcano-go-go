@@ -33,6 +33,8 @@ func _ready():
 
 
 func _physics_process(delta: float) -> void:
+	#if !multiplayer.is_server():
+		#print(global_position)
 	if DEBUG:
 		queue_redraw()
 	

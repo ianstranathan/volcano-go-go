@@ -1,7 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c7fbdssnbiw48"]
-
-[ext_resource type="Shader" uid="uid://3330b0rgcp2i" path="res://VFX/parallax/background/blur_1.gdshader" id="1_s8nt5"]
-
-[resource]
-shader = ExtResource("1_s8nt5")
-shader_parameter/blur_amount = 2.0

@@ -3,12 +3,9 @@ extends Node2D
 class_name SpikeStrip
 
 
-@export_category("Collision")
-
 @export var make: bool = false:
 	set(value):
 		make = value
-
 
 @export var thickness: float = 32.0:
 	set(value):

@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c7eql2sks7xb"]
+
+[ext_resource type="Shader" uid="uid://cw8ink37o7ov2" path="res://VFX/parallax/parallaxing_layer/parallax_canvas_group_blur.gdshader" id="1_0wbe1"]
+
+[resource]
+shader = ExtResource("1_0wbe1")
+shader_parameter/blur_radius = 7.2830003459425

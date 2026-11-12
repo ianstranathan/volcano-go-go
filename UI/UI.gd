@@ -36,6 +36,9 @@ func execute_tick( _delta: float ):
 @onready var skull_texture_height = 80;
 
 func _ready() -> void:
+	$StateTextContainer.visible = true
+	race_state_label.visible = false
+	
 	$DeathRadialMenu.choice_made.connect( func():
 		$DeathRadialMenu.hide()
 		death_fault_selection_made.emit()
@@ -43,7 +46,7 @@ func _ready() -> void:
 	
 	$DeathRadialMenu.visible = false
 	$PlayerVisualsManager.visible = false
-	race_state_label.visible = false
+	
 	$skull.visible = false
 	# -- main camera is using a zoom other than 1
 	# -- so, we need to match it for the player visual for death framing
@@ -76,19 +79,14 @@ func set_minimap_world2d( w: World2D):
 	#debug_check_layer_hierarchy( minimap_viewport, 1)
 
 
-const starting_state_texts: Array[String] = ["GET READY", "GO!"]
-
-# -- context aware death string?
-var died_state_text: String = ""
-
 @onready var race_state_label := $StateTextContainer/MarginContainer/RaceStateLabel
-
-func on_start_race_signal( count: int):
-	race_state_label.text = starting_state_texts[ count ]
-	if count == 1:
-		# -- await is fine here because it's purely visual the race has already started
+func display_race_state_message( s: String, toggle_off=false):
+	race_state_label.text = s
+	race_state_label.visible = true
+	if toggle_off:
 		await get_tree().create_timer(1.0).timeout
 		race_state_label.visible = false
+
 
 
 func show_dead_player():

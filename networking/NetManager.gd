@@ -8,6 +8,7 @@ Authoritative host + client-prediction networking manager.
 
 HIGH-LEVEL MODEL
 ----------------
+listen-server architecture: p2p transport, and the host is the server.
 
 The host is authoritative.
 
@@ -18,7 +19,8 @@ Clients:
     4. Intentionally simulate some number of ticks ahead of the host.
     5. Receive authoritative snapshots from the host.
     6. Reconcile their local predicted state against those snapshots.
-
+	7. Other clients are interpolated dummies
+	
 The host:
 
     1. Runs the authoritative simulation.
@@ -83,108 +85,28 @@ var _timer: float = 0.0       # -- just counting up delta for tick increment
 const TICK_RATE := 1.0 / 60.0 # --
 var fract_tick: float = 0.0   # -- decimal remainder of the tick
 var update_remote_modulo : int = 2 # -- e.g. 60hz -> 30hz
+var evaluate_remote_input_buffer_modulo: int = 6 # -- e.g. 60hz -> 10hz
 var clock_synced := false
 var tick_lead: int = 10 # -- from initial ping, then dynamically updated
-const MIN_TICK_LEAD := 4
-const TARGET_TICK_LEAD := 8
+const MIN_TICK_LEAD := 8
+const TARGET_TICK_LEAD := 15
 const MAX_TICK_LEAD := 20
 
-var remote_tick_leads: Dictionary = {}
-"""
-Highest command tick received from each client.
-This is useful for diagnostics.
-
-IMPORTANT:
-    newest_input_tick - current_tick
-
-does NOT tell us how many usable commands are actually available.
-
-For example:
-
-    current_tick = 100
-
-    received:
-        100
-        101
-        102
-        104
-        105
-
-Newest = 105
-
-But command 103 is missing, so the host can only safely continue through
-102 before starvation.
-
-Therefore we also calculate consecutive input availability.
-"""
-var remote_latest_input_tick: Dictionary = {}
 # -------------------------------------------------------------------------
-# Number of consecutive commands available beginning at current_tick.
+# Per-client hysteresis i.e.
+# -- increase lead quickly
+# -- decrease lead slowly
 # -------------------------------------------------------------------------
 var remote_consecutive_input_ticks: Dictionary = {} # -- 
-"""
-host = 100
-
-received:
-[100 101 102 103 104 105]
-=> consecutive = 6
-
-As opposed to:
-received:
-100 101 102 [104 105 106]
-
-consecutive = 3
-"""
-
-"""
-Do not evaluate/change lead every simulation tick.
-
-At 60 Hz:
-    15 ticks = 250 ms
-Therefore this controller runs roughly 4 times per second.
-"""
-const LEAD_EVALUATION_INTERVAL_TICKS := 15
-var lead_evaluation_counter: int = 0
-
-"""
-STARVATION
-----------
-
-If fewer than this many consecutive commands are available, the client is
-dangerously close to starving.
-
-HEALTHY BUFFER
---------------
-
-If more than this many consecutive commands are available, the client has
-substantial spare input buffered.
-
-The controller intentionally has hysteresis:
-
-    increase lead quickly-ish
-    decrease lead slowly
-
-This prevents:
-    +1
-    -1
-    +1
-    -1
-
-oscillation under ordinary jitter.
-"""
 const STARVATION_EVALUATIONS_REQUIRED := 2
 const HEALTHY_EVALUATIONS_REQUIRED := 4
-
-# -------------------------------------------------------------------------
-# Per-client hysteresis counters.
-# -------------------------------------------------------------------------
 var remote_starvation_counts: Dictionary = {}
 var remote_healthy_counts: Dictionary = {}
 
-#var last_host_tick: int = 0
 var average_offset: float = 0
 const OFFSET_LERP_WEIGHT := 0.01 # 0.03
 const MAX_CLOCK_ADJUST := 0.001  # 0.005
+
 # ------------------------------------------------------------------------------
 var tick_scheduler := TickScheduler.new()
 
@@ -253,8 +175,9 @@ func _physics_process(delta: float) -> void:
 			
 			# -- go through buffer of tick-marked / saved local player commands
 			elif multiplayer.is_server():
+				
 				host_process_remote_client(id, _player)
-			
+				
 			# -- at a slower Hz, host sends out RPC to give interpolation and
 			# -- reconciliation data for client's local version
 			if multiplayer.is_server() and (current_tick % update_remote_modulo == 0):
@@ -263,15 +186,17 @@ func _physics_process(delta: float) -> void:
 					sync_player_state.rpc(current_tick,
 										  id,
 										  _state.serialize())
-										
-		if multiplayer.is_server():
-			lead_evaluation_counter += 1
-			if ( lead_evaluation_counter >= LEAD_EVALUATION_INTERVAL_TICKS):
-				lead_evaluation_counter = 0
-		
-				#evaluate_remote_input_buffers()
-		if (ticks_processed == max_ticks_per_frame and _timer >= TICK_RATE):
-			pass
+				#elif current_tick % evaluate_remote_input_buffer_modulo == 0:
+					## -- check remote buffer health
+					#check_remote_input_buffer_health( id )
+		# -- every so often, check the remote command buffer health
+		# -- if we're running low, increase the tick
+		# -- if we have more than enough, decrease the tick
+		#if current_tick % evaluate_remote_input_buffer_modulo == 0:
+			## -- check remote buffer health
+			#check_remote_input_buffer_health()
+		#if (ticks_processed == max_ticks_per_frame and _timer >= TICK_RATE):
+			#pass
 			# for diagnosing frame stalls.
 			#
 			#print(
@@ -309,12 +234,14 @@ func setup_remote_buffer(id: int):
 	# -- prefill with empty commands to avoid null checks
 	for i in range(INPUT_BUFFER_SIZE):
 		buffer[i] = PlayerCommand.new()
-	remote_input_buffers[id] = buffer
 	
-	remote_latest_input_tick[id] = 0
+	remote_input_buffers[id] = buffer
+	#remote_latest_input_tick[id] = 0
 	remote_consecutive_input_ticks[id] = 0
 	remote_starvation_counts[id] = 0
 	remote_healthy_counts[id] = 0
+	remote_latest_tick[id] = current_tick
+
 
 func network_handshake(new_player_id):
 	if NetworkGateway.using_steam():
@@ -337,12 +264,14 @@ func network_handshake(new_player_id):
 	#
 	#print("Steam Handshake complete for Peer: ", id, " SteamID: ", steam_id)
 	#player_registration(id)
+
+
 func wait_for_steam_handshake(id: int, attempts: int = 0):
 	var max_attempts = 50 # 5 seconds total (50 * 0.1)
-	# case: the peer disconnected while we were waiting
-	if not multiplayer.get_peers().has(id):
-		print("Aborting handshake: Peer ", id, " disappeared.")
-		return
+	## case: the peer disconnected while we were waiting
+	#if not multiplayer.get_peers().has(id):
+		#print("Aborting handshake: Peer ", id, " disappeared.")
+		#return
 	var steam_backend = NetworkGateway.active_backend
 	var steam_id = steam_backend.peer.get_steam_id_for_peer_id(id)
 	if steam_id == 0:
@@ -360,7 +289,7 @@ func wait_for_steam_handshake(id: int, attempts: int = 0):
 	player_registration(id)
 
 
-# Called on server when a new peer connects
+# -- call on host when a new peer connects
 func player_registration(new_player_id: int) -> void:
 	# -- ui shouldn't know anything about Network readiness
 	NetworkGateway.get_avatar(new_player_id)
@@ -504,9 +433,9 @@ func tick_error() -> float:
 	    tick_lead      = 8
 	    error = 0
 	Let's say:
-	    average_offset = 5
-	    tick_lead      = 8
-	    error = -3
+		average_offset = 5
+		tick_lead      = 8
+		error = -3
 	=> Client is not far enough ahead.
 	On the other hand, let's say:
 	    average_offset = 11
@@ -588,6 +517,7 @@ func tick_multiplier() -> float:
 # -- does the host have input for this tick? execute it : use fallback
 func host_process_remote_client(id: int, player: Player) -> void:
 	var buffer = remote_input_buffers.get(id)
+	
 	if buffer == null:
 		return
 
@@ -598,13 +528,12 @@ func host_process_remote_client(id: int, player: Player) -> void:
 		player.execute_tick(TICK_RATE, cmd)
 		controller.last_command_executed = cmd
 	else:
-		# Hold last known input/state.
-		if cmd.tick > 0:
-			print("no cmds with matching ticks to execute")
-			player.execute_tick(
-				TICK_RATE,
-				controller.last_command_executed
-			)
+		print("curr tick:", current_tick, ", but cmd.tick = ", cmd.tick)
+		#print( buffer.map( func(_b): return _b.tick ))
+		player.execute_tick(
+			TICK_RATE,
+			controller.last_command_executed
+		)
 
 	var idx = controller.get_circular_index(current_tick)
 	controller.reconciliation_state_buffer[idx].set_state(
@@ -633,47 +562,49 @@ func get_remote_consecutive_input_ticks(id: int) -> int:
 
 	return available
 
-# -- periodically, we're going to check the contiguous availability
-#func evaluate_remote_input_buffers() -> void:
-	#for id in remote_input_buffers:
-		#var consecutive = get_remote_consecutive_input_ticks(id)
-#
-		#remote_consecutive_input_ticks[id] = consecutive
-#
-		#var latest: PlayerCommand = null
-#
-		## Find newest command we actually have.
-		#for i in range(INPUT_BUFFER_SIZE):
-			#var tick = current_tick + i
-			#var cmd: PlayerCommand = remote_input_buffers[id][tick % INPUT_BUFFER_SIZE]
-#
-			#if cmd == null or cmd.tick != tick:
-				#break
-#
-			#latest = cmd
-#
-		#if latest:
-			#remote_latest_input_tick[id] = latest.tick
-#
-		#_update_remote_lead(id, consecutive)
+var remote_latest_tick := {}       # id -> newest tick received, -1 = nothing yet
+var remote_late_count := {}
 
-#@rpc("authority", "reliable")
-#func request_smaller_lead():
-	#tick_lead -= 1
-#
-#@rpc("authority", "reliable")
-#func client_increase_tick_lead():
-	#tick_lead += 1
+var remote_window_min_slack := {}  # id -> min slack since last evaluation
+
+# -- periodically, we're going to check the contiguous availability
+func check_remote_input_buffer_health() -> void:
+	for id in remote_input_buffers:
+		var consecutive = get_remote_consecutive_input_ticks(id)
+		
+		# -- update per client consecutive imput counts 
+		remote_consecutive_input_ticks[id] = consecutive
+		
+		# If consecutive available inputs fall below our danger threshold
+		if consecutive < TARGET_TICK_LEAD:
+			# -- incr starvation count
+			remote_starvation_counts[id] = remote_starvation_counts.get(id, 0) + 1
+			# -- reset healthy count
+			remote_healthy_counts[id] = 0
+
+		# If we've been starving for consecutive evaluation cycles, scale up lead safely
+		if remote_starvation_counts[id] >= STARVATION_EVALUATIONS_REQUIRED:
+			remote_starvation_counts[id] = 0
+			client_increase_tick_lead.rpc_id(id)
+		elif consecutive > TARGET_TICK_LEAD + 4:
+			# Hysteresis: slowly reduce lead if we have plenty of buffer headroom
+			remote_healthy_counts[id] = remote_healthy_counts.get(id, 0) + 1
+			remote_starvation_counts[id] = 0
+
+		if remote_healthy_counts[id] >= HEALTHY_EVALUATIONS_REQUIRED:
+			remote_healthy_counts[id] = 0
+			request_smaller_lead.rpc_id(id)
+
 
 @rpc("authority", "reliable")
 func client_increase_tick_lead():
-	var old = tick_lead
+	#var old = tick_lead
 	tick_lead = min(MAX_TICK_LEAD, tick_lead + 1)
 	#print("LEAD +1: ", old, " -> ", tick_lead)
 
 @rpc("authority", "reliable")
 func request_smaller_lead():
-	var old = tick_lead
+	#var old = tick_lead
 	tick_lead = max(MIN_TICK_LEAD, tick_lead - 1)
 	#print("LEAD -1: ", old, " -> ", tick_lead)
 
@@ -683,39 +614,45 @@ func send_input_to_host(byte_arr: PackedByteArray) -> void:
 	if not multiplayer.is_server(): 
 		return
 	var sender_id = multiplayer.get_remote_sender_id()
-	var incoming_cmds = PlayerCommand.deserialize_list_of_commands(byte_arr) 
+	#var incoming_cmds = PlayerCommand.deserialize_list_of_commands(byte_arr) 
 
 	if not remote_input_buffers.has(sender_id):
 		return
 	
+	# -- NOTE
+	# -- we're gaurding against some stuff here
+	
+	# -- so, we're recieving N commands from player_controller
+	# -- to gaurd against dropped packets
+	
+	# -- but there are some edge cases ( uninitialzed commands, tick == -1)
+	# --                               ( bit overflow, -1 was serialized)
+	# --                               ( 
 	#if remote_input_buffers.has(sender_id):
 	var buffer = remote_input_buffers[sender_id]
-	for cmd in incoming_cmds:
+	for cmd in PlayerCommand.deserialize_list_of_commands(byte_arr):
+		# -- do not put uninitialized commands into buffer
+		if cmd.tick <= 0:# or cmd.tick > (current_tick + INPUT_BUFFER_SIZE / 2):
+			#print("ahhh")
+			continue
+		# -- keeping track of the latest tick per client
+		var most_recent_tick_from_this_client = remote_latest_tick.get(sender_id)
+		if cmd.tick > most_recent_tick_from_this_client:
+			remote_latest_tick[sender_id] = cmd.tick
+		
+		# -- too late, host already simulated it
+		# -- if we get too many of these, I think we gotta hard reset or something
+		if cmd.tick <= current_tick:          
+			remote_late_count[sender_id] = remote_late_count.get(sender_id, 0) + 1
+			continue
+		
 		var idx = cmd.tick % INPUT_BUFFER_SIZE
-		#remote_latest_input_tick[sender_id] = max(
-				#remote_latest_input_tick.get(sender_id, 0),
-				#cmd.tick
-			#)
+
 		# -- overwrite if the data is actually newer than what is 
 		# -- currently in that buffer slot.
 		if buffer[idx].tick < cmd.tick:
 			buffer[idx] = cmd
 
-# -- TODO
-# -- it should actually be client predicted / driven
-# -- so... 
-# -- also, this should probably be in game or something, not here
-
-# -- see pickup.gd
-# -- only copy on the host's machine can trigger the pickup
-#@rpc("authority", "call_local", "reliable")
-#func sync_item_pickup(a_world_id:int, a_peer_id: int, item_lookup_enum: ItemsDb.ItemNames):
-	## -- we want to tell the other players that this pickup exists
-	#Events.item_picked_up.emit( a_world_id ) # -- what used to be a callback to delete the pickup
-	#var _player = player_instances_by_player_id[ a_peer_id ]
-	#if _player:
-		##print("Picking up from id: ", multiplayer.get_unique_id())
-		#_player.get_node("ItemManager").pick_up(item_lookup_enum)
 
 # ------------------------------------------------------------ initial ping test
 # ------------------------------------------------------------ for RRT value
@@ -750,8 +687,6 @@ func client_receive_pong(original_send_time: int):
 		tick_lead = clamp( _calculate_final_offset(),
 							MIN_TICK_LEAD,
 							MAX_TICK_LEAD)
-		
-		#tick_lead = _calculate_final_offset()
 		# -- then start simulating on this client
 		request_host_start.rpc_id(1)
 
@@ -766,12 +701,6 @@ func request_host_start():
 	# -- we're reinitializing to make sure sure
 	# -- that we have a clean slate to reconcile against
 	setup_remote_buffer(sender_id)
-	
-	# -- maybe initialize them or something? but the host
-	# -- shouldn't be calling anything in host_process_remote_client yet
-	
-	#var _player = player_instances_by_player_id.get( sender_id )
-	#_player.velocity
 	# -- now rpc the player to tell them they can start
 	client_recieve_start_signal_and_tick.rpc_id( sender_id, sender_id, current_tick)
 	
@@ -779,24 +708,24 @@ func request_host_start():
 	var _player = player_instances_by_player_id.get( sender_id )
 	if _player:
 		_player.player_controller.reset_all_buffers()
-		#_player.is_ready = true
 
 
-# -- why 2x ideal tick lead?
-# -- well, host sends his snapshot of a tick, it taks RTT / 2 to get there
-# -- we sync to that, but now the host is T + ideal_lead on his end
-# -- and we want to be + ideal_lead ahead => 2x
 @rpc("authority", "reliable")
 func client_recieve_start_signal_and_tick(id: int, ht: int):
 	var _player = player_instances_by_player_id.get( id )
-	#_player.is_ready = true
 	current_tick = ht + tick_lead
 	_timer = 0.0
 	clock_synced = true
 	average_offset = float(tick_lead)
 	drift_history.fill(tick_lead)
 
-
+# -- NOTE
+# -- ceil(one_way_latency / tick_dt) + jitter_margin + buffer_target
+# -- calculates how many simulation ticks it takes for a message
+# -- to travel in one direction across the network.
+# -- one_way_latency in ms
+# -- simulation step in ms (delta)
+# -- so tick_dt = TICK_RATE = 1.0 / 60 (ms) = 16.67ms
 func _calculate_final_offset() -> int:
 	if pings.is_empty():
 		# -- fallback / default
@@ -820,6 +749,9 @@ func _calculate_final_offset() -> int:
 	var RTT_ms = avg_rtt
 	var RTT_ticks = ceil((RTT_ms / 1000.0) / TICK_RATE)
 
+	# -- dynamic base buffer
+	# -- this is just interpolating between 2 and 6
+	# -- based on the RTT (clamped at 500ms)
 	var base_buffer = lerp(2, 6, clamp(RTT_ms / 500.0, 0.0, 1.0))
 	var lead = RTT_ticks + jitter_ticks + int(base_buffer)
 	print("Initial Ping with avg RTT: ", avg_rtt, "ms")
@@ -832,40 +764,3 @@ func local_resync_to_host(host_tick: int):
 	_timer = 0.0
 	average_offset = float(tick_lead)
 	drift_history.fill(float(tick_lead))
-
-
-#func _calculate_final_offset() -> int:
-	#var max_rtt = 0
-	## keeping track of max_rtt here
-	#var avg_rtt = pings.reduce( func(acc, p): 
-		#max_rtt = max(max_rtt, p)
-		#return acc + p, 0) / pings.size()
-	 ## -- scale base according to how much lag or jitter there was
-	#var max_jitter_ms = (max_rtt - avg_rtt) / 1000.0
-	#var jitter_ticks = ceil( max_jitter_ms / TICK_RATE )
-	#var RTT_ms = avg_rtt / 1000.0
-	#var RTT_ticks = ceil( RTT_ms / TICK_RATE)
-	
-	
-	# ----------------------------------------------------------------- Refactor
-	#var avg_rtt = pings.reduce( func(acc, x): return acc + x, 0) / pings.size()
-	#var one_way_latency = (avg_rtt / 2.0) / 1000.0 # -- msec -> sec
-	#
-	#var max_rtt = 0
-	#for p in pings: 
-		#max_rtt = max(max_rtt, p)
-	#var jitter_ms = max_rtt - avg_rtt
-	#
-	## -- sec -> ticks
-	## -- 1 / 60 
-	## -- NOTE magic number
-	#var one_way_latency_in_ticks = ceil(one_way_latency / TICK_RATE) + 5 # -- + 2 for safety/jitter
-	#var jitter_ticks = ceil((jitter_ms / 1000.0) / TICK_RATE)
-	#
-	#var lead = one_way_latency_in_ticks + jitter_ticks + 2
-	#print("Initial Ping with Average RTT: ", avg_rtt, "ms")
-	#print("Initial Ping with max jitter: ", max_jitter_ms, "ms")
-	#
-	#var lead = RTT_ticks + jitter_ticks + lerp(2, 7, clamp(RTT_ms / 500.0, 0., 1.))
-	#print("Total lead: ", lead)
-	#return lead

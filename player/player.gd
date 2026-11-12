@@ -1169,21 +1169,13 @@ func start_cloud_descent():
 
 @onready var cloud_move_speed = 4. * kd.baseline_speed
 func cloud_state_fn( _delta: float ) -> void:
-	#if !$Cloud.visible:
-		#$Cloud.visible = true
 	velocity.y = max(move_toward(velocity.y, -move_input.y * cloud_move_speed, kd.MOV_ACCL),
 					0.1 * cloud_move_speed)
 	velocity.x = move_toward(velocity.x, move_input.x * cloud_move_speed, kd.MOV_ACCL)
 	if my_is_on_floor():
-		#print(name.to_int())
 		touched_bottom.emit( name.to_int() )
-		$Cloud.visible = false
 		toggle_all_collision_masks(true)
 		movement_state_transition_to( MovementStates.IDLE )
-
-
-#func toggle_visibility(b=true):
-	#$PlayerVisualsManager.toggle_visibility(b)
 
 
 func respawn(p: Vector2):
@@ -1271,6 +1263,9 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 			MovementStates.LEDGE_GRABBING:
 				$CollisionShape2D.set_deferred("disabled", false)
 		
+			MovementStates.CLOUD:
+				$Cloud.visible = false
+				
 		match new_movement_state:
 			MovementStates.JUMPING:
 				toggle_one_way_platform_collisions(false)
@@ -1513,7 +1508,8 @@ func apply_command( c: PlayerCommand):
 	update_visual_facing(move_input.x)
 	
 	if c.sword_swung:
-		$TEMP_SWORD.swing_sword()
+		print(last_move_input.x)
+		$SwordManager.swing_sword(last_move_input.x)
 		return
 
 	if (c.move_input.y < 0 and is_on_one_way_platform and  c.jump_pressed):

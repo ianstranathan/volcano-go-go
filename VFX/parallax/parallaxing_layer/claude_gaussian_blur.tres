@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cy7dam87h7h5f"]
+
+[ext_resource type="Shader" uid="uid://c41x1og4q6fi6" path="res://VFX/parallax/parallaxing_layer/claude_gaussian_blur.gdshader" id="1_bvdsv"]
+
+[resource]
+shader = ExtResource("1_bvdsv")
+shader_parameter/radius = 8.0
+shader_parameter/samples = 8

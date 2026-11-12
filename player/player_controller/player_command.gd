@@ -102,3 +102,19 @@ static func deserialize_list_of_commands(byte_arr: PackedByteArray) -> Array[Pla
 		cmds.append(cmd)
 
 	return cmds
+
+func print_cmd() -> void:
+	print("--- Command State ---")
+	print("tick: ", tick)
+	#print("move_input: ", move_input)
+	#print("aiming_input: ", aiming_input)
+	#print("jump_pressed: ", jump_pressed)
+	#print("jump_released: ", jump_released)
+	#print("using_controller: ", using_controller)
+	#print("grab_pressed: ", grab_pressed)
+	#print("item_use_pressed: ", item_use_pressed)
+	#print("item_use_held: ", item_use_held)
+	#print("sprint_held: ", sprint_held)
+	#print("item_dropped: ", item_dropped)
+	#print("crouch_pressed: ", crouch_pressed)
+	#print("sword_swung: ", sword_swung)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://ql7hqyibqr6h"]
+[gd_scene load_steps=21 format=3 uid="uid://ql7hqyibqr6h"]
 
 [ext_resource type="Script" uid="uid://b6oxqplhbugd0" path="res://game/game.gd" id="1_dxrkv"]
 [ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="2_4fuuu"]
@@ -21,6 +21,9 @@
 
 [sub_resource type="Curve2D" id="Curve2D_4cobl"]
 resource_local_to_scene = true
+
+[sub_resource type="Environment" id="Environment_ln7ps"]
+glow_enabled = true
 
 [node name="Game" type="Node2D" node_paths=PackedStringArray("players_container", "spawn_points", "ui", "wager_window", "post_processing_quad", "world_pickup_items_manager", "world_dynamic_objects_manager", "world_level_manager", "oasis", "wager_manager", "camera", "world_effects_container")]
 visibility_layer = 3
@@ -123,3 +126,9 @@ script = ExtResource("19_jucfl")
 z_as_relative = false
 position = Vector2(-7030, 5520)
 starting_position_marker = NodePath("../Oasis/DeathTVPosition")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ln7ps")

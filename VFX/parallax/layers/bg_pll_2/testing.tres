@@ -1,0 +1,45 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://dkdcvh4svaj3i"]
+
+[ext_resource type="Shader" uid="uid://db2wyphmfd87v" path="res://VFX/parallax/layers/bg_pll_2/testing.gdshader" id="1_4wnyr"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_1gqct"]
+[ext_resource type="Texture2D" uid="uid://g832rt407u8f" path="res://assets/arabesque/luke_background_0.png" id="3_ekdf6"]
+[ext_resource type="Texture2D" uid="uid://cs5x25roea0b3" path="res://assets/PBR textures/Rocks011_2K-JPG_NormalGL.jpg" id="4_ucdnf"]
+[ext_resource type="Texture2D" uid="uid://opy7dao8ejop" path="res://assets/PBR textures/Rocks011_1K-PNG_Color.png" id="5_376d5"]
+
+[resource]
+shader = ExtResource("1_4wnyr")
+shader_parameter/noise_tex = ExtResource("2_1gqct")
+shader_parameter/rock_tex = ExtResource("5_376d5")
+shader_parameter/rock_normal = ExtResource("4_ucdnf")
+shader_parameter/pattern_tex = ExtResource("3_ekdf6")
+shader_parameter/tiles_around = 2.0
+shader_parameter/rock_tiles_around = 4.0
+shader_parameter/lod = 2.0
+shader_parameter/edge_bump_strength = 0.2
+shader_parameter/bump_strength = 1.0
+shader_parameter/rock_normal_strength = 1.0
+shader_parameter/cavity_strength = 0.5
+shader_parameter/normal_depth = 1.0
+shader_parameter/flip_normal_y = false
+shader_parameter/cel_steps = 5.0
+shader_parameter/light_strength = 1.0
+shader_parameter/light_dir = Vector3(0, 1, 1)
+shader_parameter/column_top_y = 0.0
+shader_parameter/ground_y = 30.0
+shader_parameter/curve_amount = 0.35
+shader_parameter/shared_bow = 0.15
+shader_parameter/radius_variation = 0.15
+shader_parameter/entasis_variation = 0.999999977648
+shader_parameter/taper_variation = 0.2999999932944
+shader_parameter/tint_variation = 0.25
+shader_parameter/merge_chance = 0.3999999910592
+shader_parameter/column_radius = 0.9
+shader_parameter/open_height_min = 36.755
+shader_parameter/open_height_max = 14.0
+shader_parameter/arch_rise = 2.0
+shader_parameter/arch_tilt = 2.0
+shader_parameter/decay_amount = 0.45000000670554
+shader_parameter/decay_frequency = 0.35
+shader_parameter/wall_depth = 0.3099999967962
+shader_parameter/merge_softness = 0.5999999865888
+shader_parameter/bevel_width = 0.25999999418849

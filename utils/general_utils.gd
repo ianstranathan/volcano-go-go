@@ -28,3 +28,14 @@ func align_sprite_to_world_origin_offset(s: CanvasItem) -> Vector2:
 		var _texture = s.sprite_frames.get_frame_texture(s.animation, s.frame)
 		return (_texture.get_size() * s.scale) / 2.
 	return sprite_size(s) / 2.
+
+
+func print_parents_recursive(current_node: Node) -> void:
+	if current_node == null:
+		return
+	var parent: Node = current_node.get_parent()
+	if parent:
+		print("-> Parent: %s (%s)" % [parent.name, parent.get_class()])
+		print_parents_recursive(parent)
+	else:
+		print("--- Reached Scene Root / Top ---")

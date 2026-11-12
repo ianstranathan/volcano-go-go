@@ -1,4 +1,4 @@
-[gd_scene load_steps=1883 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1887 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -39,6 +39,10 @@
 [ext_resource type="PackedScene" uid="uid://c38uqagi7jgxs" path="res://levels/level_components/spikes/spike_renderer.tscn" id="35_yck4v"]
 [ext_resource type="PackedScene" uid="uid://df03ubrosjjhq" path="res://Level Notes/notes.tscn" id="38_p4uyy"]
 [ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="39_oerk6"]
+[ext_resource type="PackedScene" uid="uid://dk10o1lhtajme" path="res://VFX/parallax/layers/bg_pll_0/bg_pll_0.tscn" id="40_03d50"]
+[ext_resource type="Material" uid="uid://cy7dam87h7h5f" path="res://VFX/parallax/parallaxing_layer/claude_gaussian_blur.tres" id="40_7hsrn"]
+[ext_resource type="PackedScene" uid="uid://et4tabhw74ou" path="res://VFX/parallax/layers/bg_pll_1/bg_pll_1.tscn" id="41_iomm0"]
+[ext_resource type="PackedScene" uid="uid://57rf4lmj5cat" path="res://VFX/parallax/layers/bg_pll_2/bg_2.tscn" id="42_id7yg"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -46,7 +50,7 @@ level_index = 0
 level_height = 12771.0
 offset_to_chunk_origin = -11989.0
 level_width = 14496.0
-player_spawn_points = [Vector2(-2030, -7059), Vector2(-163, -143), Vector2(392, -139), Vector2(-31, -136)]
+player_spawn_points = [Vector2(613, -13297), Vector2(1157, -13269), Vector2(392, -139), Vector2(-31, -136)]
 pickup_definitions = Array[Dictionary]([{
 "item_enum": 3,
 "position": Vector2(-1830, -7022)
@@ -12306,10 +12310,10 @@ position = Vector2(-1352, -9648)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Marker2D" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(-2030, -7059)
+position = Vector2(613, -13297)
 
 [node name="Marker2D2" type="Marker2D" parent="SpawnPoints"]
-position = Vector2(-163, -143)
+position = Vector2(1157, -13269)
 
 [node name="Marker2D3" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(392, -139)
@@ -14276,4 +14280,31 @@ coll_extents = Vector2(300, 1400)
 [node name="TreasureChest" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
 position = Vector2(1906, 14)
 
+[node name="TreasureChest2" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
+position = Vector2(1614, 14)
+
+[node name="TreasureChest3" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
+position = Vector2(1402, 14)
+
+[node name="TreasureChest4" parent="TreasureSourcesManager" instance=ExtResource("34_yy7ml")]
+position = Vector2(1128, 14)
+
 [node name="Notes2" parent="." instance=ExtResource("38_p4uyy")]
+
+[node name="ParallaxManager" type="Node2D" parent="."]
+z_index = -500
+position = Vector2(93, 1788)
+
+[node name="CanvasGroup" type="CanvasGroup" parent="ParallaxManager"]
+material = ExtResource("40_7hsrn")
+fit_margin = 100.0
+clear_margin = 100.0
+
+[node name="Bg0" parent="ParallaxManager/CanvasGroup" instance=ExtResource("40_03d50")]
+scroll_offset = Vector2(0, -5068)
+
+[node name="OnePll" parent="ParallaxManager/CanvasGroup" instance=ExtResource("41_iomm0")]
+scroll_offset = Vector2(0, -6111)
+
+[node name="BgPll2" parent="ParallaxManager/CanvasGroup" instance=ExtResource("42_id7yg")]
+scroll_offset = Vector2(0, -5726)

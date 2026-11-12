@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://ctyi08d6b1xq2" path="res://UI/UI.gd" id="1_6dd3c"]
 [ext_resource type="PackedScene" uid="uid://ceborxxuc334h" path="res://UI/HotBar/hotbar_ui.tscn" id="2_dhe1o"]
 [ext_resource type="PackedScene" uid="uid://sk0genylx2rr" path="res://UI/leader_icon_bar/leader_icon_bar.tscn" id="2_q0uhn"]
-[ext_resource type="Script" uid="uid://d3an8jw4234yh" path="res://networking/networking_stats_overlay/networking_stats_overlay.gd" id="3_f1fl4"]
+[ext_resource type="PackedScene" uid="uid://cpjyffnbewh41" path="res://networking/networking_stats_overlay/networking_stats_overlay.tscn" id="3_r2vy3"]
 [ext_resource type="PackedScene" uid="uid://c04hhdbm4x1" path="res://UI/track_ui_minimap/track_ui_minimap.tscn" id="4_e707p"]
 [ext_resource type="Shader" uid="uid://bmxcw5ep3dfa4" path="res://UI/minimap.gdshader" id="6_jqf55"]
 [ext_resource type="Texture2D" uid="uid://1c7qd20h0yjl" path="res://assets/arabesque/633.jpg" id="7_byuxr"]
@@ -154,11 +154,14 @@ size_flags_vertical = 8
 [node name="BottomLeft" type="VBoxContainer" parent="HudMargin/HudLayout/BottomArea"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 alignment = 2
 
-[node name="Label" type="Label" parent="HudMargin/HudLayout/BottomArea/BottomLeft"]
+[node name="NetworkingStatsOverlay" parent="HudMargin/HudLayout/BottomArea/BottomLeft" instance=ExtResource("3_r2vy3")]
 layout_mode = 2
-script = ExtResource("3_f1fl4")
+size_flags_horizontal = 8
+size_flags_vertical = 4
 
 [node name="BottomCenter" type="VBoxContainer" parent="HudMargin/HudLayout/BottomArea"]
 custom_minimum_size = Vector2(0.55, 100)

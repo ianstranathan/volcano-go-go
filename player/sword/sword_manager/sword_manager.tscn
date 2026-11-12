@@ -1,0 +1,253 @@
+[gd_scene load_steps=13 format=3 uid="uid://dgaloyi27vl0q"]
+
+[ext_resource type="Script" uid="uid://dyke5n1qqus1c" path="res://player/sword/sword_manager/sword_manager.gd" id="1_m6tcr"]
+[ext_resource type="Shader" uid="uid://24d6yma7o6tq" path="res://player/sword/sword_outline.gdshader" id="2_4l17w"]
+[ext_resource type="Texture2D" uid="uid://c2t3qwtuqftet" path="res://assets/sword/scimitar.png" id="3_88y37"]
+[ext_resource type="Shader" uid="uid://c8xo2v6e3ljt7" path="res://player/sword/sword_rework.gdshader" id="4_6toe1"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="5_7wy12"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e7oew"]
+size = Vector2(100, 200)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x7c3f"]
+shader = ExtResource("2_4l17w")
+shader_parameter/outline_color = Color(1, 0.6565637, 0.9843709, 1)
+shader_parameter/outline_width = 3.3590001595525
+shader_parameter/softness = 0.550000026125
+
+[sub_resource type="Animation" id="Animation_x7c3f"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("sword_sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-22.000004, 30.999998)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("sword_sprite:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.5888073]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("sword_sprite:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.61518556, 0.61518556)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("sword_sprite:flip_h")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CollisionShape2D:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(65, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CollisionShape2D:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(3.1165614, 5.2394624)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CollisionShape2D:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Line2D:material:shader_parameter/scroll")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-1.0]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Line2D:material:shader_parameter/swing_param")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_7wy12"]
+resource_name = "swing_down_right"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("sword_sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(91.00001, 15.000001)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("sword_sprite:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.3038511]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("sword_sprite:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.61518556, 0.61518556)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("sword_sprite:flip_h")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Line2D:material:shader_parameter/scroll")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.025]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Line2D:material:shader_parameter/swing_param")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_x7c3f"]
+_data = {
+&"RESET": SubResource("Animation_x7c3f"),
+&"swing_down_right": SubResource("Animation_7wy12")
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d4au1"]
+shader = ExtResource("4_6toe1")
+shader_parameter/noise_tex = ExtResource("5_7wy12")
+shader_parameter/scroll = -1.0
+shader_parameter/swing_param = 0.0
+
+[sub_resource type="Curve2D" id="Curve2D_88y37"]
+
+[node name="SwordManager" type="Area2D" node_paths=PackedStringArray("sword_sprite", "path_line_copies", "line2d")]
+collision_layer = 512
+collision_mask = 512
+script = ExtResource("1_m6tcr")
+sword_sprite = NodePath("sword_sprite")
+path_line_copies = NodePath("Path2D")
+line2d = NodePath("Line2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(65, 0)
+scale = Vector2(3.1165614, 5.2394624)
+shape = SubResource("RectangleShape2D_e7oew")
+disabled = true
+
+[node name="sword_sprite" type="Sprite2D" parent="."]
+texture_filter = 2
+material = SubResource("ShaderMaterial_x7c3f")
+position = Vector2(-22.000004, 30.999998)
+rotation = 2.5888073
+scale = Vector2(0.61518556, 0.61518556)
+texture = ExtResource("3_88y37")
+flip_h = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_x7c3f")
+}
+
+[node name="Line2D" type="Line2D" parent="."]
+material = SubResource("ShaderMaterial_d4au1")
+points = PackedVector2Array(35, -104, 39.05183, -101.250725, 42.96006, -98.51298, 46.726467, -95.786934, 50.35282, -93.07277, 53.840885, -90.37062, 57.19242, -87.68063, 60.409206, -85.00299, 63.493004, -82.33786, 66.44558, -79.68538, 69.268715, -77.04569, 71.964165, -74.41898, 74.53369, -71.80541, 76.97908, -69.20513, 79.30208, -66.61828, 81.50447, -64.04504, 83.58802, -61.485565, 85.55449, -58.940018, 87.405655, -56.40854, 89.14328, -53.891296, 90.76914, -51.38846, 92.28497, -48.900177, 93.6926, -46.426598, 94.993744, -43.967896, 96.19017, -41.524223, 97.28368, -39.09574, 98.27603, -36.6826, 99.168976, -34.284966, 99.96429, -31.902996, 101.26909, -27.18668, 102.20459, -22.534916, 102.78493, -17.948975, 103.024254, -13.430119, 102.93669, -8.979618, 102.5364, -4.5987396, 101.837524, -0.2887497, 100.85418, 3.9490833, 99.600525, 8.113493, 98.09072, 12.203213, 96.33888, 16.216976, 94.359184, 20.153515, 92.165726, 24.01156, 89.77268, 27.789848, 87.19418, 31.48711, 84.44439, 35.10208, 81.537415, 38.63349, 78.48742, 42.080074, 75.30853, 45.440567, 72.01492, 48.71369, 68.62071, 51.898193, 65.140045, 54.992798, 61.587067, 57.996243, 57.975914, 60.907257, 54.32074, 63.724575, 50.635685, 66.44693, 46.934883, 69.07305, 43.23249, 71.60168, 39.542637, 74.03154, 35.87947, 76.361374, 32.257137, 78.589905, 28.68977, 80.715866, 25.191525, 82.73799, 21.776531, 84.65503, 18.458939, 86.4657, 15.25289, 88.168724, 12.1725235, 89.76285, 9.231987, 91.24681, 6.4454203, 92.61934, 3.8269663, 93.879166, 1.390768, 95.02502, -0.8490324, 96.05563, -4.68287, 97.76609, -7.5614038, 99.0004, -10, 100)
+width = 60.0
+texture_mode = 2
+
+[node name="Path2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_88y37")

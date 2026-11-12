@@ -19,35 +19,46 @@ var player_data_dict:Dictionary = {} # -- id to player_data
 @export var wager_manager: WagerManager
 
 @onready var the_lava: TheLava = $World/Lava
+const looting_wait_time = 1.
+# -- this is the amount of time players spend at the begining
+@onready var start_race_timer: Timer = $Timer
 #@onready var lava_scene: PackedScene = preload("res://lava/lava.tscn")
 @export var camera: Camera2D
 @export var world_effects_container: Node2D
 
 enum GameStates{
-	PRESTART,
-	STARTED,
-	INTERMISSION,
-	POST_INTERMISSION,
-	FINISHED
+	PREGAME_OASIS,
+	PRE_LAVA_START,
+	LAVA_STARTED,
 }
-var game_state: GameStates = GameStates.PRESTART
+var game_state: GameStates = GameStates.PREGAME_OASIS
 
 func _ready():
-	
+	start_race_timer.wait_time = looting_wait_time
+	start_race_timer.timeout.connect( on_starting_clock_timeout )
 	camera.camera_centered_on_player.connect( func():
 			ui.show_dead_player()
 			post_processing_quad.fade_to_black())
 			
 	ui.death_fault_selection_made.connect( func():
 		post_processing_quad.fade_back_from_black())
-	# -- we're gaurenteed that all children (level manager and world pickup items
+	
+	# -- _ready fires bottom-up recursively (so children always _ready() before
+	# -- parensts
+	# -- ==> we're gauranteed that all children (level manager and world pickup items
 	# -- manager) are intialized
-	# ==> can just set the prev. world pickup items ready stuff to here
+	# -- ==> can just set the prev. world pickup items ready stuff to here
 	#post_processing_quad.transition_back_finished.connect( func():
 		#camera.zoom_out_on_player())
-	post_processing_quad.transition_finished.connect(
-		func(): world_level_manager.call_deferred("start_level")
+		
+	# -- after post processing quad is fully black, we can load level
+	# -- the level load itself has a callback:
+	# -- world_level_manager.level_ready.connect( on_level_manager_loaded_first_chunk )
+	# -- 
+	post_processing_quad.transition_finished.connect( func():
+		transition_game_state( GameStates.PRE_LAVA_START )
 	)
+	
 	post_processing_quad.fade_back_from_black_finished.connect( func():
 		ui.hide_dead_player()
 		camera.unlock_from_player())
@@ -59,12 +70,9 @@ func _ready():
 		world_level_manager.get_all_dynamic_object_definitions()
 	)
 	assert( camera )
-	
 	world_level_manager.cam_ref = camera
 	world_level_manager.level_ready.connect( on_level_manager_loaded_first_chunk )
-	#post_processing_quad.transition_finished.connect( func():
-		 #)
-	
+
 	oasis.portal_entered.connect( on_oasis_portal_entered )
 	
 	assert(spawn_points)
@@ -159,7 +167,7 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 	player_data_dict[peer_id] = a_player_data
 	
 	# --------------------------------------------------- connect player signals
-	a_player.touched_bottom.connect( on_player_touched_bottom )
+	
 	a_player.dropped_pickup_item.connect(
 		world_pickup_items_manager.on_player_dropped_pickup_item
 	)
@@ -182,6 +190,7 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 	a_player.projectiles_container_ref = $World/ProjectilesContainer
 	
 	if peer_id == multiplayer.get_unique_id():
+		a_player.touched_bottom.connect( on_player_touched_bottom )
 		camera.target_initialize(a_player)
 		camera.global_position = a_player.global_position
 		ui.player_ref = a_player
@@ -252,43 +261,57 @@ func get_level_dimensions() -> Vector2:
 
 var num_players_initialized = 0
 func on_oasis_portal_entered( body, portal_pos: Vector2 ) -> void:
-	if body is Player:
-		num_players_initialized += 1
-		body.entered_portal() # -- state and vfx stuff
-	if num_players_initialized == players_container.get_children().size():
-		# -- relative vector for origin of transition point; can change or w/e
-		post_processing_quad.start_transition_anim(
-			(portal_pos  - camera.global_position))
-		#num_players_initialized = 0.
-		#world_level_manager.call_deferred("start_level")
+	match game_state:
+		GameStates.PREGAME_OASIS:
+			if body is Player:
+				num_players_initialized += 1
+				# -- post processing ripple here
+				body.entered_portal()
+			if num_players_initialized == players_container.get_children().size():
+				# -- relative vector for origin of transition point; can change or w/e
+				post_processing_quad.start_transition_anim(
+					(portal_pos  - camera.global_position))
 
-
-func on_level_manager_loaded_first_chunk( _spawn_points: Array ):
+@rpc("any_peer","call_local","reliable")
+func initialize_at_bottom_of_volcano( ):
+	assert( !volcano_spawn_points.is_empty() )
 	var idx = 0 # -- python enumerate would be nice or lisp macro to do two arr at once
 	for id in id_2_spawn_index:
 		var _player = NetManager.player_instances_by_player_id[ id ]
-		_player.global_position = _spawn_points[ idx]
+		_player.global_position = volcano_spawn_points[ idx]
 		idx += 1
 	post_processing_quad.start_transition_anim_back()
 	world_is_ticking = true
 	
 	the_lava.global_position = Vector2(0., $World/LevelManager.get_level_bottom_y() - 600)
-	print("bottom of volcano: ", $World/LevelManager.get_level_bottom_y())
+	# print("bottom of volcano: ", $World/LevelManager.get_level_bottom_y())
 	the_lava.start_lava(Vector2(level_x_length, level_y_length))
 	
 	ui.set_minimap_world2d( $World.get_world_2d() )
 
+# -- maybe I wanna reuse this for saving volcano positions
+# -- plus, there's no reason to send it over the wire if we're getting it
+# -- deterministically from callback on every client
+var volcano_spawn_points: Array
+func on_level_manager_loaded_first_chunk( _spawn_points: Array ):
+	volcano_spawn_points = _spawn_points
+	if multiplayer.is_server():
+		initialize_at_bottom_of_volcano.rpc( )
+
 
 func on_player_touched_bottom( _player_id):
-	#lava.global_position = Vector2(0., 0.)
-	#lava.start_race()
-	
-	# -- start timer to start race
-	ui.visible = true
-	
-	# -- camera should return back to player perspective
-	# -- tween is fine because it only is visual for the authority
-	camera.zoom_in_to_player()
+	if _player_id == multiplayer.get_unique_id():
+		# -- camera should return back to player perspective
+		# -- tween is fine because it only is visual for the authority
+		ui.visible = true
+		camera.zoom_in_to_player()
+
+	if multiplayer.is_server():
+		# -- start timer to start race
+		# -- doesn't really matter
+		# -- only host can handle callback
+		start_race_timer.start()
+		print( multiplayer.get_unique_id() )
 
 
 func test_death_tv():
@@ -296,13 +319,26 @@ func test_death_tv():
 	$DeathTv.target_player = players_container.get_children()[0]
 
 
-func initialize_volcano():
-	pass
-
-
+@rpc("any_peer","call_local","reliable")
 func start_race():
-	# -- tell UI to show race starting
-	
-	# -- lava start
-	
-	pass
+	the_lava.lava_state = TheLava.LavaState.RISING
+	transition_game_state( GameStates.LAVA_STARTED )
+
+
+func on_starting_clock_timeout():
+	if multiplayer.is_server():
+		# -- tell UI to show race starting
+		ui.display_race_state_message("Get Ready!")
+		get_tree().create_timer(1.0).timeout.connect( func():
+			start_race.rpc() )
+
+
+func transition_game_state( new_game_state: GameStates ):
+	if game_state != new_game_state:
+		match game_state:
+			GameStates.PREGAME_OASIS:
+				world_level_manager.call_deferred("start_level")
+			GameStates.PRE_LAVA_START:
+				ui.display_race_state_message("Go!", true)
+				
+		game_state = new_game_state

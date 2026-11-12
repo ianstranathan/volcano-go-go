@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://by5kd51cixxgu"]
+[gd_scene load_steps=19 format=3 uid="uid://by5kd51cixxgu"]
 
 [ext_resource type="Script" uid="uid://bo2vw5tl14uk4" path="res://player/player.gd" id="1_yf0e5"]
 [ext_resource type="Resource" uid="uid://dhmx6u1dpspmo" path="res://player/kinematic_data_rscs/default_player_kinematic_data.tres" id="2_yllr7"]
@@ -14,7 +14,6 @@
 [ext_resource type="Texture2D" uid="uid://df0njwv75h0io" path="res://assets/Cloud_1.png" id="10_8t03j"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="11_ebec5"]
 [ext_resource type="Script" uid="uid://wot2cetc4r57" path="res://player/metaball_manager.gd" id="14_kb6p2"]
-[ext_resource type="Script" uid="uid://dyke5n1qqus1c" path="res://player/sword_manager.gd" id="19_c35mf"]
 
 [sub_resource type="Curve" id="Curve_rgyib"]
 _data = [Vector2(0.2511628, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6966293), 0.0, 0.0, 0, 0]
@@ -33,14 +32,15 @@ shader_parameter/noise_tex = ExtResource("11_ebec5")
 shader_parameter/fuzziness = 0.0310000014725
 shader_parameter/speed = 1.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_e7oew"]
-
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 143
 script = ExtResource("1_yf0e5")
+DEBUG = null
 kd = ExtResource("2_yllr7")
 hang_time_curve = SubResource("Curve_rgyib")
+num_frame_you_cant_move_after_wall_jump = null
+movement_state = null
 metadata/_edit_group_ = true
 
 [node name="PlayerVisualsManager" parent="." instance=ExtResource("5_e7oew")]
@@ -220,19 +220,8 @@ position = Vector2(0, -26)
 target_position = Vector2(-25, 0)
 collision_mask = 5
 
-[node name="TEMP_SWORD" type="Area2D" parent="."]
-position = Vector2(65, 0)
-collision_layer = 512
-collision_mask = 512
-script = ExtResource("19_c35mf")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TEMP_SWORD"]
-scale = Vector2(3.1165614, 5.2394624)
-shape = SubResource("RectangleShape2D_e7oew")
-disabled = true
-
 [node name="StuffKillsYouManager" type="Area2D" parent="."]
-collision_layer = 1024
+collision_layer = 2
 collision_mask = 1024
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StuffKillsYouManager"]

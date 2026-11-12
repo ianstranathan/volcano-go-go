@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3 uid="uid://dynxoe4euonwy"]
+
+[ext_resource type="Script" uid="uid://ciyysu3y65wks" path="res://player/sword/sword_slash_baking/sword_slash_bake.gd" id="1_h0d58"]
+[ext_resource type="Shader" uid="uid://cl0cgp0ahpxht" path="res://player/sword/sword_slash_baking/sword_slash.gdshader" id="2_75iny"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="3_dpyug"]
+[ext_resource type="Texture2D" uid="uid://d2ju0x6gf4c3n" path="res://assets/sword/meshtexture-2-sdf.png" id="4_lvikf"]
+[ext_resource type="PackedScene" uid="uid://by5kd51cixxgu" path="res://player/player.tscn" id="5_75iny"]
+
+[sub_resource type="Curve2D" id="Curve2D_qnclt"]
+_data = {
+"points": PackedVector2Array(-202.41272, 105.59362, 202.41272, -105.59362, -47, 134, 0, 0, 0, 0, 182, -66)
+}
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_76526"]
+shader = ExtResource("2_75iny")
+shader_parameter/tex = ExtResource("4_lvikf")
+shader_parameter/noise_tex = ExtResource("3_dpyug")
+
+[node name="Node2D" type="Node2D" node_paths=PackedStringArray("line", "sb_vp")]
+script = ExtResource("1_h0d58")
+line = NodePath("SubViewportContainer/SubViewport/Line2D")
+save_path = "res://player/sword/sword_slash_textures/sword_slash_3.png"
+sb_vp = NodePath("SubViewportContainer/SubViewport")
+
+[node name="Path2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_qnclt")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+msaa_2d = 3
+size = Vector2i(256, 256)
+render_target_update_mode = 4
+
+[node name="Line2D" type="Line2D" parent="SubViewportContainer/SubViewport"]
+material = SubResource("ShaderMaterial_76526")
+position = Vector2(128, 128)
+points = PackedVector2Array(-47, 134, -44.636017, 132.76309, -42.288074, 131.52724, -39.956123, 130.29247, -37.640114, 129.0588, -35.339985, 127.826294, -33.055687, 126.594955, -30.787163, 125.36482, -28.534367, 124.13591, -26.297241, 122.90827, -24.07573, 121.681915, -21.869783, 120.456894, -19.679344, 119.233215, -15.3447895, 116.79003, -11.071632, 114.352615, -6.8594513, 111.921196, -2.7078152, 109.496025, 1.3837032, 107.077324, 5.4155235, 104.665344, 9.3880825, 102.26031, 13.3018, 99.86247, 17.157108, 97.47207, 20.954433, 95.08933, 24.694202, 92.7145, 28.376831, 90.34781, 32.002766, 87.98951, 35.572422, 85.639824, 39.086224, 83.298996, 42.544613, 80.96727, 45.94799, 78.644875, 49.296814, 76.332054, 52.591488, 74.029045, 55.832447, 71.736084, 59.020123, 69.453415, 62.154938, 67.18127, 65.23732, 64.91988, 68.26769, 62.669502, 71.246475, 60.430355, 74.17412, 58.20269, 77.051025, 55.986744, 79.87763, 53.782745, 82.65438, 51.590942, 85.381676, 49.411568, 88.05997, 47.244865, 90.689644, 45.091064, 93.271164, 42.950413, 95.804955, 40.82314, 98.29143, 38.70949, 100.731026, 36.609695, 103.124146, 34.524, 105.47126, 32.452637, 107.77277, 30.395851, 110.02909, 28.353874, 112.24068, 26.326942, 114.40793, 24.315304, 116.53129, 22.319187, 118.6112, 20.338837, 120.648056, 18.374485, 122.64229, 16.426376, 124.594345, 14.494739, 126.50465, 12.579823, 128.37361, 10.681859, 130.20168, 8.801086, 131.98924, 6.937747, 133.73679, 5.0920715, 137.11339, 1.4546795, 140.3349, -2.1091805, 143.40477, -5.5976067, 146.32639, -9.008696, 149.10315, -12.340538, 151.7385, -15.591234, 154.23584, -18.758877, 156.5986, -21.84156, 158.8302, -24.837383, 160.93402, -27.744434, 162.91351, -30.560818, 164.77206, -33.284622, 166.51312, -35.913948, 168.14008, -38.446884, 169.65637, -40.881527, 171.0654, -43.215977, 172.37057, -45.448326, 174.68304, -49.599102, 176.62112, -53.31862, 178.21213, -56.59164, 179.4834, -59.402924, 180.46225, -61.737236, 182, -66)
+width = 60.0
+texture_mode = 2
+
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
+
+[node name="Player" parent="." instance=ExtResource("5_75iny")]

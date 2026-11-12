@@ -71,7 +71,9 @@ func reset_all_buffers():
 		
 		# -- size recent cmd buffer
 		if i < recent_cmd_range:
-			recent_cmds[i] = PlayerCommand.new()
+			var _cmd = PlayerCommand.new()
+			_cmd.tick = 0
+			recent_cmds[i] = _cmd
 		if i < interpolation_buffer_size:
 			interpolation_buffer[i] = PlayerState.new()
 
@@ -108,25 +110,19 @@ func update_remote_state(host_state: PlayerState):
 	if incoming_tick > last_confirmed_interpolation_tick:
 		last_confirmed_interpolation_tick = incoming_tick
 
-
-# -- TODO, check args using delta
 # -- Called from netmanager on a local controller
 # -- this allows a deterministic delta time (NetManager's TICK_RATE)
 func on_tick_generated(tick: int, delta: float):
-	# -- we don't need to check is_multiplayer_authority as this is
-	# -- already being done from NetManager checking IDs
-	
-	# -- this is being called from NetManager, so no need to make a function call
-	# -- or accessor back to NetManager
 	var _index = get_circular_index(tick)
 	# ----------------------------------------------------- record cmd and state
 	var current_command = command_history_buffer[_index]
-	current_command.tick = tick                       # -- timestamp the command
-	# -- reset all transient data
-	#current_command.collided_id = -1
-	#current_command.impulse = Vector2.ZERO
-	controller.update_command(current_command, delta) # -- update the command
-
+	# -- timestamp the command
+	current_command.tick = tick      
+	
+	# -- update the command
+	# -- pass the command to the controller and stamp it's input data
+	controller.update_command(current_command, delta) 
+	# -- player consumes data predictively
 	player.execute_tick(delta, current_command) # -- client prediction
 	last_command_executed = current_command
 	reconciliation_state_buffer[_index].set_state( player, tick )
@@ -135,18 +131,33 @@ func on_tick_generated(tick: int, delta: float):
 	if !multiplayer.is_server():
 		for i in range(recent_cmd_range):
 			# -- get last N commands from existing command history
-			var check_tick = tick - i # i is zero we're at tick, i is -5, we're 5 cmds back
-			if check_tick > 0: # -- only do this if it's a valid tick
-				# -- is this actually aligned to tick modulo?
-				#var _idx = check_tick % recent_cmd_range
-				#recent_cmds[_idx] = command_history_buffer[get_circular_index(check_tick)]
-				recent_cmds[i] = command_history_buffer[get_circular_index(check_tick)]
+			# -- e.g. i is zero we're at tick, i is -5, we're 5 cmds back
+			var check_tick = tick - i
+			if check_tick <= 0:
+				break
+			var _cmd = command_history_buffer[get_circular_index(check_tick)]
+			if _cmd.tick != check_tick:   # never generated, or a stale slot from 240 ticks ago
+				continue
+			# -- remember, this is initialized with new, so defaults to -1
+			# -- if we serialize -1, we get bit overflow
+			recent_cmds[i] = command_history_buffer[get_circular_index(check_tick)]
+				
 		#print("Client sending state for: ", current_command.tick)
 		# -- send the command to the host for it to move its remote copies
 		# -- and tell the other players that this player moved
 		#NetManager.send_input_to_host.rpc_id(1, current_command.serialize())
 		NetManager.send_input_to_host.rpc_id(1, PlayerCommand.serialize_list_of_commands(recent_cmds))
-
+	#if !multiplayer.is_server():
+		#var to_send: Array[PlayerCommand] = []
+		#for i in range(recent_cmd_range):
+			#var check_tick = tick - i
+			#if check_tick <= 0:
+				#break
+			#var c = command_history_buffer[get_circular_index(check_tick)]
+			#if c.tick != check_tick:   # never generated, or a stale slot from 240 ticks ago
+				#continue
+			#to_send.append(c)
+		#NetManager.send_input_to_host.rpc_id(1, PlayerCommand.serialize_list_of_commands(to_send))
 
 # -- TODO
 @onready var min_offset: float = NetManager.tick_lead

@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://b7y1wu02currg"]
+
+[ext_resource type="Shader" uid="uid://ms41horamxlh" path="res://VFX/parallax/layers/bg_pll_1/bg_1.gdshader" id="1_eatsl"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_bvji4"]
+[ext_resource type="Texture2D" uid="uid://yer5pp7m8401" path="res://assets/PBR textures/Rock033_2K-PNG/Rock033_2K-PNG_NormalDX.png" id="3_hfbkx"]
+[ext_resource type="Texture2D" uid="uid://cs5x25roea0b3" path="res://assets/PBR textures/Rocks011_2K-JPG_NormalGL.jpg" id="5_hfbkx"]
+
+[resource]
+shader = ExtResource("1_eatsl")
+shader_parameter/rock_normal_map = ExtResource("5_hfbkx")
+shader_parameter/noise_tex = ExtResource("2_bvji4")
+shader_parameter/texture_scale = 0.001
+shader_parameter/density = 0.5
+shader_parameter/column_stretch_y = 0.2
+shader_parameter/column_sharpness = 1.2
+shader_parameter/rock_normal = ExtResource("3_hfbkx")
+shader_parameter/lod = 0.0
+shader_parameter/cel_steps = 6.0

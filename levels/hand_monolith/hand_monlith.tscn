@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://gos18ho54fws"]
+
+[ext_resource type="Shader" uid="uid://bnlyi0g2usokq" path="res://levels/hand_monolith/hand_monlith.gdshader" id="1_qddks"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_8hkhu"]
+[ext_resource type="Texture2D" uid="uid://dio1hkof0naus" path="res://assets/Textures/hand_monolith/Closed_Hand.png" id="2_l7a6p"]
+[ext_resource type="Texture2D" uid="uid://71u7cyyaso07" path="res://assets/Textures/hand_monolith/Claw_Hand.png" id="3_l7a6p"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0imif"]
+shader = ExtResource("1_qddks")
+shader_parameter/is_shaking = 1
+shader_parameter/is_closed = 0
+shader_parameter/shake_strength = 10.000000475
+shader_parameter/shake_speed = 15.0
+shader_parameter/noise_tex = ExtResource("2_8hkhu")
+shader_parameter/closed_tex = ExtResource("2_l7a6p")
+
+[node name="HandMonlith" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_0imif")
+texture = ExtResource("3_l7a6p")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

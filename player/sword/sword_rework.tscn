@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=3 uid="uid://bjk6hlfcfyw5n"]
+
+[ext_resource type="Script" uid="uid://big1p08mmckr5" path="res://player/sword/sword_rework.gd" id="1_2hjbo"]
+[ext_resource type="Shader" uid="uid://c8xo2v6e3ljt7" path="res://player/sword/sword_rework.gdshader" id="1_08m65"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_2hjbo"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_gxgmq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2hjbo"]
+shader = ExtResource("1_08m65")
+shader_parameter/noise_tex = ExtResource("2_2hjbo")
+shader_parameter/scroll = 0.0
+shader_parameter/swing_param = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mem1p"]
+shader = ExtResource("1_08m65")
+shader_parameter/noise_tex = ExtResource("2_2hjbo")
+shader_parameter/scroll = -0.975
+shader_parameter/swing_param = 0.60000000894072
+
+[node name="SwordRework" type="Node2D"]
+script = ExtResource("1_2hjbo")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_2hjbo")
+texture = ExtResource("2_gxgmq")
+
+[node name="Line2D" type="Line2D" parent="."]
+material = SubResource("ShaderMaterial_mem1p")
+position = Vector2(128, 128)
+points = PackedVector2Array(35, -104, 39.05183, -101.250725, 42.96006, -98.51298, 46.726467, -95.786934, 50.35282, -93.07277, 53.840885, -90.37062, 57.19242, -87.68063, 60.409206, -85.00299, 63.493004, -82.33786, 66.44558, -79.68538, 69.268715, -77.04569, 71.964165, -74.41898, 74.53369, -71.80541, 76.97908, -69.20513, 79.30208, -66.61828, 81.50447, -64.04504, 83.58802, -61.485565, 85.55449, -58.940018, 87.405655, -56.40854, 89.14328, -53.891296, 90.76914, -51.38846, 92.28497, -48.900177, 93.6926, -46.426598, 94.993744, -43.967896, 96.19017, -41.524223, 97.28368, -39.09574, 98.27603, -36.6826, 99.168976, -34.284966, 99.96429, -31.902996, 101.26909, -27.18668, 102.20459, -22.534916, 102.78493, -17.948975, 103.024254, -13.430119, 102.93669, -8.979618, 102.5364, -4.5987396, 101.837524, -0.2887497, 100.85418, 3.9490833, 99.600525, 8.113493, 98.09072, 12.203213, 96.33888, 16.216976, 94.359184, 20.153515, 92.165726, 24.01156, 89.77268, 27.789848, 87.19418, 31.48711, 84.44439, 35.10208, 81.537415, 38.63349, 78.48742, 42.080074, 75.30853, 45.440567, 72.01492, 48.71369, 68.62071, 51.898193, 65.140045, 54.992798, 61.587067, 57.996243, 57.975914, 60.907257, 54.32074, 63.724575, 50.635685, 66.44693, 46.934883, 69.07305, 43.23249, 71.60168, 39.542637, 74.03154, 35.87947, 76.361374, 32.257137, 78.589905, 28.68977, 80.715866, 25.191525, 82.73799, 21.776531, 84.65503, 18.458939, 86.4657, 15.25289, 88.168724, 12.1725235, 89.76285, 9.231987, 91.24681, 6.4454203, 92.61934, 3.8269663, 93.879166, 1.390768, 95.02502, -0.8490324, 96.05563, -4.68287, 97.76609, -7.5614038, 99.0004, -10, 100)
+width = 60.0
+texture_mode = 2

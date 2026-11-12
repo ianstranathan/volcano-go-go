@@ -2,6 +2,11 @@ extends Node2D
 
 class_name TheLava
 
+enum LavaState{
+	PAUSED,
+	RISING
+}
+var lava_state: LavaState = LavaState.PAUSED
 # -- this should just be a thin interface between CPU and GPU
 # -- 1
 # --   it has a analytic function (a sinusoid) that it manages
@@ -66,7 +71,9 @@ func translate_lava_vertically(y_amount: float):
 func execute_tick(delta):
 	t += delta
 	sprite.material.set_shader_parameter("t", t)
-	#translate_lava_vertically( -50. * delta )
+	match lava_state:
+		LavaState.RISING:
+			translate_lava_vertically( -50. * delta )
 	#print(initial_world_lava_level)
 	# -- for each lava tile, step it's t forward
 	#for c in get_children():
