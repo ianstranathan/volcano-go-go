@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=7 format=3 uid="uid://dojvjsk4442wn"]
 
-[ext_resource type="Shader" uid="uid://ms41horamxlh" path="res://VFX/parallax/layers/bg_pll_1/bg_1.gdshader" id="1_c2sja"]
+[ext_resource type="Shader" uid="uid://ms41horamxlh" path="res://VFX/parallax/layers/bg_pll_1/bg__pll_1.gdshader" id="1_c2sja"]
 [ext_resource type="Texture2D" uid="uid://cl4141y5dj6p" path="res://assets/PBR textures/Rock033_2K-PNG/Rock033_2K-PNG_Color.png" id="2_kxyyy"]
 [ext_resource type="Texture2D" uid="uid://cbix55avrsf8o" path="res://assets/PBR textures/Lava001_2K-PNG/Lava001_2K-PNG_Color.png" id="2_p5dxm"]
 [ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="3_kxyyy"]

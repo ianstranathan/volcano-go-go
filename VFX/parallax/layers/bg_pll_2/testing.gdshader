@@ -73,10 +73,10 @@ const float D_Y = 0.03;
 const float D_W = 0.03;
 const float CELL_W = 5.0;
 
-varying vec2 local_position;
-void vertex() {
-	local_position = VERTEX;
-}
+//varying vec2 local_position;
+//void vertex() {
+	//local_position = VERTEX;
+//}
 
 // ---- Hashing ----------------------------------------------------------------
 vec4 hash41(float n) {
@@ -232,8 +232,24 @@ float wall_z(Wall w, vec2 f) {
 	return w.depth * smoothstep(0.0, bevel_width, -f.x) * smoothstep(0.0, 0.5, f.y);
 }
 
+group_uniforms parallax;
+
+varying vec2 initial_world_pos;
+varying vec2 target_pos_varying;
+uniform vec2 scroll_scale = vec2(0.1, 1.);
+uniform vec2 texture_scale = vec2(15000.);
+
+void vertex() {
+	initial_world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+	vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
+	// FIX: Flipped the subtraction order so 0.0 locks to the camera
+	vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	target_pos_varying = initial_world_pos - parallax_offset;
+}
+
 void fragment() {
-	vec2 p = local_position * 0.01;
+	// ---------------------------------------
+	vec2 p = target_pos_varying / texture_scale;
 	p *= 50.;
 	float x = p.x;
 	float y = p.y;

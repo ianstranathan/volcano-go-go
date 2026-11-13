@@ -1,26 +1,18 @@
-[gd_scene load_steps=7 format=3 uid="uid://et4tabhw74ou"]
+[gd_scene load_steps=6 format=3 uid="uid://et4tabhw74ou"]
 
-[ext_resource type="Script" uid="uid://c44mus1ayem3q" path="res://VFX/parallax/parallaxing_layer/parallaxing_layer.gd" id="1_x4jfx"]
-[ext_resource type="Material" uid="uid://b7y1wu02currg" path="res://VFX/parallax/layers/bg_pll_1/one_pll.tres" id="2_0pax8"]
+[ext_resource type="Material" uid="uid://b7y1wu02currg" path="res://VFX/parallax/layers/bg_pll_1/bg_pll_1.tres" id="1_0pax8"]
+[ext_resource type="Script" uid="uid://c41kk4wywvvyw" path="res://VFX/parallax/layers/full_screen_bg_pll/full_screen_bg_pll.gd" id="1_tcmr4"]
 [ext_resource type="Script" uid="uid://hc72grdfxumn" path="res://VFX/parallax/parallaxing_layer/parallaxing_depth_config.gd" id="2_snx0u"]
-[ext_resource type="Material" uid="uid://c7eql2sks7xb" path="res://VFX/parallax/parallaxing_layer/bg_canvas_group_mat.tres" id="3_rdyi3"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_snx0u"]
 
 [sub_resource type="Resource" id="Resource_snx0u"]
 script = ExtResource("2_snx0u")
 metadata/_custom_type_script = "uid://hc72grdfxumn"
 
-[node name="OnePll" type="Parallax2D" node_paths=PackedStringArray("canvas_group")]
-scroll_scale = Vector2(0.421875, 0.729)
-script = ExtResource("1_x4jfx")
-depth_config = SubResource("Resource_snx0u")
-plane_index = 1
-layer_material = ExtResource("3_rdyi3")
-blurred = false
-canvas_group = NodePath("")
-metadata/_custom_type_script = "uid://c44mus1ayem3q"
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-material = ExtResource("2_0pax8")
-scale = Vector2(75.131485, 75.131485)
+[node name="Bg1" type="Sprite2D"]
+material = ExtResource("1_0pax8")
 texture = ExtResource("3_snx0u")
+script = ExtResource("1_tcmr4")
+plane_index = 1
+depth_config = SubResource("Resource_snx0u")
+metadata/_custom_type_script = "uid://c41kk4wywvvyw"

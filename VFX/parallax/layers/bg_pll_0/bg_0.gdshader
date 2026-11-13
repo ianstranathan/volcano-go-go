@@ -14,7 +14,7 @@ uniform sampler2D noise_tex : filter_linear, repeat_enable;
 
 // ═══════════════════════════ FLOW ═══════════════════════════
 group_uniforms flow;
-
+uniform float vertical_scroll_speed : hint_range(0.0, 2.0) = 0.05;
 uniform float slow_speed : hint_range(0.0, 1.0) = 0.05;
 uniform float fast_speed : hint_range(0.0, 2.0) = 0.22;
 uniform float molten_y_scale : hint_range(0.2, 2.0) = 0.7;
@@ -89,13 +89,24 @@ vec3 heat_ramp(float h) {
 	c = mix(c, color_core, smoothstep(0.70, 1.00, h));
 	return c;
 }
+group_uniforms parallax;
 
-uniform float vertical_scroll_speed : hint_range(0.0, 2.0) = 1.0;
+varying vec2 initial_world_pos;
+varying vec2 target_pos_varying;
+uniform vec2 scroll_scale = vec2(0.1, 1.);
+uniform vec2 texture_scale = vec2(15000.);
 
-// ═══════════════════════════ FRAGMENT ═══════════════════════════
+void vertex() {
+	initial_world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+	vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
+	// FIX: Flipped the subtraction order so 0.0 locks to the camera
+	vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	target_pos_varying = initial_world_pos - parallax_offset;
+}
+
 void fragment() {
-	vec2 uv = UV; // arbitrary number bro
-	
+	// ---------------------------------------
+	vec2 uv = target_pos_varying / texture_scale;
 	// ── 1. SMOOTH WARP
 	vec2 wp = uv * warp_scale;
 	float wn1 = texture(noise_tex, wp + vec2(0.0, -TIME * warp_speed * vertical_scroll_speed)).r - 0.5;

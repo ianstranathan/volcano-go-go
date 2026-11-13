@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cthk35xf0xyqg"]
 
-[ext_resource type="Shader" uid="uid://dv1nm4wcvtdq5" path="res://materials/clikmi_pillar.gdshader" id="1_ahqtr"]
+[ext_resource type="Shader" uid="uid://dv1nm4wcvtdq5" path="res://VFX/materials/clikmi_pillar.gdshader" id="1_ahqtr"]
 
 [resource]
 resource_local_to_scene = true

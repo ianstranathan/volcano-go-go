@@ -3,22 +3,18 @@ render_mode unshaded;
 
 const vec3 LUMA = vec3(0.299, 0.587, 0.114);
 
-// ═══════════════════════════════════════════════════════════
-// TEXTURES & UNIFORMS
-// ═══════════════════════════════════════════════════════════
-
 group_uniforms textures;
 //uniform sampler2D rock_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D rock_normal_map : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform sampler2D noise_tex : filter_linear, repeat_enable;
 
-varying vec2 local_position;
+//varying vec2 local_position;
 
-void vertex() {
-    local_position = VERTEX;
-}
-
-uniform float texture_scale = 0.001;
+//void vertex() {
+    //local_position = VERTEX;
+//}
+//
+//uniform float texture_scale = 0.001;
 
 uniform float density : hint_range(0.1, 0.9) = 0.5;
 uniform float column_stretch_y : hint_range(0.1, 10.0) = 0.2;
@@ -30,8 +26,26 @@ uniform float cel_steps = 6.0;
 
 const vec3 light_dir = vec3(0.0, 1.0, 0.0);
 
+group_uniforms parallax;
+
+varying vec2 initial_world_pos;
+varying vec2 target_pos_varying;
+uniform vec2 scroll_scale = vec2(0.1, 1.);
+uniform vec2 texture_scale = vec2(15000.);
+
+void vertex() {
+	initial_world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+	vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
+	// FIX: Flipped the subtraction order so 0.0 locks to the camera
+	vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	target_pos_varying = initial_world_pos - parallax_offset;
+}
+
 void fragment() {
-    vec2 _UV = local_position * 0.01;
+	// ---------------------------------------
+	vec2 _UV = target_pos_varying / texture_scale;
+//void fragment() {
+    //vec2 _UV = local_position * 0.01;
     float base = texture(noise_tex, _UV).r;
     
 	float n0 = texture(noise_tex, _UV).r;

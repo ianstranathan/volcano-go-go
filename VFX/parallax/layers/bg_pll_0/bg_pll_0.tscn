@@ -1,25 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://dk10o1lhtajme"]
+[gd_scene load_steps=6 format=3 uid="uid://dk10o1lhtajme"]
 
-[ext_resource type="Script" uid="uid://c44mus1ayem3q" path="res://VFX/parallax/parallaxing_layer/parallaxing_layer.gd" id="1_2rt70"]
+[ext_resource type="Script" uid="uid://c41kk4wywvvyw" path="res://VFX/parallax/layers/full_screen_bg_pll/full_screen_bg_pll.gd" id="1_xw44w"]
 [ext_resource type="Script" uid="uid://hc72grdfxumn" path="res://VFX/parallax/parallaxing_layer/parallaxing_depth_config.gd" id="2_6jdys"]
 [ext_resource type="Material" uid="uid://buxg18ksyl1y7" path="res://VFX/parallax/layers/bg_pll_0/bg_0.tres" id="2_h3x1f"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_juo53"]
-[ext_resource type="Material" uid="uid://c7eql2sks7xb" path="res://VFX/parallax/parallaxing_layer/bg_canvas_group_mat.tres" id="3_rluv4"]
 
 [sub_resource type="Resource" id="Resource_fovt8"]
 script = ExtResource("2_6jdys")
 metadata/_custom_type_script = "uid://hc72grdfxumn"
 
-[node name="Bg0" type="Parallax2D" node_paths=PackedStringArray("canvas_group")]
-scroll_scale = Vector2(0.31640625, 0.6561)
-script = ExtResource("1_2rt70")
-depth_config = SubResource("Resource_fovt8")
-layer_material = ExtResource("3_rluv4")
-blurred = false
-canvas_group = NodePath("")
-metadata/_custom_type_script = "uid://c44mus1ayem3q"
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Bg0" type="Sprite2D"]
 material = ExtResource("2_h3x1f")
-scale = Vector2(68.301346, 68.301346)
 texture = ExtResource("3_juo53")
+script = ExtResource("1_xw44w")
+depth_config = SubResource("Resource_fovt8")
+metadata/_custom_type_script = "uid://c41kk4wywvvyw"

@@ -4,5 +4,5 @@
 
 [resource]
 shader = ExtResource("1_bvdsv")
-shader_parameter/radius = 8.0
-shader_parameter/samples = 8
+shader_parameter/radius = 16.0000002384192
+shader_parameter/samples = 4

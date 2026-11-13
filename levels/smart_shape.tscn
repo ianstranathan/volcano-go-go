@@ -1,4 +1,4 @@
-[gd_scene load_steps=1887 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1891 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -40,9 +40,11 @@
 [ext_resource type="PackedScene" uid="uid://df03ubrosjjhq" path="res://Level Notes/notes.tscn" id="38_p4uyy"]
 [ext_resource type="PackedScene" uid="uid://camohv0etu6x2" path="res://wind/wind_gust_lift/wind_gust_lift.tscn" id="39_oerk6"]
 [ext_resource type="PackedScene" uid="uid://dk10o1lhtajme" path="res://VFX/parallax/layers/bg_pll_0/bg_pll_0.tscn" id="40_03d50"]
-[ext_resource type="Material" uid="uid://cy7dam87h7h5f" path="res://VFX/parallax/parallaxing_layer/claude_gaussian_blur.tres" id="40_7hsrn"]
-[ext_resource type="PackedScene" uid="uid://et4tabhw74ou" path="res://VFX/parallax/layers/bg_pll_1/bg_pll_1.tscn" id="41_iomm0"]
-[ext_resource type="PackedScene" uid="uid://57rf4lmj5cat" path="res://VFX/parallax/layers/bg_pll_2/bg_2.tscn" id="42_id7yg"]
+[ext_resource type="Material" uid="uid://cy7dam87h7h5f" path="res://VFX/parallax/parallaxing_layer/claude_gaussian_blur.tres" id="40_epmlq"]
+[ext_resource type="Script" uid="uid://b6s07pwnwdlj3" path="res://VFX/parallax/canvas_group_fullscreen_ppl_container/canvas_group_fullscreen_ppl_container.gd" id="41_epmlq"]
+[ext_resource type="Script" uid="uid://hc72grdfxumn" path="res://VFX/parallax/parallaxing_layer/parallaxing_depth_config.gd" id="42_6gmxm"]
+[ext_resource type="PackedScene" uid="uid://et4tabhw74ou" path="res://VFX/parallax/layers/bg_pll_1/bg_pll_1.tscn" id="42_id7yg"]
+[ext_resource type="PackedScene" uid="uid://57rf4lmj5cat" path="res://VFX/parallax/layers/bg_pll_2/bg_2.tscn" id="43_7hsrn"]
 
 [sub_resource type="Resource" id="Resource_b0i2u"]
 script = ExtResource("2_go1yl")
@@ -12273,6 +12275,16 @@ _data = {
 }
 point_count = 2
 
+[sub_resource type="Resource" id="Resource_q80io"]
+script = ExtResource("42_6gmxm")
+fog_color = Color(0.39215687, 0.39215687, 0.39215687, 1)
+fog_strength = 0.0
+metadata/_custom_type_script = "uid://hc72grdfxumn"
+
+[sub_resource type="Resource" id="Resource_bs2vb"]
+script = ExtResource("42_6gmxm")
+metadata/_custom_type_script = "uid://hc72grdfxumn"
+
 [node name="SmartShape" type="Node2D" node_paths=PackedStringArray("treasure_path_manager", "treasure_src_manager", "tickable_geometry_container", "enemy_container", "bottom_marker", "top_marker", "left_marker", "right_marker", "platforms_root", "minimap_geometry_container")]
 visibility_layer = 3
 script = ExtResource("1_hy8xc")
@@ -14296,15 +14308,20 @@ z_index = -500
 position = Vector2(93, 1788)
 
 [node name="CanvasGroup" type="CanvasGroup" parent="ParallaxManager"]
-material = ExtResource("40_7hsrn")
+modulate = Color(0.68, 0.68, 0.68, 1)
+material = ExtResource("40_epmlq")
 fit_margin = 100.0
 clear_margin = 100.0
+script = ExtResource("41_epmlq")
+depth_config = SubResource("Resource_q80io")
 
 [node name="Bg0" parent="ParallaxManager/CanvasGroup" instance=ExtResource("40_03d50")]
-scroll_offset = Vector2(0, -5068)
 
-[node name="OnePll" parent="ParallaxManager/CanvasGroup" instance=ExtResource("41_iomm0")]
-scroll_offset = Vector2(0, -6111)
+[node name="CanvasGroup2" type="CanvasGroup" parent="ParallaxManager"]
+modulate = Color(0.68, 0.68, 0.68, 1)
+script = ExtResource("41_epmlq")
+depth_config = SubResource("Resource_bs2vb")
 
-[node name="BgPll2" parent="ParallaxManager/CanvasGroup" instance=ExtResource("42_id7yg")]
-scroll_offset = Vector2(0, -5726)
+[node name="Bg1" parent="ParallaxManager/CanvasGroup2" instance=ExtResource("42_id7yg")]
+
+[node name="Bg2" parent="ParallaxManager/CanvasGroup2" instance=ExtResource("43_7hsrn")]

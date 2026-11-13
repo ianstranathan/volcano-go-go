@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://v08jnyb1a06v"]
+
+[ext_resource type="Shader" uid="uid://dcmocvifho2qk" path="res://VFX/parallax/canvas_group_fullscreen_ppl_container/canvas_group_fullscreen_ppl_container.gdshader" id="1_scorg"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_scorg")
+shader_parameter/radius = 7.917047464637365
+shader_parameter/contrast_mult = 0.6
+shader_parameter/saturation_mult = 0.52
+shader_parameter/brightness = 0.6799999999999999
+shader_parameter/fog_color = Color(0.65882355, 0.3137255, 0, 1)
+shader_parameter/fog_amount = 0.4511883639059736
+shader_parameter/samples = 4

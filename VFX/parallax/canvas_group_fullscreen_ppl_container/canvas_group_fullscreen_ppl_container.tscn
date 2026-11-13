@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://d14toepco32ue"]
+
+[ext_resource type="Script" uid="uid://b6s07pwnwdlj3" path="res://VFX/parallax/canvas_group_fullscreen_ppl_container/canvas_group_fullscreen_ppl_container.gd" id="1_ytbno"]
+
+[node name="CanvasGroupContainer" type="CanvasGroup"]
+script = ExtResource("1_ytbno")

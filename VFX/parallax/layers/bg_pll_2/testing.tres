@@ -43,3 +43,5 @@ shader_parameter/decay_frequency = 0.35
 shader_parameter/wall_depth = 0.3099999967962
 shader_parameter/merge_softness = 0.5999999865888
 shader_parameter/bevel_width = 0.25999999418849
+shader_parameter/scroll_scale = Vector2(0.1, 1)
+shader_parameter/texture_scale = Vector2(15000, 15000)
