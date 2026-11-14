@@ -5,15 +5,17 @@ signal portal_entered( body, pos )
 
 var players_within_reveal_threshold : Array[CharacterBody2D]
 @export var portal: Node2D
-@onready var portal_area: Area2D = portal.get_node("Area2D")
-
-func _ready() -> void:
-	portal_area.body_entered.connect( func(body):
-			portal_entered.emit(body,
-			portal_area.global_position))
-	portal_area.body_exited.connect( func(body):
-		if body is Player:
-			body.exited_portal())
+#@onready var portal_area: Area2D = portal.get_node("Area2D")
+#
+#func _ready() -> void:
+	#portal_area.body_entered.connect( func(body):
+			#portal_entered.emit(body,
+			#portal_area.global_position))
+	#portal_area.body_exited.connect( func(body):
+		#if body is Player:
+			#body.exited_portal())
+			
+	# -------------------------------------------------------------------
 	# -- we initialize the visuals to be on
 	# -- and the area to be off
 	# -- we're starting in the oasis

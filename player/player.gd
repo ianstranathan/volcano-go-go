@@ -7,6 +7,7 @@ class_name Player
 signal reconciled
 signal died( visibility_callback: Callable )
 
+signal on_state_changed
 signal touched_bottom( peer_id: int)
 signal dropped_pickup_item( item_key: ItemsDb.ItemNames, item_slot: int, pos: Vector2)
 
@@ -1286,7 +1287,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 		set_debug_label( new_movement_state )
 		movement_state = new_movement_state
 		
-		player_visuals_manager.set_movement_state(new_movement_state)
+		on_state_changed.emit( new_movement_state )
+		#player_visuals_manager.set_movement_state(new_movement_state)
 
 @onready var one_way_collision_structs: Array = $CeilingCheckContainer.get_children() + $FloorCheckContainer.get_children()
 func toggle_one_way_platform_collisions(b: bool) -> void:
@@ -1505,7 +1507,7 @@ var throw_speed := 500.
 
 func apply_command( c: PlayerCommand):
 	move_input = c.move_input
-	update_visual_facing(move_input.x)
+	#update_visual_facing(move_input.x)
 	
 	if c.sword_swung:
 		print(last_move_input.x)
@@ -1573,10 +1575,10 @@ func apply_command( c: PlayerCommand):
 			movement_state_transition_to(MovementStates.WALKING)
 
 
-func update_visual_facing(horizontal_direction: float) -> void:
-	if absf(horizontal_direction) < 0.01:
-		return
-	player_visuals_manager.set_facing_direction(horizontal_direction)
+#func update_visual_facing(horizontal_direction: float) -> void:
+	#if absf(horizontal_direction) < 0.01:
+		#return
+	#player_visuals_manager.set_facing_direction(horizontal_direction)
 
 # ------------------------------------------------------------------------------
 # -- assumes this is only called in like walking or running (grounded state)

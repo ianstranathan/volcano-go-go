@@ -1,7 +1,7 @@
 class_name PlayerAnimationController
 extends Node
 
-@export var body: AnimatedSprite2D
+@export var player_animated_sprite: AnimatedSprite2D
 
 var current_animation: StringName = &""
 var current_state: Player.MovementStates = Player.MovementStates.IDLE
@@ -13,16 +13,40 @@ func set_movement_state(new_state: Player.MovementStates) -> void:
 	var next_animation := animation_for_state(new_state)
 	play_animation(next_animation)
 
-
+#enum MovementStates
+#{
+	#IDLE,
+	#WALKING,
+	#RUNNING,
+	#JUMPING,
+	#FALLING,
+	#CROUCHING,
+	#WALL_SLIDING,
+	#LEDGE_GRABBING,
+	#ITEM_MOVING,
+	#CLIMBING,
+	#CLOUD,
+	#PORTAL,
+	#SLIDING,
+	#METABALL,
+	#LOG_ROLL,
+	#GRABBED,
+	#DEAD,
+	#RESPAWNED
+	## GENIE_HAND
+#}
 func animation_for_state(state: Player.MovementStates) -> StringName:
 	
 	match state:
 		Player.MovementStates.IDLE:
-			return &"idle"
+			return &"Idle"
+			#return &"idle"
 
-		Player.MovementStates.WALKING, \
+		Player.MovementStates.WALKING:
+			return &"Jogging"
+		
 		Player.MovementStates.RUNNING:
-			return &"run"
+			return &"Sprinting"
 
 		Player.MovementStates.JUMPING, \
 		Player.MovementStates.ITEM_MOVING:
@@ -43,11 +67,16 @@ func set_facing_direction(horizontal_direction: float) -> void:
 	if is_zero_approx(horizontal_direction):
 		return
 
-	body.flip_h = horizontal_direction < 0.0
-	
+	player_animated_sprite.flip_h = horizontal_direction < 0.0
+
+var is_moving: bool = false
+var last_pos: Vector2 = Vector2.ZERO
+
+#func _physics_process(delta: float) -> void:
+	#(last_pos - global_position).x
 func play_animation(animation_name: StringName) -> void:
 	if current_animation == animation_name:
 		return
 
 	current_animation = animation_name
-	body.play(animation_name)
+	player_animated_sprite.play(animation_name)

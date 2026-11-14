@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dj4ikjlvtcgys"]
+[gd_scene load_steps=26 format=3 uid="uid://dj4ikjlvtcgys"]
 
 [ext_resource type="Script" uid="uid://doocrwweeolna" path="res://player/player_visuals/player_visuals.gd" id="1_8c3sm"]
 [ext_resource type="Texture2D" uid="uid://1ue2wrhhbei4" path="res://assets/Sprites/Character/ArabianKnightJumpnFall.png" id="1_ito51"]
@@ -7,7 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://be8lnln1tivo5" path="res://assets/Sprites/Character/ArabianKnightRunning.png" id="3_fp1hi"]
 [ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_n05ws"]
 [ext_resource type="Texture2D" uid="uid://bk70nllrhw4sm" path="res://assets/Sprites/Character/ArabianKnighWallSlide.png" id="4_8c3sm"]
-[ext_resource type="Script" uid="uid://dd5gau6j7y8dy" path="res://player/animation_controller.gd" id="8_8c3sm"]
+[ext_resource type="Shader" uid="uid://bc1qnq2u2olmn" path="res://player/player_visuals/player_visuals.gdshader" id="8_8v16l"]
+[ext_resource type="PackedScene" uid="uid://dyq41q5um47ow" path="res://scenes/Charcter States.tscn" id="9_n05ws"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qpug8"]
 resource_local_to_scene = true
@@ -147,8 +148,12 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="PlayerVisualsManager" type="Node2D"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n05ws"]
+shader = ExtResource("8_8v16l")
+
+[node name="PlayerVisualsManager" type="Node2D" node_paths=PackedStringArray("player_animated_sprite")]
 script = ExtResource("1_8c3sm")
+player_animated_sprite = NodePath("DarrenCharacterVisuals/Player Animations")
 
 [node name="DebugVisuals" type="Node2D" parent="."]
 
@@ -157,13 +162,16 @@ material = SubResource("ShaderMaterial_qpug8")
 texture = ExtResource("3_n05ws")
 
 [node name="ProdVisuals" type="Node2D" parent="."]
+visible = false
 
 [node name="Body" type="AnimatedSprite2D" parent="ProdVisuals"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_r7pn3")
-animation = &"ledge_grabbing"
+animation = &"wall_sliding"
 
-[node name="PlayerAnimationController" type="Node" parent="." node_paths=PackedStringArray("body")]
-script = ExtResource("8_8c3sm")
-body = NodePath("../ProdVisuals/Body")
-metadata/_custom_type_script = "uid://dd5gau6j7y8dy"
+[node name="DarrenCharacterVisuals" type="Node2D" parent="."]
+material = SubResource("ShaderMaterial_n05ws")
+
+[node name="Player Animations" parent="DarrenCharacterVisuals" instance=ExtResource("9_n05ws")]
+scale = Vector2(3, 3)
+animation = &"Wall Slide"

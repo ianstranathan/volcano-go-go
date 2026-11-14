@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cltm8bo3nfnm0"]
-
-[ext_resource type="Script" uid="uid://c44mus1ayem3q" path="res://VFX/parallax/parallaxing_layer/parallaxing_layer.gd" id="1_tierr"]
-
-[node name="Testing" type="Parallax2D"]
-script = ExtResource("1_tierr")
-metadata/_custom_type_script = "uid://c44mus1ayem3q"

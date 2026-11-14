@@ -374,7 +374,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qx3rn")
 }],
-"loop": true,
+"loop": false,
 "name": &"Death",
 "speed": 5.0
 }, {
@@ -409,7 +409,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_tnvl2")
 }],
-"loop": true,
+"loop": false,
 "name": &"Emote",
 "speed": 8.0
 }, {
@@ -426,7 +426,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_r3y6b")
 }],
-"loop": true,
+"loop": false,
 "name": &"Falling",
 "speed": 10.0
 }, {
@@ -509,7 +509,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0h6ad")
 }],
-"loop": true,
+"loop": false,
 "name": &"Jumping",
 "speed": 12.0
 }, {
@@ -602,7 +602,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_f7558")
 }],
-"loop": true,
+"loop": false,
 "name": &"Wall Jump",
 "speed": 14.0
 }, {
@@ -610,7 +610,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_l1qrj")
 }],
-"loop": true,
+"loop": false,
 "name": &"Wall Slide",
 "speed": 5.0
 }]
@@ -618,4 +618,4 @@ animations = [{
 [node name="Player Animations" type="AnimatedSprite2D"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_dn0m6")
-animation = &"Wall Jump"
+animation = &"Crouch Idle"

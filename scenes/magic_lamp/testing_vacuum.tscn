@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://bghep5o66kvre"]
+
+[ext_resource type="Shader" uid="uid://bt7pd64b3bnss" path="res://scenes/magic_lamp/vacuum_suction.gdshader" id="1_4gsxv"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_odvfk"]
+[ext_resource type="Script" uid="uid://byfo24ii4tgjn" path="res://scenes/magic_lamp/ghost_vacuum.gd" id="3_bltah"]
+[ext_resource type="Shader" uid="uid://dmuldtorikp7p" path="res://scenes/magic_lamp/testing_vacuum.gdshader" id="4_lqmrc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_onqj3"]
+shader = ExtResource("1_4gsxv")
+shader_parameter/target_pos = Vector2(0.5, 0.5)
+shader_parameter/ghost_center = Vector2(0.5, 0.5)
+shader_parameter/suction_progress = 0.19600000931
+shader_parameter/swirl_strength = 10.0
+shader_parameter/stretch_factor = 1.5
+shader_parameter/influence_radius = 0.8
+shader_parameter/stretch_reach = 1.5
+shader_parameter/suction_curve = 2.0
+shader_parameter/spiral_mix = 0.5
+shader_parameter/pinch = 1.5
+shader_parameter/aberration = 0.08
+shader_parameter/fade_radius = 0.12
+shader_parameter/glow_color = Color(0.55, 0.95, 1, 1)
+shader_parameter/streak_strength = 0.6
+shader_parameter/streak_arms = 5.0
+shader_parameter/streak_speed = 8.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vcrsh"]
+shader = ExtResource("4_lqmrc")
+shader_parameter/corner_weights = PackedFloat32Array(1, 1, 1, 1)
+shader_parameter/target_world_pos = Vector2(0, 0)
+
+[node name="TestingVacuum" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_onqj3")
+texture = ExtResource("2_odvfk")
+script = ExtResource("3_bltah")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_vcrsh")
+texture = ExtResource("2_odvfk")
