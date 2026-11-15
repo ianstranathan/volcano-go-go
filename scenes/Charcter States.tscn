@@ -1,8 +1,21 @@
-[gd_scene load_steps=80 format=3 uid="uid://dyq41q5um47ow"]
+[gd_scene load_steps=83 format=3 uid="uid://dyq41q5um47ow"]
 
 [ext_resource type="Texture2D" uid="uid://03lgikhoitex" path="res://assets/Sprites/Character/animation player states labeled.png" id="1_7m1vr"]
+[ext_resource type="Shader" uid="uid://j2cm4lg6sy7g" path="res://VFX/player effects/lamp_vacuum.gdshader" id="1_xrrcp"]
 [ext_resource type="Texture2D" uid="uid://ck7b7fku6m5jl" path="res://assets/Sprites/Character/dupes.png" id="2_e1hh7"]
 [ext_resource type="Texture2D" uid="uid://b285t4ssxf080" path="res://assets/Sprites/Character/ledge grab.png" id="3_vfidn"]
+[ext_resource type="Script" uid="uid://m8vdej1wvbfh" path="res://player/player_visuals/player_shader_manager.gd" id="5_7vgyn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7vgyn"]
+shader = ExtResource("1_xrrcp")
+shader_parameter/lamp_pos = Vector2(0.5, -0.5)
+shader_parameter/progress = 0.0
+shader_parameter/stretch_amount = 2.0
+shader_parameter/squeeze_amount = 1.5
+shader_parameter/frame_offset = Vector2(0.00625, 0.21180555)
+shader_parameter/frame_size = Vector2(0.05, 0.038194444)
+shader_parameter/outline_color = Color(0.4862745, 0.3764706, 0.9019608, 1)
+shader_parameter/outline_width = 0.015
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dn0m6"]
 atlas = ExtResource("1_7m1vr")
@@ -617,5 +630,7 @@ animations = [{
 
 [node name="Player Animations" type="AnimatedSprite2D"]
 texture_filter = 1
+material = SubResource("ShaderMaterial_7vgyn")
 sprite_frames = SubResource("SpriteFrames_dn0m6")
 animation = &"Crouch Idle"
+script = ExtResource("5_7vgyn")

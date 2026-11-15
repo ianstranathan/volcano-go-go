@@ -368,7 +368,8 @@ func execute_tick(delta: float, cmd: PlayerCommand):
 		manual_wall_jump_frame_counter -= 1
 	
 	# -- call the movement state function matching the movement_state variable
-	call(movement_states_keys[movement_state].to_lower() + "_state_fn", delta)
+	var _state_fn_str = movement_states_keys[movement_state].to_lower() + "_state_fn"
+	call(_state_fn_str, delta)
 
 	# ---------------------------------------------------------------------------
 	if integrate_motion:
@@ -950,16 +951,17 @@ func falling_state_fn(_delta) -> void:
 		velocity = Vector2.ZERO
 		g = 0
 		start_ledge_grab()
-	
+		return
 	if !wall_jump_coyote_timer.is_stopped():
 		check_for_jump()
 	elif can_wall_slide():
 		movement_state_transition_to(MovementStates.WALL_SLIDING)
+		return
 	elif my_is_on_floor():
 			#var land_shake = ShakeInstance.new(0.5, 0.1, Vector2.DOWN, MyMathUtils.inverted_parabola, false)
 			#Events.shake_cam.emit(land_shake)
 		movement_state_transition_to(MovementStates.IDLE)
-
+		return
 
 func wall_normal() -> Vector2:	
 	for ray in $WallCheckContainer.get_children():
@@ -1040,7 +1042,6 @@ func start_ledge_grab():
 
 func ledge_grabbing_state_fn(delta) -> void:
 	check_for_jump()
-	
 	# -- start climbing if you press up and you can
 	if move_input.y > 0.6 and !is_ledge_climbing:
 		is_ledge_climbing = true
@@ -1188,6 +1189,7 @@ func respawn(p: Vector2):
 	
 
 func movement_state_transition_to(new_movement_state: MovementStates):
+	print( "state: ", MovementStates.find_key(new_movement_state))
 	if movement_state != new_movement_state:
 		match movement_state:
 			MovementStates.DEAD:
@@ -1268,6 +1270,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 				$Cloud.visible = false
 				
 		match new_movement_state:
+			#MovementStates.WALL_SLIDING:
+				#var b
 			MovementStates.JUMPING:
 				toggle_one_way_platform_collisions(false)
 			MovementStates.FALLING:
@@ -1285,8 +1289,8 @@ func movement_state_transition_to(new_movement_state: MovementStates):
 		if new_movement_state in [MovementStates.IDLE, MovementStates.WALKING, MovementStates.WALL_SLIDING]:
 			last_tocuhing_surface_state = new_movement_state
 		set_debug_label( new_movement_state )
-		movement_state = new_movement_state
 		
+		movement_state = new_movement_state
 		on_state_changed.emit( new_movement_state )
 		#player_visuals_manager.set_movement_state(new_movement_state)
 

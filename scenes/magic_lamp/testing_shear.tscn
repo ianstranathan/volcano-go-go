@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://jhq365yp8e1a"]
+
+[ext_resource type="Shader" uid="uid://dtxn551uxsud" path="res://scenes/magic_lamp/testing_shear.gdshader" id="1_qtcis"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_2ybln"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4qabc"]
+shader = ExtResource("1_qtcis")
+shader_parameter/lamp_pos = Vector2(1, 0)
+shader_parameter/progress = 0.0
+shader_parameter/stretch_amount = 5.0
+shader_parameter/squeeze_amount = 1.5
+
+[node name="TestingShear" type="Sprite2D"]
+material = SubResource("ShaderMaterial_4qabc")
+texture = ExtResource("2_2ybln")

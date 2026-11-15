@@ -36,11 +36,8 @@ shader_parameter/speed = 1.0
 collision_layer = 2
 collision_mask = 143
 script = ExtResource("1_yf0e5")
-DEBUG = null
 kd = ExtResource("2_yllr7")
 hang_time_curve = SubResource("Curve_rgyib")
-num_frame_you_cant_move_after_wall_jump = null
-movement_state = null
 metadata/_edit_group_ = true
 
 [node name="PlayerVisualsManager" parent="." instance=ExtResource("5_e7oew")]

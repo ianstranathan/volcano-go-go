@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://dj4ikjlvtcgys"]
+[gd_scene load_steps=28 format=3 uid="uid://dj4ikjlvtcgys"]
 
 [ext_resource type="Script" uid="uid://doocrwweeolna" path="res://player/player_visuals/player_visuals.gd" id="1_8c3sm"]
 [ext_resource type="Texture2D" uid="uid://1ue2wrhhbei4" path="res://assets/Sprites/Character/ArabianKnightJumpnFall.png" id="1_ito51"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bk70nllrhw4sm" path="res://assets/Sprites/Character/ArabianKnighWallSlide.png" id="4_8c3sm"]
 [ext_resource type="Shader" uid="uid://bc1qnq2u2olmn" path="res://player/player_visuals/player_visuals.gdshader" id="8_8v16l"]
 [ext_resource type="PackedScene" uid="uid://dyq41q5um47ow" path="res://scenes/Charcter States.tscn" id="9_n05ws"]
+[ext_resource type="Shader" uid="uid://j2cm4lg6sy7g" path="res://VFX/player effects/lamp_vacuum.gdshader" id="10_n05ws"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qpug8"]
 resource_local_to_scene = true
@@ -151,6 +152,17 @@ animations = [{
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n05ws"]
 shader = ExtResource("8_8v16l")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_880s2"]
+shader = ExtResource("10_n05ws")
+shader_parameter/lamp_pos = Vector2(0.5, -0.5)
+shader_parameter/progress = 0.0
+shader_parameter/stretch_amount = 2.0
+shader_parameter/squeeze_amount = 1.5
+shader_parameter/frame_offset = Vector2(0.20625, 0.21180555)
+shader_parameter/frame_size = Vector2(0.05, 0.038194444)
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/outline_width = 0.750000035625
+
 [node name="PlayerVisualsManager" type="Node2D" node_paths=PackedStringArray("player_animated_sprite")]
 script = ExtResource("1_8c3sm")
 player_animated_sprite = NodePath("DarrenCharacterVisuals/Player Animations")
@@ -173,5 +185,7 @@ animation = &"wall_sliding"
 material = SubResource("ShaderMaterial_n05ws")
 
 [node name="Player Animations" parent="DarrenCharacterVisuals" instance=ExtResource("9_n05ws")]
-scale = Vector2(3, 3)
-animation = &"Wall Slide"
+material = SubResource("ShaderMaterial_880s2")
+scale = Vector2(2.5, 2.5)
+frame = 2
+frame_progress = 1.0

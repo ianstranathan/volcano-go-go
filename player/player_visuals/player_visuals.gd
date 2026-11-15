@@ -61,7 +61,7 @@ func _physics_process(_delta: float) -> void:
 	if !player_ref:
 		return
 	var _dir_x = player_ref.last_move_input.x
-	if !is_zero_approx( _dir_x ) and last_dir_x != _dir_x:
+	if !is_zero_approx( _dir_x ) and sign(last_dir_x  * _dir_x) < 0:
 		last_dir_x = _dir_x
 		set_facing_direction( _dir_x )
 	
@@ -109,46 +109,22 @@ func set_visual_from_death_type( death_type=null ):
 			pass
 
 
-
-
-
-
-
-
 func set_movement_state(new_state: Player.MovementStates) -> void:
 	current_state = new_state
+	# -- player expects the wall kick to change the orientation
+	#last_dir_x
+	if player_animated_sprite.animation == "Wall Slide":
+		last_dir_x *= -1.0
+	# -- the ternary is just compensating for Darren's switch ledge grab
+	# -- + wall slide being the inverse of the direction
+	set_facing_direction(last_dir_x, 
+		true if (new_state == Player.MovementStates.LEDGE_GRABBING or 
+				 new_state == Player.MovementStates.WALL_SLIDING) else false)
 	var next_animation := animation_for_state(new_state)
 	play_animation(next_animation)
 
-#enum MovementStates
-#{
-	#IDLE,
-	#WALKING,
-	#RUNNING,
-	#JUMPING,
-	#FALLING,
-	#CROUCHING,
-	#WALL_SLIDING,
-	#LEDGE_GRABBING,
-	#ITEM_MOVING,
-	#CLIMBING,
-	#CLOUD,
-	#PORTAL,
-	#SLIDING,
-	#METABALL,
-	#LOG_ROLL,
-	#GRABBED,
-	#DEAD,
-	#RESPAWNED
-	## GENIE_HAND
-#}
 
 func animation_for_state(state: Player.MovementStates) -> StringName:
-	if !(state == Player.MovementStates.WALL_SLIDING or 
-		state == Player.MovementStates.LEDGE_GRABBING):
-		set_facing_direction( last_dir_x)
-	else:
-		set_facing_direction( -last_dir_x)
 	match state:
 		Player.MovementStates.IDLE:
 			return &"Idle"
@@ -178,14 +154,13 @@ func animation_for_state(state: Player.MovementStates) -> StringName:
 			return &"Idle"
 
 
-func set_facing_direction(horizontal_direction: float) -> void:
+func set_facing_direction(horizontal_direction: float, other_way: bool=false) -> void:
 	if is_zero_approx(horizontal_direction):
 		return
-	
-	#var ADHOC = (player_animated_sprite.animation == "Wall Slide" or
-				#player_animated_sprite.animation == "Ledge Grab")
-	
-	player_animated_sprite.flip_h = horizontal_direction > 0.0
+	if other_way:
+		player_animated_sprite.flip_h = horizontal_direction < 0.0
+	else:
+		player_animated_sprite.flip_h = horizontal_direction > 0.0
 
 
 func play_animation(animation_name: StringName) -> void:
