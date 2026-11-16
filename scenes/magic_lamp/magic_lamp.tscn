@@ -1,31 +1,32 @@
 [gd_scene load_steps=6 format=3 uid="uid://c3wbq8ke0po27"]
 
-[ext_resource type="Script" uid="uid://dtjl5f67kkk2" path="res://scenes/magic_lamp/magic_lamp.gd" id="1_0u53j"]
+[ext_resource type="Script" uid="uid://ysulnpd3h71w" path="res://scenes/magic_lamp/magic_lamp.gd" id="1_0u53j"]
 [ext_resource type="Texture2D" uid="uid://cpkvg3g1pxnt" path="res://assets/magic_lamp_placeholder.png" id="1_is1qt"]
 [ext_resource type="Shader" uid="uid://dh0xku12u4cx6" path="res://scenes/magic_lamp/magic_lamp_bg_aura.gdshader" id="2_hct5e"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ghqnk"]
 shader = ExtResource("2_hct5e")
-shader_parameter/glow_color = Color(0.86942333, 0.43631956, 1, 1)
-shader_parameter/glow_thickness = 2.6930001279175
-shader_parameter/pulse_speed = 3.3270001580325
-shader_parameter/pulse_intensity = 1.0
+shader_parameter/glow_color = Color(0.41960785, 0, 0.12156863, 1)
+shader_parameter/glow_thickness = 3.0000001425
+shader_parameter/pulse_speed = 2.000000095
+shader_parameter/pulse_intensity = 0.51600002451
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_is1qt"]
-size = Vector2(350, 157)
+[sub_resource type="CircleShape2D" id="CircleShape2D_ghqnk"]
+radius = 15.0
 
-[node name="MagicLamp" type="Node2D"]
+[node name="MagicLamp" type="Area2D"]
+collision_mask = 2
 script = ExtResource("1_0u53j")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 material = SubResource("ShaderMaterial_ghqnk")
+position = Vector2(-2, 4)
 texture = ExtResource("1_is1qt")
 hframes = 4
 vframes = 4
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -68.5)
-shape = SubResource("RectangleShape2D_is1qt")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-25, -8)
+rotation = 1.589976
+shape = SubResource("CircleShape2D_ghqnk")

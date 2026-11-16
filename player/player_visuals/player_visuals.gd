@@ -188,3 +188,79 @@ func on_animation_finished():
 			player_animated_sprite.play("Falling Idle")
 		_:
 			return
+
+
+func get_sucked_into_lamp(pos: Vector2, callback_from_lamp: Callable) -> void:
+	# 1. Set the hit position on the shader
+	player_animated_sprite.material.set_shader_parameter("lamp_pos", world_pos_to_uv(pos))
+	player_animated_sprite.material.set_shader_parameter("progress", 0.0)
+	
+	var tween = create_tween()
+	
+	# --- The Struggle (Slight pull-back / stutter on progress) ---
+	tween.tween_property(
+		player_animated_sprite.material, 
+		"shader_parameter/progress", 
+		0.15, 
+		0.12
+	).set_ease(Tween.EASE_OUT)
+	
+	tween.tween_property(
+		player_animated_sprite.material, 
+		"shader_parameter/progress", 
+		0.05, 
+		0.08
+	).set_ease(Tween.EASE_IN) # Briefly slips backward as they fight it
+	
+	# --- The Final Suction ---
+	tween.tween_property(
+		player_animated_sprite.material, 
+		"shader_parameter/progress", 
+		1.0, 
+		0.45
+	).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+	
+	# --- Cleanup & Callback ---
+	tween.chain().tween_callback(func():
+		visible = false
+		player_animated_sprite.material.set_shader_parameter("progress", 0.0)
+		callback_from_lamp.call()
+	)
+	
+func world_pos_to_uv(world_pos: Vector2) -> Vector2:
+	if not player_animated_sprite.sprite_frames:
+		return Vector2.ZERO
+	
+	# 1. Get the texture of the currently active animation frame
+	var frame_tex = player_animated_sprite.sprite_frames.get_frame_texture(
+		player_animated_sprite.animation, 
+		player_animated_sprite.frame
+	)
+	if not frame_tex:
+		return Vector2.ZERO
+		
+	var tex_size = frame_tex.get_size()
+
+	# 2. Transform world position into the sprite's local space
+	var local_pos = player_animated_sprite.to_local(world_pos)
+
+	# 3. Unscale local position
+	var unscaled_local = local_pos / player_animated_sprite.scale
+
+	# 4. Normalize to 0.0 - 1.0 based on centering
+	var uv = Vector2.ZERO
+	if player_animated_sprite.centered:
+		uv.x = (unscaled_local.x / tex_size.x) + 0.5
+		uv.y = (unscaled_local.y / tex_size.y) + 0.5
+	else:
+		uv.x = unscaled_local.x / tex_size.x
+		uv.y = unscaled_local.y / tex_size.y
+
+	# 5. Account for sprite flipping
+	if player_animated_sprite.flip_h:
+		uv.x = 1.0 - uv.x
+	if player_animated_sprite.flip_v:
+		uv.y = 1.0 - uv.y
+
+	# 6. Clamp to boundaries
+	return uv.clamp(Vector2.ZERO, Vector2.ONE)

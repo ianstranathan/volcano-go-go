@@ -8,7 +8,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7vgyn"]
 shader = ExtResource("1_xrrcp")
-shader_parameter/lamp_pos = Vector2(0.5, -0.5)
+shader_parameter/lamp_pos = Vector2(0, 0.5)
 shader_parameter/progress = 0.0
 shader_parameter/stretch_amount = 2.0
 shader_parameter/squeeze_amount = 1.5

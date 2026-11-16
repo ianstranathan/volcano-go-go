@@ -113,7 +113,8 @@ enum MovementStates
 	LOG_ROLL,
 	GRABBED,
 	DEAD,
-	RESPAWNED
+	RESPAWNED,
+	LIMBO
 	# GENIE_HAND
 }
 @export var movement_state: MovementStates = MovementStates.IDLE
@@ -143,6 +144,8 @@ func _ready() -> void:
 		
 	$StuffKillsYouManager.body_entered.connect( die )
 	# --------------------------------------------------------------------------
+	#$PlayerVisualsManager.sucked_into_lamp_finished.connect( func():
+		#)
 	$PlayerVisualsManager.death_animation_finished.connect( 
 		func():
 			died.emit( func(): 
@@ -726,6 +729,14 @@ func die( _area_or_body):
 	movement_state_transition_to( MovementStates.DEAD )
 
 
+func entered_volcano():
+	$PlayerVisualsManager.visible = true
+	movement_state_transition_to( MovementStates.CLOUD )
+
+
+func limbo_state_fn( _delta) -> void:
+	velocity = Vector2.ZERO
+
 func dead_state_fn( _delta) -> void:
 	pass
 
@@ -1189,7 +1200,7 @@ func respawn(p: Vector2):
 	
 
 func movement_state_transition_to(new_movement_state: MovementStates):
-	print( "state: ", MovementStates.find_key(new_movement_state))
+	#print( "state: ", MovementStates.find_key(new_movement_state))
 	if movement_state != new_movement_state:
 		match movement_state:
 			MovementStates.DEAD:
@@ -1395,10 +1406,12 @@ func gravity_from_state() -> float:
 		_:
 			return 0.0
 
-func entered_portal():
-	velocity = Vector2.ZERO
-	movement_state_transition_to( MovementStates.PORTAL )
-
+#func entered_portal():
+	#velocity = Vector2.ZERO
+	#movement_state_transition_to( MovementStates.PORTAL )
+func get_sucked_into_lamp( pos: Vector2, callabck_from_lamp: Callable ):
+	$PlayerVisualsManager.get_sucked_into_lamp( pos, callabck_from_lamp )
+	movement_state_transition_to( MovementStates.LIMBO )
 
 func exited_portal():
 	movement_state_transition_to( MovementStates.IDLE )

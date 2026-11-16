@@ -5,9 +5,9 @@ uniform float glow_thickness : hint_range(0.0, 20.0) = 4.0;
 uniform float pulse_speed : hint_range(0.0, 10.0) = 3.0;
 uniform float pulse_intensity : hint_range(0.0, 1.0) = 0.4;
 
-void vertex(){
-	VERTEX.xy += 2. * sin(pulse_speed * TIME) * vec2(sign(VERTEX.x), sign(VERTEX.y));
-}
+//void vertex(){
+	//VERTEX.xy += 2. * sin(pulse_speed * TIME) * vec2(sign(VERTEX.x), sign(VERTEX.y));
+//}
 void fragment() {
     vec4 tex_color = texture(TEXTURE, UV);
 

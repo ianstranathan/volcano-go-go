@@ -102,4 +102,4 @@ scale = Vector2(16.519999, 1)
 shape = SubResource("RectangleShape2D_q6erl")
 
 [node name="MagicLamp" parent="." instance=ExtResource("5_sko6r")]
-position = Vector2(51, -294)
+position = Vector2(55, -303)

@@ -154,14 +154,14 @@ shader = ExtResource("8_8v16l")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_880s2"]
 shader = ExtResource("10_n05ws")
-shader_parameter/lamp_pos = Vector2(0.5, -0.5)
+shader_parameter/lamp_pos = Vector2(1, 1)
 shader_parameter/progress = 0.0
 shader_parameter/stretch_amount = 2.0
 shader_parameter/squeeze_amount = 1.5
-shader_parameter/frame_offset = Vector2(0.20625, 0.21180555)
-shader_parameter/frame_size = Vector2(0.05, 0.038194444)
+shader_parameter/frame_offset = Vector2(0.010416667, 0.359375)
+shader_parameter/frame_size = Vector2(0.032986112, 0.057291668)
 shader_parameter/outline_color = Color(0, 0, 0, 1)
-shader_parameter/outline_width = 0.750000035625
+shader_parameter/outline_width = 0.946000044935
 
 [node name="PlayerVisualsManager" type="Node2D" node_paths=PackedStringArray("player_animated_sprite")]
 script = ExtResource("1_8c3sm")
@@ -170,6 +170,7 @@ player_animated_sprite = NodePath("DarrenCharacterVisuals/Player Animations")
 [node name="DebugVisuals" type="Node2D" parent="."]
 
 [node name="DebugCharacterVisual" type="Sprite2D" parent="DebugVisuals"]
+visible = false
 material = SubResource("ShaderMaterial_qpug8")
 texture = ExtResource("3_n05ws")
 
@@ -187,5 +188,5 @@ material = SubResource("ShaderMaterial_n05ws")
 [node name="Player Animations" parent="DarrenCharacterVisuals" instance=ExtResource("9_n05ws")]
 material = SubResource("ShaderMaterial_880s2")
 scale = Vector2(2.5, 2.5)
-frame = 2
-frame_progress = 1.0
+animation = &"Jogging"
+frame_progress = 0.119362764

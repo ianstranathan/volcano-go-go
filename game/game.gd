@@ -1,8 +1,5 @@
 extends Node2D
 
-"""
-
-"""
 # -- TODO
 var player_data_dict:Dictionary = {} # -- id to player_data
 
@@ -48,7 +45,9 @@ func _ready():
 	# -- ==> we're gauranteed that all children (level manager and world pickup items
 	# -- manager) are intialized
 	# -- ==> can just set the prev. world pickup items ready stuff to here
-	#post_processing_quad.transition_back_finished.connect( func():
+	post_processing_quad.transition_back_finished.connect( func():
+		for p in players_container.get_children():
+			p.entered_volcano())
 		#camera.zoom_out_on_player())
 		
 	# -- after post processing quad is fully black, we can load level
@@ -56,8 +55,7 @@ func _ready():
 	# -- world_level_manager.level_ready.connect( on_level_manager_loaded_first_chunk )
 	# -- 
 	post_processing_quad.transition_finished.connect( func():
-		transition_game_state( GameStates.PRE_LAVA_START )
-	)
+		transition_game_state( GameStates.PRE_LAVA_START ))
 	
 	post_processing_quad.fade_back_from_black_finished.connect( func():
 		ui.hide_dead_player()
@@ -73,8 +71,8 @@ func _ready():
 	world_level_manager.cam_ref = camera
 	world_level_manager.level_ready.connect( on_level_manager_loaded_first_chunk )
 
-	oasis.portal_entered.connect( on_oasis_portal_entered )
-	
+	#oasis.portal_entered.connect( on_oasis_portal_entered )
+	oasis.lamp_entered.connect( on_lamp_entered )
 	assert(spawn_points)
 	assert(players_container)
 
@@ -219,6 +217,11 @@ func get_spawn_point_from_child_node(spawn_points_node: Node2D, peer_id: int) ->
 	return actual_point.global_position
 
 
+
+#func broadcast_cloud_state():
+	#if multiplayer.is_server()
+	#
+
 # ------------------------------------------------------------------------ Utils
 func ordered_players_by_height() -> Array:
 	"""
@@ -260,17 +263,16 @@ func get_level_dimensions() -> Vector2:
 
 
 var num_players_initialized = 0
-func on_oasis_portal_entered( body, portal_pos: Vector2 ) -> void:
+
+func on_lamp_entered( body, lamp_pos: Vector2 ) -> void:
 	match game_state:
 		GameStates.PREGAME_OASIS:
-			if body is Player:
-				num_players_initialized += 1
-				# -- post processing ripple here
-				body.entered_portal()
+			num_players_initialized += 1
 			if num_players_initialized == players_container.get_children().size():
 				# -- relative vector for origin of transition point; can change or w/e
 				post_processing_quad.start_transition_anim(
-					(portal_pos  - camera.global_position))
+					(lamp_pos  - camera.global_position))
+
 
 @rpc("any_peer","call_local","reliable")
 func initialize_at_bottom_of_volcano( ):

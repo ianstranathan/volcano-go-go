@@ -1,10 +1,18 @@
 extends Node2D
 
+signal lamp_entered( player_id: int, lamp_global_pos: Vector2 )
 
-signal portal_entered( body, pos )
+func _ready() -> void:
+	$MagicLamp.player_finished_entering.connect( func( id: int):
+		lamp_entered.emit( id, $MagicLamp.global_position ) )
 
-var players_within_reveal_threshold : Array[CharacterBody2D]
-@export var portal: Node2D
+
+# ------------------------------------------------------------------------------
+#signal portal_entered( body, pos )
+
+#var players_within_reveal_threshold : Array[CharacterBody2D]
+
+#@export var portal: Node2D
 #@onready var portal_area: Area2D = portal.get_node("Area2D")
 #
 #func _ready() -> void:
@@ -43,4 +51,3 @@ var players_within_reveal_threshold : Array[CharacterBody2D]
 #func noramlize_reveal_param( d: float) -> void:
 	#$Sprite2D.material.set_shader_parameter( "amt", 
 		#1. - pow((d / rad_sqrd), 2.0))
-		
