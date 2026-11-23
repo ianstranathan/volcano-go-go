@@ -30,29 +30,30 @@ point_count = 2
 [sub_resource type="CurveTexture" id="CurveTexture_05jd1"]
 curve = SubResource("Curve_fvxjv")
 
-[sub_resource type="Curve" id="Curve_iy8y1"]
-_limits = [0.5, 1.0, 0.0, 1.0]
-_data = [Vector2(0, 0.68303204), 0.0, 2.6228774, 0, 0, Vector2(0.24367622, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+[sub_resource type="Curve" id="Curve_vp3em"]
+_limits = [0.0, 1.5, 0.0, 1.0]
+_data = [Vector2(0, 0.5264555), 0.0, 12.957016, 0, 0, Vector2(0.14586847, 1.5), 0.0, 0.0, 0, 0, Vector2(1, 0.3790015), -3.673759, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="CurveTexture_ugkd0"]
-curve = SubResource("Curve_iy8y1")
+[sub_resource type="CurveTexture" id="CurveTexture_iy8y1"]
+curve = SubResource("Curve_vp3em")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_4f28p"]
-lifetime_randomness = 1.0
+lifetime_randomness = 0.08
 particle_flag_disable_z = true
 emission_shape = 3
 emission_box_extents = Vector3(500, 200, 1)
 direction = Vector3(0, -1, 0)
-spread = 44.161
+spread = 32.981
 initial_velocity_min = 234.48
-initial_velocity_max = 234.48
+initial_velocity_max = 251.65999
+radial_velocity_min = -2.2351742e-05
+radial_velocity_max = 61.859978
 gravity = Vector3(0, 0, 0)
 damping_min = 37.242
 damping_max = 41.47
-scale_min = 0.0
 scale_max = 2.0
-scale_curve = SubResource("CurveTexture_ugkd0")
+scale_curve = SubResource("CurveTexture_iy8y1")
 color = Color(1, 0.864, 0.49, 1)
 color_ramp = SubResource("GradientTexture1D_ugkd0")
 alpha_curve = SubResource("CurveTexture_vp3em")
@@ -64,7 +65,7 @@ hue_variation_max = 0.049999975
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 material = SubResource("CanvasItemMaterial_vp3em")
-amount = 90
+amount = 50
 texture = ExtResource("1_7p8qv")
 lifetime = 4.04
 process_material = SubResource("ParticleProcessMaterial_4f28p")
