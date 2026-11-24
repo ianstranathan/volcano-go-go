@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://bim887eyb4gb6"]
+[gd_scene load_steps=19 format=3 uid="uid://bim887eyb4gb6"]
 
 [ext_resource type="Texture2D" uid="uid://vc4wmewwfixw" path="res://assets/particle_masks/floaty_64.png" id="1_7p8qv"]
+[ext_resource type="Texture2D" uid="uid://bff0eipq3wmx0" path="res://assets/particle_masks/ash particle.png" id="2_vp3em"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vp3em"]
 blend_mode = 1
@@ -61,11 +62,58 @@ emission_curve = SubResource("CurveTexture_05jd1")
 hue_variation_min = -2.2351742e-08
 hue_variation_max = 0.049999975
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_iy8y1"]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_vp3em"]
+colors = PackedColorArray(1, 0.31666666, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_iy8y1"]
+gradient = SubResource("Gradient_vp3em")
+
+[sub_resource type="Curve" id="Curve_ugkd0"]
+_limits = [0.0, 14.3, 0.0, 1.0]
+_data = [Vector2(0, 10.322376), 0.0, -40.70941, 0, 0, Vector2(0.24536258, 1.7196064), -6.1982155, -6.1982155, 0, 0, Vector2(1, 0), -0.729311, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_fvxjv"]
+curve = SubResource("Curve_ugkd0")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ugkd0"]
+particle_flag_disable_z = true
+angle_min = 1.0728835e-05
+angle_max = 360.00003
+direction = Vector3(0, -1, 0)
+spread = 38.851
+initial_velocity_min = 386.21
+initial_velocity_max = 523.83997
+angular_velocity_min = -99.31001
+angular_velocity_max = 148.44998
+gravity = Vector3(0, 150, 0)
+damping_min = 84.482
+damping_max = 87.629005
+scale_min = 0.5
+color = Color(1, 0.508, 0.27999997, 1)
+color_initial_ramp = SubResource("GradientTexture1D_iy8y1")
+emission_curve = SubResource("CurveTexture_fvxjv")
+anim_offset_max = 1.0
+
 [node name="Embers" type="Node2D"]
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+visible = false
 material = SubResource("CanvasItemMaterial_vp3em")
 amount = 50
 texture = ExtResource("1_7p8qv")
 lifetime = 4.04
 process_material = SubResource("ParticleProcessMaterial_4f28p")
+
+[node name="GPUParticles2D2" type="GPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_iy8y1")
+amount = 3
+texture = ExtResource("2_vp3em")
+lifetime = 4.25
+process_material = SubResource("ParticleProcessMaterial_ugkd0")
