@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bim887eyb4gb6"]
+[gd_scene load_steps=26 format=3 uid="uid://bim887eyb4gb6"]
 
 [ext_resource type="Texture2D" uid="uid://vc4wmewwfixw" path="res://assets/particle_masks/floaty_64.png" id="1_7p8qv"]
 [ext_resource type="Texture2D" uid="uid://bff0eipq3wmx0" path="res://assets/particle_masks/ash particle.png" id="2_vp3em"]
@@ -32,6 +32,14 @@ point_count = 2
 [sub_resource type="CurveTexture" id="CurveTexture_05jd1"]
 curve = SubResource("Curve_fvxjv")
 
+[sub_resource type="Curve" id="Curve_iy8y1"]
+_limits = [-200.0, 200.0, 0.0, 1.0]
+_data = [Vector2(0, 2.4880066), 0.0, 0.0, 0, 0]
+point_count = 1
+
+[sub_resource type="CurveTexture" id="CurveTexture_ugkd0"]
+curve = SubResource("Curve_iy8y1")
+
 [sub_resource type="Curve" id="Curve_vp3em"]
 _limits = [0.0, 1.5, 0.0, 1.0]
 _data = [Vector2(0, 0.5264555), 0.0, 12.957016, 0, 0, Vector2(0.14586847, 1.5), 0.0, 0.0, 0, 0, Vector2(1, 0.3790015), -3.673759, 0.0, 0, 0]
@@ -52,6 +60,7 @@ initial_velocity_max = 251.65999
 radial_velocity_min = -2.2351742e-05
 radial_velocity_max = 61.859978
 gravity = Vector3(0, 0, 0)
+radial_accel_curve = SubResource("CurveTexture_ugkd0")
 damping_min = 37.242
 damping_max = 41.47
 scale_max = 2.0
@@ -138,7 +147,7 @@ material = SubResource("CanvasItemMaterial_vp3em")
 amount = 65
 texture = ExtResource("1_7p8qv")
 lifetime = 4.5
-speed_scale = 2.2800000000000002
+speed_scale = 2.28
 process_material = SubResource("ParticleProcessMaterial_4f28p")
 
 [node name="GPUParticles2D2" type="GPUParticles2D" parent="."]
