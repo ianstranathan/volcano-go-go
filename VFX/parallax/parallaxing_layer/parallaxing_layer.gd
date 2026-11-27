@@ -1,36 +1,18 @@
 @tool
-extends Parallax2D
-
+extends Node2D
 class_name ParallaxingLayer
+
 """
+basically, just a data structure to hold a plane index + choices
+about that layer (e.g. blurred)
+
 ParallaxDepthConfig: 
 	stores global main player index and derives all parallaxing values from it.
 
-ParallaxDepthManager: 
-	Knows which plane is the main plane and coordinates the system.
-
-ParallaxingLayer:
-	└── CanvasGroup
-	    ├── Sprite2D
-	    ├── Sprite2D
-	    ├── Sprite2D
-	    └── Sprite2D
-	Knows its own index and uses a ParallaxDepthConfig to set it's
-	canvas group properties
-
-	CanvasGroup: 
-		Provides a convenient place to apply shared visual transformations.
 """
-# -- NOTE! (from godot docs)
-"""
-Since CanvasGroup and CanvasItem.clip_children both utilize the backbuffer,
- children of a CanvasGroup who have their CanvasItem.clip_children set to anything other than CanvasItem.CLIP_CHILDREN_DISABLED
- will not function correctly.
-"""
-
-# -- TODO NOTE
-# -- if something is a full screen background layer, it's not going to take 
-
+# -- NOTE
+# -- this should come from chunking information
+var world_dimensions  = Vector2(15000, 15000)
 @export var depth_config: ParallaxDepthConfig:
 	set(value):
 		if depth_config == value:
@@ -48,27 +30,16 @@ Since CanvasGroup and CanvasItem.clip_children both utilize the backbuffer,
 
 		update_depth_properties()
 
-
+	
 @export var plane_index: int = 0:
 	set(value):
 		plane_index = value
 		update_depth_properties()
 
-@export var layer_material: ShaderMaterial:
-	set(v):
-		if layer_material == v:
-			return
-		layer_material = v
-		create_material_instance()
-		update_shader_parameters()
-
-var _layer_material_instance: ShaderMaterial
-@export var blurred: bool = true:
-	set(value):
-		blurred = value
-		update_shader_parameters()
-
-@export var canvas_group: CanvasGroup
+@export var _parallax_2D: Parallax2D:
+	set(p):
+		_parallax_2D = p
+		_parallax_2D.scroll_scale = layer_scroll_speed
 
 
 # --------------------------------------------- Derived from ParallaxDepthConfig
@@ -82,8 +53,11 @@ var layer_opacity: float = 1.0
 var layer_fog_amount: float = 0.0
 
 
+var vp_size
+
+
+
 func _ready() -> void:
-	create_material_instance()
 	connect_depth_config()
 	update_depth_properties()
 
@@ -92,6 +66,7 @@ func _exit_tree() -> void:
 	if depth_config != null:
 		if depth_config.changed.is_connected( update_depth_properties ):
 			depth_config.changed.disconnect( update_depth_properties )
+
 
 func connect_depth_config() -> void:
 	if depth_config == null:
@@ -112,8 +87,6 @@ func set_depth_config(value: ParallaxDepthConfig) -> void:
 func update_depth_properties():
 	if depth_config == null:
 		return
-	if canvas_group == null:
-		return
 	# ------------------------------------------- derived layer vars from config
 	layer_scroll_speed = depth_config.get_movement_factor( plane_index )
 	layer_scale = depth_config.get_scale_factor( plane_index )
@@ -124,43 +97,6 @@ func update_depth_properties():
 	layer_opacity = depth_config.get_opacity( plane_index )
 	layer_fog_amount = depth_config.get_atmospheric_fog( plane_index )
 
-	# -- Parallax2D properties
-	scroll_scale = layer_scroll_speed
-	
-	# -- Group render vars
-	if canvas_group != null:
-		canvas_group.scale = Vector2.ONE * layer_scale
-		canvas_group.modulate = Color(
-			layer_brightness,
-			layer_brightness,
-			layer_brightness,
-			layer_opacity
-		)
-	
-	# ------------------------------------------------------ set shader uniforms
-	update_shader_parameters()
-
-
-func update_shader_parameters() -> void:
-	if _layer_material_instance == null:
-		return
-	if depth_config == null:
-		return
-	var effective_blur := layer_blur_radius if blurred else 0.0
-
-	_layer_material_instance.set_shader_parameter("contrast", layer_contrast)
-	_layer_material_instance.set_shader_parameter("saturation", layer_saturation)
-	_layer_material_instance.set_shader_parameter("blur_radius", effective_blur)
-	_layer_material_instance.set_shader_parameter("fog_color", depth_config.fog_color)
-	_layer_material_instance.set_shader_parameter("fog_amount", layer_fog_amount)
-
-
-func create_material_instance() -> void:
-	if layer_material == null:
-		_layer_material_instance = null
-		if canvas_group != null:
-			canvas_group.material = null
-		return
-	_layer_material_instance = layer_material.duplicate() as ShaderMaterial
-	if canvas_group != null:
-		canvas_group.material = _layer_material_instance
+	if _parallax_2D:
+		_parallax_2D.scroll_scale = Vector2(layer_scale, layer_scale)
+		

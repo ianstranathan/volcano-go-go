@@ -268,6 +268,7 @@ func start_level() -> void:
 			return m.global_position)
 		level_ready.emit(marker_positions)
 
+	$ParallaxinglayersManager.visible = true
 	# -- start loading chunk 1 in the background
 	_request_chunk_load(1)
 

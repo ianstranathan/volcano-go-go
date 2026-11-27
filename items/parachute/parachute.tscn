@@ -13,8 +13,8 @@ script = ExtResource("2_u8r2o")
 metadata/_custom_type_script = "uid://du6dcuy4lm2fk"
 
 [sub_resource type="Curve" id="Curve_l5lux"]
-_data = [Vector2(0.010869563, 0.50561804), 0.0, 0.0, 0, 0, Vector2(0.5652174, 1), -7.1210957, -7.1210957, 0, 0, Vector2(0.83152175, 1), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0, 0.5209657), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fysdi"]
 shader = ExtResource("1_64bp3")

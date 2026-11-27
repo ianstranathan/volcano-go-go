@@ -12,9 +12,6 @@ uniform float radius : hint_range(0.0, 64.0, 0.1) = 8.0;
 uniform int samples : hint_range(1, 16, 1) = 4;
 
 void fragment() {
-	//if (radius <= 0.001) {
-		//COLOR = texture(screen_texture, SCREEN_UV);
-	//} else {
 	float sigma = radius / 3.0; // kernel reaches ~3 sigma at the edge
 	float step_size = radius / float(samples);
 	float inv_two_sigma_sq = 1.0 / (2.0 * sigma * sigma);
@@ -27,8 +24,8 @@ void fragment() {
 			vec2 offset = vec2(float(x), float(y)) * step_size;
 			float w = exp(-dot(offset, offset) * inv_two_sigma_sq);
 
+			//vec4 c = texture(TEXTURE, UV + offset);
 			vec4 c = texture(screen_texture, SCREEN_UV + offset * SCREEN_PIXEL_SIZE);
-
 			// Accumulate premultiplied so transparent pixels don't darken edges.
 			accum += vec4(c.rgb * c.a, c.a) * w;
 			total_weight += w;
@@ -37,5 +34,4 @@ void fragment() {
 	accum /= total_weight;
 	// Un-premultiply back for Godot's standard blend mode.
 	COLOR = accum.a > 0.0001 ? vec4(accum.rgb / accum.a, accum.a) : vec4(0.0);
-//}
 }

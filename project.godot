@@ -36,11 +36,10 @@ AudioDb="*res://audio/audio_db.gd"
 AudioManager="*res://audio/audio_manager.gd"
 SettingsManager="*res://autoload/settings_manager.gd"
 DynamicObjectsDb="*res://autoload/dynamic_objects_db.gd"
+InternalSettings="*res://autoload/internal_settings.gd"
 
 [display]
 
-window/size/viewport_width=800
-window/size/viewport_height=600
 window/size/initial_position_type=3
 window/size/resizable=false
 
@@ -205,6 +204,13 @@ swing_sword={
 [rendering]
 
 gl_compatibility/nvidia_disable_threaded_optimization=false
+
+[shader_globals]
+
+parallax_camera_pos={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
 
 [steam]
 

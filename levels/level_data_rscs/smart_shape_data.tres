@@ -24,6 +24,9 @@ pickup_definitions = Array[Dictionary]([{
 }, {
 "item_enum": 0,
 "position": Vector2(-534, 52)
+}, {
+"item_enum": 3,
+"position": Vector2(252, 63)
 }])
 dynamic_object_definitions = Array[Dictionary]([{
 "dynamic_object_type": 0,

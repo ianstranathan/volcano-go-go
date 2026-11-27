@@ -2,87 +2,63 @@ extends Sprite2D
 
 class_name FullScreenBgPll
 
-@export var camera: Camera2D
-@export var plane_index: int
-@export var depth_config: ParallaxDepthConfig:
-	set(value):
-		if depth_config == value:
-			return
+"""
+This is a sprite that scales to our render target size
 
-		if depth_config != null:
-			if depth_config.changed.is_connected( update_depth_properties ):
-				depth_config.changed.disconnect( update_depth_properties )
-
-		depth_config = value
-
-		if depth_config != null:
-			if not depth_config.changed.is_connected( update_depth_properties):
-				depth_config.changed.connect( update_depth_properties )
-
-		update_depth_properties()
-
-var layer_scroll_speed: Vector2 = Vector2.ONE
-var layer_scale: float = 1.0
-var layer_brightness: float = 1.0
-var layer_contrast: float = 1.0
-var layer_saturation: float = 1.0
-var layer_blur_radius: float = 0.0
-var layer_opacity: float = 1.0
-var layer_fog_amount: float = 0.0
-
-
-func _process(_delta: float) -> void:
-	# -- we're just moving out full screen bg sprite along with the camera
-	# -- we're doing all out parallaxing in a vertex shader
-	if not camera:
-		return
-	global_position = camera.global_position
-
+It just pulls in information from a parallaxing layer
+(i.e. the necessary parallax data required for the shader offsets))
+"""
+@export var parallaxing_layer: ParallaxingLayer
+@export var parent_subviewport: SubViewport
+@export var inner_camera: Camera2D
+#@onready var main_camera: Camera2D = get_viewport().get_camera_2d()
+@onready var main_camera: Camera2D = get_tree().root.get_camera_2d()
+@onready var world_dims: Vector2 = parallaxing_layer.world_dimensions
+@onready var scroll_speed: Vector2 = parallaxing_layer.layer_scroll_speed
 
 func _ready() -> void:
-	if not camera:
-		camera = get_viewport().get_camera_2d()
-	rescale_to_viewport()
-	# -- vp changed callback
-	if not Engine.is_editor_hint():
-		assert(texture, "Invalid texture on background sprite in : {_name}".format(
-			{"_name": name}))
-		assert( plane_index != null )
-		# -- meaningless to have is_fullscreen_bg if sprite hasn't been assigned
-		get_viewport().size_changed.connect( rescale_to_viewport )
-
-
-func rescale_to_viewport() -> void:
-	var viewport_size: Vector2
-	if Engine.is_editor_hint():
-		# In the editor, grab the target resolution defined in Project Settings
-		var w = ProjectSettings.get_setting("display/window/size/viewport_width")
-		var h = ProjectSettings.get_setting("display/window/size/viewport_height")
-		viewport_size = Vector2(w, h)
-	else:
-		# At runtime, get the actual active window/viewport size
-		viewport_size = get_viewport().get_visible_rect().size
+	print(main_camera)
+	print(inner_camera)
+	print(main_camera == inner_camera)
+	print("main: ", main_camera, " inner: ", inner_camera, " same: ", main_camera == inner_camera)
+	print("main center: ", main_camera.get_screen_center_position())
+	print("------------------------")
+	var vp_size := Vector2(parent_subviewport.size)
+	#$Camera2D.zoom = camera.zoom
+	inner_camera.global_position = main_camera.global_position
+	#var ratio := float(parent_subviewport.size.x) / get_viewport_rect().size.x   # 480 / 1920
+	#var main_size := main_camera.get_viewport_rect().size
+	#var ratio := vp_size.x / main_size.x
+	#inner_camera.zoom = main_camera.zoom * ratio
 	
-	scale = viewport_size / texture.get_size()
-
-
-func update_depth_properties():
-	if depth_config == null:
-		return
-
-	# ------------------------------------------- derived layer vars from config
-	layer_scroll_speed = depth_config.get_movement_factor( plane_index )
-	layer_scale = depth_config.get_scale_factor( plane_index )
-	layer_brightness = depth_config.get_atmospheric_fade( plane_index )
-	layer_contrast = depth_config.get_contrast( plane_index )
-	layer_saturation = depth_config.get_saturation( plane_index )
-	layer_blur_radius = depth_config.get_blur( plane_index )
-	layer_opacity = depth_config.get_opacity( plane_index )
-	layer_fog_amount = depth_config.get_atmospheric_fog( plane_index )
-
-	# -------------------------------
-	# -- TODO NOTE
-	# -- hardcoding scale in shader right now, need this to be reflective of game eventually
+	var ratio := float(parent_subviewport.size.x) / main_camera.get_viewport_rect().size.x   # 480 / 1920
+	inner_camera.zoom = main_camera.zoom
 	
-	material.set_shader_parameter("texture_scale", Vector2(15000., 15000.))
-	material.set_shader_parameter("scroll_scale", layer_scroll_speed)
+	# -- scale inner bg sprite to size of subviewport
+	scale = vp_size / texture.get_size()
+	
+	_sync()
+	
+	print("Ratio: ", ratio)
+	print("Sprite scale: ", scale)
+	print("Sprite total size: ", scale * texture.get_size())
+
+func _process(_delta: float) -> void:
+	_sync()
+	#global_position = main_camera.global_position
+	#set_shader_parallaxing_uniforms()
+
+
+func _sync() -> void:
+	
+	global_position = main_camera.global_position
+	if material:
+		RenderingServer.global_shader_parameter_set("parallax_camera_pos", main_camera.global_position)
+		material.set_shader_parameter("texture_scale", world_dims)
+		#material.set_shader_parameter("scroll_scale", Vector2(scroll_speed.x * 0.5, 0.1))
+		
+#func set_shader_parallaxing_uniforms():
+	#if material:
+		#material.set_shader_parameter("camera_pos", inner_camera.global_position)
+		#material.set_shader_parameter("texture_scale", world_dims)
+		#material.set_shader_parameter("scroll_scale", scroll_speed)

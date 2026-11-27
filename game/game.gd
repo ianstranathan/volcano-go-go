@@ -199,7 +199,7 @@ func spawn_player(peer_id: int, _name: String, spawn_index: int):
 		# -- then UI visual takes its place
 		a_player.died.connect( func(visibility_callback: Callable):
 			camera.on_player_died(visibility_callback))
-			
+		$World.player_ref = a_player
 		# -- closure around spawn_marker_pos for this player
 		# -- so we're turning on the player's visuals in respawn before
 		# -- the post processing quad has faded back in

@@ -234,23 +234,27 @@ float wall_z(Wall w, vec2 f) {
 
 group_uniforms parallax;
 
+//uniform vec2 camera_pos;
 varying vec2 initial_world_pos;
 varying vec2 target_pos_varying;
 uniform vec2 scroll_scale = vec2(0.1, 1.);
 uniform vec2 texture_scale = vec2(15000.);
 
+global uniform vec2 parallax_camera_pos;
+
+
 void vertex() {
 	initial_world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
-	vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
+	//vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
 	// FIX: Flipped the subtraction order so 0.0 locks to the camera
-	vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	vec2 parallax_offset = parallax_camera_pos * (vec2(1.0) - scroll_scale);
 	target_pos_varying = initial_world_pos - parallax_offset;
 }
 
 void fragment() {
 	// ---------------------------------------
 	vec2 p = target_pos_varying / texture_scale;
-	p *= 50.;
+	p *= 250.;
 	float x = p.x;
 	float y = p.y;
 	float scroll = 1.; // TIME * spin_speed

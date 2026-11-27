@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://ctyvowqeemjtf"]
+
+[ext_resource type="Shader" uid="uid://imfeyd84nf7m" path="res://levels/oasis/waterfall/waterfall.gdshader" id="1_j6b12"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="2_5jor8"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_23rpa"]
+
+[sub_resource type="Gradient" id="Gradient_7l7g1"]
+offsets = PackedFloat32Array(0, 0.492, 1)
+colors = PackedColorArray(0, 0.29411766, 0.3137255, 1, 0.049416162, 0.53930926, 0.4923389, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ts7qs"]
+gradient = SubResource("Gradient_7l7g1")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_23rpa"]
+shader = ExtResource("1_j6b12")
+shader_parameter/sprite_or_color_rect_resolution = Vector2(128, 128)
+shader_parameter/noise_texture = ExtResource("2_23rpa")
+shader_parameter/noise_zoom = 2.0
+shader_parameter/noise_stretch = Vector2(1, 0.1)
+shader_parameter/water_gradient = SubResource("GradientTexture1D_ts7qs")
+shader_parameter/foam_color = Color(0.915, 0.965, 0.938, 1)
+shader_parameter/lighter_water_color_threshold_1 = 0.47
+shader_parameter/lighter_water_color_threshold_2 = 0.57
+shader_parameter/foam_color_threshold = 0.6
+shader_parameter/waterfall_speed = 140.0
+shader_parameter/waterfall_noise_blend_speed = 8.0
+shader_parameter/opacity_strength = 0.9
+shader_parameter/opacity_edge_up = 2.0
+shader_parameter/opacity_edge_down = 0.0
+shader_parameter/opacity_edge_left = 6.0
+shader_parameter/opacity_edge_right = 6.0
+shader_parameter/edge_foam_up = 6.0
+shader_parameter/edge_foam_down = 10.0
+shader_parameter/edge_foam_left = 5.0
+shader_parameter/edge_foam_right = 5.0
+shader_parameter/use_terrain_foam_mask = false
+
+[node name="Waterfall" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_23rpa")
+texture = ExtResource("2_5jor8")

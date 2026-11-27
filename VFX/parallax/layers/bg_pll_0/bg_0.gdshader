@@ -93,20 +93,24 @@ group_uniforms parallax;
 
 varying vec2 initial_world_pos;
 varying vec2 target_pos_varying;
-uniform vec2 scroll_scale = vec2(0.1, 1.);
+uniform vec2 scroll_scale = vec2(0.1, 0.1);
 uniform vec2 texture_scale = vec2(15000.);
+
+global uniform vec2 parallax_camera_pos;
 
 void vertex() {
 	initial_world_pos = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
-	vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
+	//vec2 cam_pos = (inverse(CANVAS_MATRIX) * vec4(0.0, 0.0, 0.0, 1.0)).xy;
 	// FIX: Flipped the subtraction order so 0.0 locks to the camera
-	vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	//vec2 parallax_offset = cam_pos * (vec2(1.0) - scroll_scale);
+	vec2 parallax_offset = parallax_camera_pos * (vec2(1.0) - scroll_scale);
+	//parallax_camera_pos
 	target_pos_varying = initial_world_pos - parallax_offset;
 }
 
 void fragment() {
 	// ---------------------------------------
-	vec2 uv = target_pos_varying / texture_scale;
+	vec2 uv = target_pos_varying / (texture_scale);
 	// ── 1. SMOOTH WARP
 	vec2 wp = uv * warp_scale;
 	float wn1 = texture(noise_tex, wp + vec2(0.0, -TIME * warp_speed * vertical_scroll_speed)).r - 0.5;
@@ -193,4 +197,5 @@ float wn2 = texture(noise_tex, wp * 0.7 + vec2(0.43, 0.17 - TIME * warp_speed * 
 	vec3 col = mix(crust_final, molten_col, mask);
 
 	COLOR = vec4(max(col, vec3(0.0)), 1.);
+	//COLOR = vec4(vec3(0.5, 0., 1.), 1.);
 }

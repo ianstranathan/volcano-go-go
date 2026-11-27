@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsh82winow0dl"]
+
+[ext_resource type="Script" uid="uid://bcbqua3kucf78" path="res://VFX/sprite_layer_pseudo_post_processing/sprite_layer_pseudo_post_processing.gd" id="1_v6hkk"]
+[ext_resource type="Material" uid="uid://c3iiqjgusfd2e" path="res://VFX/sprite_layer_pseudo_post_processing/player_vignette/player_vignette.tres" id="2_yqxwa"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="3_ntp4u"]
+[ext_resource type="Shader" uid="uid://dvjf0g26qfihu" path="res://VFX/sprite_layer_pseudo_post_processing/player_backlight/back_additive_sprite.gdshader" id="4_v6hkk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yqxwa"]
+shader = ExtResource("4_v6hkk")
+shader_parameter/light_strength = 0.12
+shader_parameter/light_radius = 0.1
+shader_parameter/light_color = Color(1, 0.88, 0.72, 1)
+shader_parameter/player_screen_pos = Vector2(0, 0)
+
+[node name="SpriteLayerPseudoPostProcessing" type="Node2D" node_paths=PackedStringArray("base_vignette_sprite", "backlight_sprite", "noise_vignette_sprite")]
+script = ExtResource("1_v6hkk")
+base_vignette_sprite = NodePath("base_vignette")
+backlight_sprite = NodePath("player_back_light")
+noise_vignette_sprite = NodePath("noise_vignette")
+
+[node name="base_vignette" type="Sprite2D" parent="."]
+material = ExtResource("2_yqxwa")
+instance_shader_parameters/noise_scale = 2.745
+instance_shader_parameters/noise_strength = 0.23600001121
+instance_shader_parameters/vignette_radius = 1.0
+instance_shader_parameters/vignette_strength = 0.5670000269325
+texture = ExtResource("3_ntp4u")
+
+[node name="player_back_light" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_yqxwa")
+texture = ExtResource("3_ntp4u")
+
+[node name="noise_vignette" type="Sprite2D" parent="."]
+material = ExtResource("2_yqxwa")
+instance_shader_parameters/noise_scale = 0.5
+instance_shader_parameters/noise_strength = 0.400000019
+instance_shader_parameters/vignette_layer = 1
+texture = ExtResource("3_ntp4u")

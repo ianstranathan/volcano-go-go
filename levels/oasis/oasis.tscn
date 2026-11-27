@@ -1,8 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://bg5gcggjlxqdx"]
+[gd_scene load_steps=14 format=3 uid="uid://bg5gcggjlxqdx"]
 
 [ext_resource type="Texture2D" uid="uid://dqh3gfimhcbfj" path="res://assets/adamsaltsman.png" id="1_eypol"]
 [ext_resource type="Script" uid="uid://dso72jwgq4una" path="res://levels/oasis/oasis.gd" id="1_vrkva"]
+[ext_resource type="PackedScene" uid="uid://ctyvowqeemjtf" path="res://levels/oasis/waterfall/waterfall.tscn" id="4_vrkva"]
+[ext_resource type="Texture2D" uid="uid://bdp1meibxsg38" path="res://assets/rocks/SmallRock2.png" id="5_5ovu8"]
 [ext_resource type="PackedScene" uid="uid://c3wbq8ke0po27" path="res://scenes/magic_lamp/magic_lamp.tscn" id="5_sko6r"]
+[ext_resource type="Texture2D" uid="uid://c1dolq4vuwx8c" path="res://assets/rocks/SmallRock1.png" id="6_vv1hg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vrkva"]
 radius = 1300.0
@@ -103,3 +106,23 @@ shape = SubResource("RectangleShape2D_q6erl")
 
 [node name="MagicLamp" parent="." instance=ExtResource("5_sko6r")]
 position = Vector2(55, -303)
+
+[node name="Waterfall" parent="." instance=ExtResource("4_vrkva")]
+position = Vector2(-972, 9.000001)
+scale = Vector2(2.5, 2.5)
+
+[node name="SmallRock2" type="Sprite2D" parent="."]
+position = Vector2(-1020, 152)
+texture = ExtResource("5_5ovu8")
+
+[node name="SmallRock1" type="Sprite2D" parent="."]
+position = Vector2(-1103, 155)
+texture = ExtResource("6_vv1hg")
+
+[node name="SmallRock3" type="Sprite2D" parent="."]
+position = Vector2(-839.5, 152)
+texture = ExtResource("5_5ovu8")
+
+[node name="SmallRock4" type="Sprite2D" parent="."]
+position = Vector2(-922.5, 155)
+texture = ExtResource("6_vv1hg")

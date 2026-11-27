@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://c3iiqjgusfd2e"]
+
+[ext_resource type="Shader" uid="uid://cn2r78aks001p" path="res://VFX/sprite_layer_pseudo_post_processing/player_vignette/player_vignette.gdshader" id="1_2syu2"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="2_vsdwr"]
+
+[resource]
+shader = ExtResource("1_2syu2")
+shader_parameter/noise_texture = ExtResource("2_vsdwr")
+shader_parameter/player_screen_pos = Vector2(0, 0)

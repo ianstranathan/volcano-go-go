@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dym557k566ebo"]
+
+[ext_resource type="Shader" uid="uid://c4mno3iusj02u" path="res://VFX/parallax/canvas_group_blur.gdshader" id="1_32o7f"]
+
+[resource]
+shader = ExtResource("1_32o7f")
+shader_parameter/wide_kernel = true
+shader_parameter/spread = 1.0

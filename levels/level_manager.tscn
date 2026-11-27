@@ -1,10 +1,130 @@
-[gd_scene load_steps=2 format=3 uid="uid://dv6yjtu0iucn2"]
+[gd_scene load_steps=22 format=3 uid="uid://dv6yjtu0iucn2"]
 
 [ext_resource type="Script" uid="uid://c8ncf2ojbw8cf" path="res://levels/level_manager.gd" id="1_x4ns8"]
+[ext_resource type="Material" uid="uid://buxg18ksyl1y7" path="res://VFX/parallax/layers/bg_pll_0/bg_0.tres" id="2_3uyut"]
+[ext_resource type="Script" uid="uid://c41kk4wywvvyw" path="res://VFX/parallax/layers/full_screen_bg_pll/full_screen_bg_pll.gd" id="3_fa8ul"]
+[ext_resource type="Script" uid="uid://c0tehhcibnv73" path="res://throw_me_away_camera.gd" id="4_3uyut"]
+[ext_resource type="Script" uid="uid://hc72grdfxumn" path="res://VFX/parallax/parallaxing_layer/parallaxing_depth_config.gd" id="4_plt5s"]
+[ext_resource type="Material" uid="uid://dym557k566ebo" path="res://VFX/parallax/canvas_group_blur.tres" id="4_t8q1s"]
+[ext_resource type="Shader" uid="uid://b65yhehtgoh46" path="res://throw_me_away.gdshader" id="5_l3tyk"]
+[ext_resource type="Texture2D" uid="uid://dlweeb20tvspc" path="res://icon.svg" id="5_yrpma"]
+[ext_resource type="Script" uid="uid://bbcv1qj8hv51x" path="res://throw_me_away.gd" id="6_yrpma"]
+[ext_resource type="PackedScene" uid="uid://et4tabhw74ou" path="res://VFX/parallax/layers/bg_pll_1/bg_pll_1.tscn" id="7_4a1ml"]
+[ext_resource type="Script" uid="uid://c44mus1ayem3q" path="res://VFX/parallax/parallaxing_layer/parallaxing_layer.gd" id="7_plt5s"]
+[ext_resource type="PackedScene" uid="uid://57rf4lmj5cat" path="res://VFX/parallax/layers/bg_pll_2/bg_2.tscn" id="10_t8q1s"]
+[ext_resource type="Shader" uid="uid://drul7eeavnbvj" path="res://levels/oasis/fake_fog.gdshader" id="13_5hiki"]
+[ext_resource type="Texture2D" uid="uid://c86gxkiqc1kne" path="res://VFX/reusuable_fastnoise.tres" id="14_lhux2"]
+[ext_resource type="Script" uid="uid://bqvvjhsi0xm6q" path="res://levels/fake_fog.gd" id="15_lhux2"]
+
+[sub_resource type="Resource" id="Resource_plt5s"]
+script = ExtResource("4_plt5s")
+metadata/_custom_type_script = "uid://hc72grdfxumn"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_plt5s"]
+shader = ExtResource("5_l3tyk")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4a1ml"]
+viewport_path = NodePath("World/SubViewport")
+
+[sub_resource type="Resource" id="Resource_ugugx"]
+script = ExtResource("4_plt5s")
+metadata/_custom_type_script = "uid://hc72grdfxumn"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ugugx"]
+viewport_path = NodePath("ParallaxinglayersManager/ParallaxingLayer2/SubViewport2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_layxw"]
+shader = ExtResource("13_5hiki")
+shader_parameter/fog_color = Color(0.8901961, 0.25882354, 0.105882354, 1)
+shader_parameter/rect_size = Vector2(50, 100)
+shader_parameter/fog_thickness = 35.0
+shader_parameter/fog_density = 0.8
+shader_parameter/edge_softness = 18.0
+shader_parameter/distortion = 25.0
+shader_parameter/noise_texture = ExtResource("14_lhux2")
+shader_parameter/noise_scale = 10.0
+shader_parameter/detail_scale = 4.0
+shader_parameter/detail_strength = 2.0
+shader_parameter/noise_speed = 0.025
 
 [node name="LevelManager" type="Node2D"]
 visibility_layer = 3
 script = ExtResource("1_x4ns8")
+
+[node name="ParallaxinglayersManager" type="Node2D" parent="."]
+visible = false
+position = Vector2(0, -1)
+
+[node name="ParallaxingLayer0" type="Node2D" parent="ParallaxinglayersManager"]
+position = Vector2(0, 1)
+script = ExtResource("7_plt5s")
+depth_config = SubResource("Resource_plt5s")
+
+[node name="SubViewport" type="SubViewport" parent="ParallaxinglayersManager/ParallaxingLayer0"]
+transparent_bg = true
+size = Vector2i(480, 270)
+render_target_update_mode = 4
+
+[node name="CanvasGroup" type="CanvasGroup" parent="ParallaxinglayersManager/ParallaxingLayer0/SubViewport"]
+material = ExtResource("4_t8q1s")
+
+[node name="lava_bg" type="Sprite2D" parent="ParallaxinglayersManager/ParallaxingLayer0/SubViewport/CanvasGroup" node_paths=PackedStringArray("parallaxing_layer", "parent_subviewport", "inner_camera")]
+material = ExtResource("2_3uyut")
+texture = ExtResource("5_yrpma")
+script = ExtResource("3_fa8ul")
+parallaxing_layer = NodePath("../../..")
+parent_subviewport = NodePath("../..")
+inner_camera = NodePath("../../Camera2D")
+
+[node name="Camera2D" type="Camera2D" parent="ParallaxinglayersManager/ParallaxingLayer0/SubViewport"]
+script = ExtResource("4_3uyut")
+
+[node name="display_layer_0" type="Sprite2D" parent="ParallaxinglayersManager/ParallaxingLayer0" node_paths=PackedStringArray("sub_viewport")]
+z_index = -500
+z_as_relative = false
+material = SubResource("ShaderMaterial_plt5s")
+texture = SubResource("ViewportTexture_4a1ml")
+script = ExtResource("6_yrpma")
+sub_viewport = NodePath("../SubViewport")
+
+[node name="ParallaxingLayer2" type="Node2D" parent="ParallaxinglayersManager"]
+position = Vector2(0, 1)
+script = ExtResource("7_plt5s")
+depth_config = SubResource("Resource_ugugx")
+plane_index = 2
+
+[node name="SubViewport2" type="SubViewport" parent="ParallaxinglayersManager/ParallaxingLayer2"]
+transparent_bg = true
+msaa_2d = 1
+
+[node name="CanvasGroup" type="CanvasGroup" parent="ParallaxinglayersManager/ParallaxingLayer2/SubViewport2"]
+material = ExtResource("4_t8q1s")
+
+[node name="Camera2D" type="Camera2D" parent="ParallaxinglayersManager/ParallaxingLayer2/SubViewport2/CanvasGroup"]
+script = ExtResource("4_3uyut")
+
+[node name="Bg1" parent="ParallaxinglayersManager/ParallaxingLayer2/SubViewport2/CanvasGroup" node_paths=PackedStringArray("parallaxing_layer", "parent_subviewport", "inner_camera") instance=ExtResource("7_4a1ml")]
+parallaxing_layer = NodePath("../../..")
+parent_subviewport = NodePath("../..")
+inner_camera = NodePath("../Camera2D")
+
+[node name="BgPll2" parent="ParallaxinglayersManager/ParallaxingLayer2/SubViewport2/CanvasGroup" node_paths=PackedStringArray("parallaxing_layer", "parent_subviewport", "inner_camera") instance=ExtResource("10_t8q1s")]
+parallaxing_layer = NodePath("../../..")
+parent_subviewport = NodePath("../..")
+inner_camera = NodePath("../Camera2D")
+
+[node name="display_layer_2" type="Sprite2D" parent="ParallaxinglayersManager/ParallaxingLayer2" node_paths=PackedStringArray("sub_viewport")]
+z_index = -490
+z_as_relative = false
+texture = SubResource("ViewportTexture_ugugx")
+script = ExtResource("6_yrpma")
+sub_viewport = NodePath("../SubViewport2")
+
+[node name="fake_fog" type="Sprite2D" parent="ParallaxinglayersManager"]
+material = SubResource("ShaderMaterial_layxw")
+position = Vector2(0, 1)
+texture = ExtResource("5_yrpma")
+script = ExtResource("15_lhux2")
 
 [node name="ChunkContainer" type="Node2D" parent="."]
 visibility_layer = 3

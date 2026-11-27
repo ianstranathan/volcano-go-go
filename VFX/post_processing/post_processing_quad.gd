@@ -28,11 +28,7 @@ func _ready() -> void:
 		transition_finished.emit())
 
 	assert(cam)
-	get_viewport().size_changed.connect(_on_viewport_size_changed)
-	_scale_to_viewport()
-
-
-func _on_viewport_size_changed() -> void:
+	get_viewport().size_changed.connect(_scale_to_viewport)
 	_scale_to_viewport()
 
 

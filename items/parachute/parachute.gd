@@ -134,7 +134,7 @@ func tick_update(delta: float, cmd: PlayerCommand):
 			
 			if gust_interpolant <= 1.0:
 				gust_interpolant += delta
-				player_ref.velocity.y -= 4000 * delta * accl_curve.sample(gust_interpolant)
+				player_ref.velocity.y -= 10000 * delta * accl_curve.sample(gust_interpolant)
 				gust_interpolant = clamp(gust_interpolant, 0., 1.)
 			pass
 		ParachuteTypes.PARACHUTING:

@@ -4,18 +4,16 @@ class_name ParallaxDepthConfig
 extends Resource
 
 """
+Saturation decreases.                               
+Contrast decreases.                                 
+Dark shadows become lighter.                        
+Colors shift toward the atmosphere's dominant color.
+Fine details become less prominent.                 
+
 The further away something is, the slower it moves relative to the camera:
 0.75 ^ d
 
 """
-
-@export var main_plane_index: int = 4:
-	set(value):
-		if main_plane_index == value:
-			return
-		main_plane_index = value
-		emit_changed()
-
 
 # ------------------------------------------------------------------------------
 #d<0: Background.
@@ -24,7 +22,7 @@ The further away something is, the slower it moves relative to the camera:
 # -- NOTE plane_index defined on parent
 #var depth := plane_index - depth_config.main_plane_index
 func get_depth(index: int) -> int:
-	return index - main_plane_index
+	return index - InternalSettings.MAIN_PLANE_INDEX
 
 # ------------------------------------------------------------------------------
 

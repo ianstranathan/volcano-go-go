@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dfq4cgj6vy1o0"]
+
+[ext_resource type="Shader" uid="uid://b6mjcwid62sul" path="res://VFX/parallax/canvas_group_from_docs.gdshader" id="1_s61qu"]
+
+[resource]
+shader = ExtResource("1_s61qu")

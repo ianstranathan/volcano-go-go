@@ -180,6 +180,7 @@ func on_animation_movement_change(_is_stationary: bool):
 			if _is_stationary:
 				player_animated_sprite.play("Crouch Idle")
 
+
 func on_animation_finished():
 	# -- we need to acocunt for transitioning to secondary or tertiary
 	# -- animations following a state change animation
@@ -226,7 +227,8 @@ func get_sucked_into_lamp(pos: Vector2, callback_from_lamp: Callable) -> void:
 		player_animated_sprite.material.set_shader_parameter("progress", 0.0)
 		callback_from_lamp.call()
 	)
-	
+
+# -- for getting sucked into lamp
 func world_pos_to_uv(world_pos: Vector2) -> Vector2:
 	if not player_animated_sprite.sprite_frames:
 		return Vector2.ZERO

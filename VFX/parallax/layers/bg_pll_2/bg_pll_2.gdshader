@@ -98,9 +98,10 @@ void fragment() {
 	vec2 grad_scale = vec2(dtheta_dx, 1.0) * uv_scale;
 	vec2 duv_dx = vec2(dFdx(x), dFdx(y)) * grad_scale;
 	vec2 duv_dy = vec2(dFdy(x), dFdy(y)) * grad_scale;
-
-	// https://www.google.com/search?q=textureGrad+glsl&sxsrf=AKL5yDh2j3QvVi2tbbi1PTBF3_IyEVtudg%3A1794436497562
-	// textureGrad is a built-in GLSL function that samples a texture using explicit partial derivatives
+	
+	// -- NOTE
+	// -- https://www.google.com/search?q=textureGrad+glsl&sxsrf=AKL5yDh2j3QvVi2tbbi1PTBF3_IyEVtudg%3A1794436497562
+	// -- textureGrad is a built-in GLSL function that samples a texture using explicit partial derivatives
 	vec3 rock = textureGrad(rock_tex, rock_uv, duv_dx, duv_dy).rgb;
 	vec3 pattern = textureGrad(pattern_tex, rock_uv, duv_dx, duv_dy).rgb;
 	vec3 tn = textureGrad(rock_normal, rock_uv, duv_dx, duv_dy).xyz * 2.0 - 1.0;

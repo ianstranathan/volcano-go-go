@@ -6,10 +6,10 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ghqnk"]
 shader = ExtResource("2_hct5e")
-shader_parameter/glow_color = Color(0.41960785, 0, 0.12156863, 1)
-shader_parameter/glow_thickness = 3.0000001425
-shader_parameter/pulse_speed = 2.000000095
-shader_parameter/pulse_intensity = 0.51600002451
+shader_parameter/glow_color = Color(0.41960785, 0, 0.93333334, 1)
+shader_parameter/glow_thickness = 4.00000019
+shader_parameter/pulse_speed = 10.0
+shader_parameter/pulse_intensity = 0.2000000095
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ghqnk"]
 radius = 15.0
