@@ -1,4 +1,4 @@
-[gd_scene load_steps=1891 format=4 uid="uid://fooirwkjdwxl"]
+[gd_scene load_steps=1892 format=4 uid="uid://fooirwkjdwxl"]
 
 [ext_resource type="Script" uid="uid://dm5wfhjtpqix" path="res://levels/chunks/level_chunk.gd" id="1_hy8xc"]
 [ext_resource type="Script" uid="uid://cptvpu01udgc8" path="res://levels/chunks/level_chunk_data.gd" id="2_go1yl"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://5x7tnpyvft8y" path="res://levels/platforms/base_platform/base_platform.tscn" id="19_lv54x"]
 [ext_resource type="Script" uid="uid://dfndtocpf6lff" path="res://levels/pickup_editor_placeholder.gd" id="20_5ghxw"]
 [ext_resource type="Script" uid="uid://b1nvb61fqdic5" path="res://levels/platforms/platform_components/fall_through_platform_component/fall_through_platform_component.gd" id="20_rywxm"]
+[ext_resource type="PackedScene" uid="uid://v5ryr26ym7eb" path="res://assets/Platforms/Volcano bridge.tscn" id="21_6gmxm"]
 [ext_resource type="Script" uid="uid://x7uxn7nwb2x8" path="res://levels/dynamic_objects/dynamic_object_placeholder.gd" id="23_m8ier"]
 [ext_resource type="PackedScene" uid="uid://dc8lgy70k2yf8" path="res://levels/lantern_area/lantern_area.tscn" id="24_m8ier"]
 [ext_resource type="PackedScene" uid="uid://bstwsvd7h5cew" path="res://enemies/skeleton/skeleton.tscn" id="25_5o15g"]
@@ -14325,3 +14326,6 @@ depth_config = SubResource("Resource_bs2vb")
 [node name="Bg1" parent="ParallaxManager/CanvasGroup2" instance=ExtResource("42_id7yg")]
 
 [node name="Bg2" parent="ParallaxManager/CanvasGroup2" instance=ExtResource("43_7hsrn")]
+
+[node name="Volcano Bridge" parent="." instance=ExtResource("21_6gmxm")]
+position = Vector2(5333, 109)

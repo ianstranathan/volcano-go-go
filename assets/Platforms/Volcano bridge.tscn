@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://v5ryr26ym7eb"]
+
+[ext_resource type="Texture2D" uid="uid://bdtpu58i8gcgv" path="res://assets/Sprites/Platforms/Volcano bridge right and left piece.png" id="1_t2os8"]
+
+[node name="Volcano Bridge" type="Node2D"]
+
+[node name="Static" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Static"]
+texture_filter = 1
+position = Vector2(3, -192)
+scale = Vector2(3, 3)
+texture = ExtResource("1_t2os8")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Static/Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Static/Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-118.333336, -42.66667, -118.333336, -56, -110.333336, -58.66667, 105.66667, -58.66667, 113.66667, -56, 113.66667, -40, 103, -40, 111, -24, 108.333336, -18.666672, 119, -2.6666718, 119.333336, 3, 113.333336, 10.333332, 117.66667, 15, 113.66667, 23.666664, 106.333336, 31.666664, 108, 36.666664, 111.66667, 40.333332, 112, 47.666664, 119.66667, 52.666664, 119.333336, 57.666668, 117.66667, 63, -112, 63.666668, -108, 57.333332, -112.66667, 50.333332, -111.333336, 44, -105, 39.333332, -107.66667, 31, -103.333336, 22.666664, -98.66667, 19.666664, -103, 9.666664, -101, 6, -105, 0, -101.333336, -4.6666718, -111.66667, -10.333336, -113.333336, -18, -108, -23, -110.66667, -30.333336, -105.333336, -34, -99.333336, -36.333336, -102.333336, -42.66667)
