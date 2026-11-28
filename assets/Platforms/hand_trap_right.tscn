@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnkik84aq1vgi"]
+
+[ext_resource type="Texture2D" uid="uid://dpqyf0qn616rd" path="res://assets/Sprites/Platforms/Open Hand Trap Right.png" id="1_n46o0"]
+[ext_resource type="Texture2D" uid="uid://bge27m1b4cymw" path="res://assets/Sprites/Platforms/Open Hand Trap Right Fingers Only.png" id="2_uaisn"]
+
+[node name="Hand Trap Right" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -288)
+scale = Vector2(3, 3)
+texture = ExtResource("1_n46o0")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-85.333336, -32, -112, -26.666672, -112, -8, -141.33334, 21.333328, -165.33334, 93.333336, -77.333336, 93.333336, -61.333336, 34.666664, 152, 32, 165.33334, 5.3333282, 165.33334, -18.666672, 42.666668, -18.666672)
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+z_index = 2
+position = Vector2(0, -288)
+scale = Vector2(3, 3)
+texture = ExtResource("2_uaisn")

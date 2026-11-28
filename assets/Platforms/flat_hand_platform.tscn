@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://h2yc525ko75r"]
+
+[ext_resource type="Texture2D" uid="uid://dv1knylu2enqn" path="res://assets/Sprites/Platforms/Flat Hand Platform.png" id="1_akmhh"]
+
+[node name="Flat Hand Platform" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -528)
+scale = Vector2(2, 2)
+texture = ExtResource("1_akmhh")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-157.33334, -128, 2.6666667, -125.33334, 93.333336, -114.66669, 253.33334, -101.33334, 253.33334, -61.333344, 96, -48, -80, -40, -128, 173.33333, -264, 173.33333, -172.737, -92.63316, -157.33334, -98.66669)

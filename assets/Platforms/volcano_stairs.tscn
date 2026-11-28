@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://bck1d18f6pdep"]
+
+[ext_resource type="Texture2D" uid="uid://17xp5ywgqpe4" path="res://assets/Sprites/Platforms/Volcano stairs platform.png" id="1_qh8w2"]
+
+[node name="Volcano Stairs" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -208)
+scale = Vector2(3, 3)
+texture = ExtResource("1_qh8w2")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-120, -61.333336, -120, -45.333336, -109.333336, -34.666664, -114.66667, -26.666664, -114.66667, -16, -106.66667, -16, -106.66667, -2.6666641, -109.333336, 2.6666641, -90.66667, 16, -101.333336, 40, -98.66667, 53.333336, -104, 58.666668, -101.333336, 69.333336, 114.66667, 69.333336, 109.333336, 53.333336, 112, 45.333336, 114.66667, 29.333336, 120, 29.333336, 120, 21.333336, 101.333336, 21.333336, -72, -58.666664, -85.333336, -61.333336)

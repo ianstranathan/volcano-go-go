@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://n2aq5q22j0km"]
+
+[ext_resource type="Texture2D" uid="uid://e5tg1yx46f16" path="res://assets/Sprites/Platforms/Pointing finger.png" id="1_aj83c"]
+
+[node name="Pointing finger" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -520)
+scale = Vector2(3, 3)
+texture = ExtResource("1_aj83c")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-269.33334, 173.33334, -42.666668, 58.66667, -24, 37.333344, 32, -45.33333, 77.333336, -98.66666, 93.333336, -104, 152, -154.66666, 226.66667, -168, 274.6667, -165.33334, 274.6667, -149.33334, 266.6667, -144, 232, -141.33334, 181.33334, -125.33334, 146.66667, -80, 146.66667, -72, 205.33334, -58.666656, 205.33334, 16, 200, 24, 197.33334, 48.000008, 181.33334, 48.000008, 157.33334, 58.66667, 141.33334, 50.66667, 154.66667, 21.333344, 125.333336, 42.66667, 101.333336, 82.66667, 64, 109.33334, 10.666667, 122.66667, -53.333336, 173.33334)
