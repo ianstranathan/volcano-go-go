@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://crb2816aqxoeg"]
+
+[ext_resource type="Texture2D" uid="uid://bs8x6bqa7d1nc" path="res://assets/Sprites/Platforms/Volcano pillar platform.png" id="1_ixq5j"]
+
+[node name="Volcano Pillar Platform" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1, -246)
+scale = Vector2(3, 3)
+texture = ExtResource("1_ixq5j")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Sprite2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Sprite2D/StaticBody2D"]
+polygon = PackedVector2Array(-51, -75.33334, -51, -59.333344, -24.333334, -59.333344, -24.333334, 2, -35, 2, -35, 23.333332, -21.666668, 39.333332, -21.666668, 82, 18.333334, 82, 18.333334, 36.666664, 23.666666, 23.333332, 10.333334, 23.333332, 10.333334, -19.333336, 2.3333335, -35.333336, 15.666667, -46, 15.666667, -59.333344, 31.666666, -64.66667, 53.000004, -64.66667, 53.000004, -75.33334)
